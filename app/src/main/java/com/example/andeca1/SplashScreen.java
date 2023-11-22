@@ -15,11 +15,6 @@ public class SplashScreen extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_splash_screen);
-        TextView textView = findViewById(R.id.titleSplash);
-        String html = "<b><font color='" + String.format("#%06X", (0xFFFFFF & Color.BLACK))
-                + "'><big>zen</big></font></b><b><font color='"
-                + "#9835D0" + "'><big>Budget</big></font></b>";
-        textView.setText(Html.fromHtml(html));
         Thread splashThread = new Thread() {
 
             public void run() {
