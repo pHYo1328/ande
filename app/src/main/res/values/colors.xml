@@ -7,4 +7,7 @@
     <color name="teal_700">#FF018786</color>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+    <color name="zen_black">#000000</color>
+    <color name="budget_purple">#9835D0</color>
+    <color name="icon_color">#FFFFFF</color> <!-- Example color -->
 </resources>

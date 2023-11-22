@@ -1,3 +1,8 @@
 <resources>
     <string name="app_name">ANDE CA1</string>
+    <string name="title_home">Home</string>
+    <string name="title_expense">Expense Logging</string>
+    <string name="title_event">event creation</string>
+    <string name="title_chat">AI adviser</string>
+    <string name="title_profile">Profile</string>
 </resources>
