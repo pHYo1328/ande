@@ -2,7 +2,9 @@
     <string name="app_name">ANDE CA1</string>
     <string name="title_home">Home</string>
     <string name="title_expense">Expense Logging</string>
-    <string name="title_event">event creation</string>
+    <string name="title_event">Event Creation</string>
     <string name="title_chat">AI adviser</string>
     <string name="title_profile">Profile</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>
