@@ -3,11 +3,11 @@ package com.example.andeca1;
 import java.util.Date;
 
 public class recycleItem {
-    private String eventTitle;
-    private int progress;
-    private String date;
-    private int photoID;
-    private String amount;
+    private final String eventTitle;
+    private final int progress;
+    private final String date;
+    private final int photoID;
+    private final String amount;
     public String getEventTitle() {
         return eventTitle;
     }

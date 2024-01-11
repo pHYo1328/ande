@@ -1,10 +1,30 @@
 <resources>
     <string name="app_name">ANDE CA1</string>
     <string name="title_home">Home</string>
-    <string name="title_expense">Expense Logging</string>
-    <string name="title_event">Event Creation</string>
-    <string name="title_chat">AI adviser</string>
+    <string name="title_expense">Expense</string>
+    <string name="title_event">Event</string>
+    <string name="title_chat">AI chat</string>
     <string name="title_profile">Profile</string>
-    <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string-array name="categories">
+        <item>Select Category</item>
+        <item>Housing</item>
+        <item>Utilities</item>
+        <item>Food</item>
+        <item>Transportation</item>
+        <item>Insurance</item>
+        <item>Healthcare</item>
+        <item>Personal Care</item>
+        <item>Entertainment</item>
+        <item>Clothing</item>
+        <item>Education</item>
+        <item>Savings and Investments</item>
+        <item>Travel</item>
+        <item>Miscellaneous</item>
+    </string-array>
+    <string-array name="events">
+        <item>Select Events</item>
+        <item>Event 1</item>
+        <item>Event 2</item>
+    </string-array>
 </resources>

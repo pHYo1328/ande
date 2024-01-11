@@ -40,9 +40,7 @@ public class MainActivity extends BaseActivity {
         String text = "Welcome Back,\nJohn";
         items = new ArrayList<>();
 
-
         SpannableString spannableString = new SpannableString(text);
-
 
         spannableString.setSpan(new AbsoluteSizeSpan(35, true), 0, 14, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
 

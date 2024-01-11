@@ -2,10 +2,11 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:layout_margin="10dp"
     android:background="@color/design_default_color_background"
     android:orientation="vertical"
-    android:layout_margin="10dp"
-    android:padding= "30dp">
+    android:paddingHorizontal="30dp"
+    android:paddingTop="30dp">
 
 
     <!-- Wrapper Layout with Background Image -->
@@ -35,10 +36,9 @@
         android:id="@+id/wrapElement2"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
         android:background="@color/design_default_color_background"
-        android:padding= "35dp"
-        >
+        android:orientation="vertical"
+        android:padding="35dp">
         > <!-- Background image set here -->
 
         <!-- First Inner LinearLayout -->
