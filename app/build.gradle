@@ -39,7 +39,7 @@ dependencies {
     implementation "androidx.compose.material3:material3:1.1.2"
     implementation "androidx.compose.material3:material3-window-size-class:1.1.2"
     implementation 'com.mikhaellopez:circularprogressbar:3.1.0'
-    coreLibraryDesugaring 'com.android.tools:desugar_jdk_libs:2.0.4'
+    coreLibraryDesugaring 'com.android.tools:desugar_jdk_libs:2.0i.4'
     implementation 'com.kizitonwose.calendar:view:2.4.0'
     implementation 'com.kizitonwose.calendar:compose:1.5.2'
 }

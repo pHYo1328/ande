@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="8dp">
+
+    <TextView
+        android:id="@+id/timestamp_recipient"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="@style/TextAppearance.Material3.BodySmall"
+        android:layout_gravity="start"
+        android:text="8:58 PM"
+        android:layout_marginStart="16dp" />
+
+    <com.google.android.material.card.MaterialCardView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="start"
+        android:layout_marginStart="16dp"
+
+        android:layout_marginTop="4dp">
+
+        <TextView
+            android:id="@+id/text_message_body_recipient"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="16dp"
+            android:textAppearance="@style/TextAppearance.Material3.BodyLarge"
+            android:text="This is a received message"
+            android:background="@color/material_dynamic_neutral95" />
+    </com.google.android.material.card.MaterialCardView>
+
+</LinearLayout>
