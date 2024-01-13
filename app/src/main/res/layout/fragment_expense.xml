@@ -52,7 +52,7 @@
             >
 
             <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/SpentTextInputLayout"
+                android:id="@+id/spentEditText"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:gravity="end"
@@ -126,5 +126,6 @@
         android:drawableEnd="@drawable/baseline_save_24"
         android:drawablePadding="5dp"
         android:text="save"
-        android:textColor="#FFFFFF" />
+        android:textColor="#FFFFFF"
+        android:onClick="saveButtonOnClickListener"/>
 </LinearLayout>

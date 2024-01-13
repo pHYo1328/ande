@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "970393414330",
+    "project_id": "ande-7f169",
+    "storage_bucket": "ande-7f169.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:970393414330:android:84921d231e0c70b761f083",
+        "android_client_info": {
+          "package_name": "com.example.andeca1"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDbYwty4F4caNIftaiyxXYBAZ9njB6mQP4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
