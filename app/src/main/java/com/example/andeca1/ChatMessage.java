@@ -4,9 +4,9 @@ public class ChatMessage {
     public static final int TYPE_SENDER = 0;
     public static final int TYPE_RECIPIENT = 1;
 
-    private String message;
-    private String timestamp;
-    private int type;
+    private final String message;
+    private final String timestamp;
+    private final int type;
 
     public ChatMessage(String message, String timestamp, int type) {
         this.message = message;

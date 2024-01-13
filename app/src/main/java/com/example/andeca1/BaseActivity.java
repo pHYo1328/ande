@@ -23,7 +23,6 @@ public class BaseActivity extends AppCompatActivity {
                     selectedFragment = new HomeFragment();
                     break;
                 case R.id.navigation_expense:
-                    Toast.makeText(this, "Expense", Toast.LENGTH_SHORT).show();
                     selectedFragment = new ExpenseFragment();
                     break;
                 case R.id.navigation_event:

@@ -3,6 +3,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
+
     android:padding="8dp">
 
     <TextView
@@ -19,7 +20,7 @@
         android:layout_height="wrap_content"
         android:layout_gravity="end"
         android:layout_marginEnd="16dp"
-
+        android:background="@drawable/chat_border"
         android:layout_marginTop="4dp">
 
         <TextView
@@ -28,6 +29,7 @@
             android:layout_height="wrap_content"
             android:padding="16dp"
             android:textAppearance="@style/TextAppearance.Material3.BodyLarge"
+            android:textColor="@color/white"
             android:text="This is a sent message"
             android:background="@color/budget_purple"/>
     </com.google.android.material.card.MaterialCardView>

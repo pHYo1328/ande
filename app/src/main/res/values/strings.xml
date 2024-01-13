@@ -27,4 +27,5 @@
         <item>Event 1</item>
         <item>Event 2</item>
     </string-array>
+    <string name="send_message">Send</string>
 </resources>

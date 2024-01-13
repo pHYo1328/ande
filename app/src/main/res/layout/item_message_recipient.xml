@@ -9,27 +9,42 @@
         android:id="@+id/timestamp_recipient"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textAppearance="@style/TextAppearance.Material3.BodySmall"
-        android:layout_gravity="start"
-        android:text="8:58 PM"
-        android:layout_marginStart="16dp" />
-
-    <com.google.android.material.card.MaterialCardView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
         android:layout_gravity="start"
         android:layout_marginStart="16dp"
+        android:text="8:58 PM"
+        android:textAppearance="@style/TextAppearance.Material3.BodySmall" />
 
-        android:layout_marginTop="4dp">
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="horizontal">
 
-        <TextView
-            android:id="@+id/text_message_body_recipient"
+        <ImageView
+            android:id="@+id/profile_icon"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_gravity="center_vertical"
+            android:contentDescription="Logo"
+            android:src="@drawable/chat_icon" />
+
+        <com.google.android.material.card.MaterialCardView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:padding="16dp"
-            android:textAppearance="@style/TextAppearance.Material3.BodyLarge"
-            android:text="This is a received message"
-            android:background="@color/material_dynamic_neutral95" />
-    </com.google.android.material.card.MaterialCardView>
+            android:layout_gravity="start"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="4dp"
+            android:background="@drawable/chat_border">
+
+            <TextView
+                android:id="@+id/text_message_body_recipient"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@color/material_dynamic_neutral95"
+                android:padding="16dp"
+                android:text="This is a received message"
+                android:textAppearance="@style/TextAppearance.Material3.BodyLarge" />
+        </com.google.android.material.card.MaterialCardView>
+    </LinearLayout>
+
 
 </LinearLayout>
