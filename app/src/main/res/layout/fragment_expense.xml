@@ -88,7 +88,8 @@
         android:layout_height="wrap_content"
         android:dropDownVerticalOffset="5dp"
         android:padding="16dp"
-        android:spinnerMode="dropdown" />
+        android:spinnerMode="dialog" />
+
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/NoteTextInputLayout"
             style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
@@ -114,7 +115,8 @@
         android:layout_height="wrap_content"
         android:dropDownVerticalOffset="5dp"
         android:padding="16dp"
-        android:spinnerMode="dropdown" />
+        android:spinnerMode="dropdown"
+        />
 
     <Button
         android:id="@+id/btnSaveExpense"
@@ -128,4 +130,6 @@
         android:text="save"
         android:textColor="#FFFFFF"
         android:onClick="saveButtonOnClickListener"/>
+
+
 </LinearLayout>

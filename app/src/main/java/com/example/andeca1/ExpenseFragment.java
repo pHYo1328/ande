@@ -109,6 +109,7 @@ public class ExpenseFragment extends Fragment {
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinnerEvent.setAdapter(adapter);
         spinnerEvent.setSelection(0);
+
         spinnerEvent.setOnItemSelectedListener(new EventSelectedListener());
     }
 

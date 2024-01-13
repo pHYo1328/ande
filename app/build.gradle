@@ -24,7 +24,6 @@ android {
         }
     }
     compileOptions {
-        coreLibraryDesugaringEnabled true
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
     }
@@ -56,11 +55,8 @@ dependencies {
     implementation "androidx.compose.material3:material3:1.1.2"
     implementation "androidx.compose.material3:material3-window-size-class:1.1.2"
     implementation 'com.mikhaellopez:circularprogressbar:3.1.0'
-    coreLibraryDesugaring 'com.android.tools:desugar_jdk_libs:2.0i.4'
-    implementation 'com.kizitonwose.calendar:view:2.4.0'
-    implementation 'com.kizitonwose.calendar:compose:1.5.2'
     implementation 'com.github.prolificinteractive:material-calendarview:2.0.0'
-    implementation platform('com.google.firebase:firebase-bom:32.7.0')
-    implementation 'com.google.firebase:firebase-analytics'
-    implementation 'com.google.firebase:firebase-firestore:24.10.0'
+    implementation ('com.google.firebase:firebase-analytics:21.5.0')
+    implementation  ('com.google.firebase:firebase-firestore:24.10.0')
+
 }
