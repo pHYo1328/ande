@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
+
     <uses-permission android:name="android.permission.INTERNET" />
 
     <application
@@ -13,21 +14,21 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.ANDECA1"
         tools:targetApi="31">
-<!--        <activity-->
-<!--            android:name=".BaseActivity"-->
-<!--            android:exported="false" />-->
-<!--        <activity-->
-<!--            android:name=".ChatActivity"-->
-<!--            android:exported="false" />-->
-<!--        <activity-->
-<!--            android:name=".EventActivity"-->
-<!--            android:exported="false" />-->
-<!--        <activity-->
-<!--            android:name=".ExpenseActivity"-->
-<!--            android:exported="false" />-->
-<!--        <activity-->
-<!--            android:name=".ProfileActivity"-->
-<!--            android:exported="false" />-->
+        <!--        <activity-->
+        <!--            android:name=".BaseActivity"-->
+        <!--            android:exported="false" />-->
+        <!--        <activity-->
+        <!--            android:name=".ChatActivity"-->
+        <!--            android:exported="false" />-->
+        <!--        <activity-->
+        <!--            android:name=".EventActivity"-->
+        <!--            android:exported="false" />-->
+        <!--        <activity-->
+        <!--            android:name=".ExpenseActivity"-->
+        <!--            android:exported="false" />-->
+        <!--        <activity-->
+        <!--            android:name=".ProfileActivity"-->
+        <!--            android:exported="false" />-->
         <activity
             android:name=".SplashScreen"
             android:exported="true">
@@ -44,9 +45,11 @@
         <activity
             android:name=".BaseActivity"
             android:exported="true">
+
             <meta-data
                 android:name="android.app.lib_name"
                 android:value="" />
+
         </activity>
 
 

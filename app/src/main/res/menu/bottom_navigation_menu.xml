@@ -3,21 +3,26 @@
     <item
         android:id="@+id/navigation_home"
         android:icon="@drawable/ic_baseline_home_24"
-        android:title="@string/title_home" />
+        android:title="@string/title_home"
+        android:focusable="false"/>
     <item
         android:id="@+id/navigation_expense"
         android:icon="@drawable/ic_baseline_attach_money_24"
-        android:title="@string/title_expense" />
+        android:title="@string/title_expense"
+        android:focusable="false"/>
     <item
         android:id="@+id/navigation_event"
         android:icon="@drawable/ic_baseline_calendar_month_24"
-        android:title="@string/title_event" />
+        android:title="@string/title_event"
+        android:focusable="false"/>
     <item
         android:id="@+id/navigation_chat"
         android:icon="@drawable/ic_baseline_chat_bubble_outline_24"
-        android:title="@string/title_chat" />
+        android:title="@string/title_chat"
+        android:focusable="false"/>
     <item
         android:id="@+id/navigation_profile"
         android:icon="@drawable/ic_baseline_person_pin_24"
-        android:title="@string/title_profile" />
+        android:title="@string/title_profile"
+        android:focusable="false"/>
 </menu>

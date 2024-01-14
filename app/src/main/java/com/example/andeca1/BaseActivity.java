@@ -2,19 +2,32 @@ package com.example.andeca1;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
+
+import android.content.Context;
+import android.graphics.Rect;
 import android.os.Bundle;
-import android.widget.Toast;
+import android.view.View;
+import android.view.ViewParent;
+import android.view.ViewTreeObserver;
+import android.view.inputmethod.InputMethodManager;
+import android.widget.EditText;
+import android.view.MotionEvent;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.google.android.material.textfield.TextInputLayout;
 
 public class BaseActivity extends AppCompatActivity {
-
+    public interface KeyboardVisibilityListener {
+        void onKeyboardVisibilityChanged(boolean keyboardVisible);
+    }
+    private KeyboardVisibilityListener keyboardVisibilityListener;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_base);
 
         BottomNavigationView bottomNavigationView = findViewById(R.id.bottomNavigationView);
+        setupKeyboardVisibilityListener();
         bottomNavigationView.setOnItemSelectedListener(item -> {
             Fragment selectedFragment = null;
 
@@ -45,9 +58,29 @@ public class BaseActivity extends AppCompatActivity {
             return true;
         });
 
+
         // Set default fragment
         if (savedInstanceState == null) {
             bottomNavigationView.setSelectedItemId(R.id.navigation_home);
         }
     }
+    private void setupKeyboardVisibilityListener() {
+        final View contentView = findViewById(android.R.id.content);
+        contentView.getViewTreeObserver().addOnGlobalLayoutListener(() -> {
+            Rect r = new Rect();
+            contentView.getWindowVisibleDisplayFrame(r);
+            int screenHeight = contentView.getRootView().getHeight();
+            int keypadHeight = screenHeight - r.bottom;
+
+            boolean isKeyboardVisible = keypadHeight > screenHeight * 0.15;
+            if (keyboardVisibilityListener != null) {
+                keyboardVisibilityListener.onKeyboardVisibilityChanged(isKeyboardVisible);
+            }
+        });
+    }
+
+    public void setKeyboardVisibilityListener(KeyboardVisibilityListener listener) {
+        this.keyboardVisibilityListener = listener;
+    }
+
 }
