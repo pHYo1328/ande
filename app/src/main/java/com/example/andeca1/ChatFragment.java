@@ -1,5 +1,6 @@
 package com.example.andeca1;
 
+import android.annotation.SuppressLint;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -7,7 +8,10 @@ import android.view.ViewGroup;
 import android.widget.EditText;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.MutableLiveData;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -38,27 +42,52 @@ public class ChatFragment extends Fragment implements View.OnClickListener, Base
     private EditText messageInput;
     private RecyclerView recyclerView;
     private BottomNavigationView navigationPlaceholder;
+    private ChatViewModel chatViewModel;
 
+    @SuppressLint("NotifyDataSetChanged")
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_chat, container, false);
 
-        initializeChatMessages();
-
         recyclerView = view.findViewById(R.id.chat_recycler_view);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
 
-        chatAdapter = new ChatAdapter(chatMessages);
+        chatAdapter = new ChatAdapter(new ArrayList<>()); // Initialize with empty list
         recyclerView.setAdapter(chatAdapter);
 
         messageInput = view.findViewById(R.id.message_input);
         navigationPlaceholder = requireActivity().findViewById(R.id.bottomNavigationView);
 
         View sendButton = view.findViewById(R.id.send_button);
-        sendButton.setOnClickListener(this); // Set the click listener
+        sendButton.setOnClickListener(this);
+
+        // Initialize ViewModel
+        chatViewModel = new ViewModelProvider(requireActivity()).get(ChatViewModel.class);
+
+        // Observe chat messages LiveData
+        chatViewModel.getChatMessages().observe(getViewLifecycleOwner(), chatMessages -> {
+            chatAdapter.setChatMessages(chatMessages); // Update adapter's data
+            chatAdapter.notifyDataSetChanged();
+            recyclerView.scrollToPosition(chatMessages.size() - 1);
+        });
 
         return view;
     }
+
+    @SuppressLint("NotifyDataSetChanged")
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+
+        // Observe LiveData
+        chatViewModel.getChatMessages().observe(getViewLifecycleOwner(), newMessages -> {
+            chatMessages = newMessages;
+            chatAdapter.notifyDataSetChanged();
+            recyclerView.scrollToPosition(chatMessages.size() - 1);
+        });
+    }
+
+
 
     @Override
     public void onResume() {
@@ -77,27 +106,93 @@ public class ChatFragment extends Fragment implements View.OnClickListener, Base
         navigationPlaceholder.setVisibility(keyboardVisible ? View.GONE : View.VISIBLE);
     }
 
-    private void addContent(JsonArray contentsArray, String role, String text) {
-        JsonObject content = new JsonObject();
-        content.addProperty("role", role);
-        JsonArray partsArray = new JsonArray();
-        JsonObject part = new JsonObject();
-        part.addProperty("text", text);
-        partsArray.add(part);
-        content.add("parts", partsArray);
-        contentsArray.add(content);
+    private static void addExample(JsonArray examplesArray, String inputAuthor, String inputContent, String outputAuthor, String outputContent) {
+        JsonObject example = new JsonObject();
+        JsonObject input = new JsonObject();
+        JsonObject output = new JsonObject();
+
+        input.addProperty("author", inputAuthor);
+        input.addProperty("content", inputContent);
+        output.addProperty("author", outputAuthor);
+        output.addProperty("content", outputContent);
+
+        example.add("input", input);
+        example.add("output", output);
+        examplesArray.add(example);
     }
 
-    private String truncateToWordLimit(String text, int wordLimit) {
-        String[] words = text.split("\\s+");
-        if (words.length <= wordLimit) return text;
+    private static JsonObject createRequestJson(List<ChatMessage> chatMessages) {
+        JsonObject requestJson = new JsonObject();
+        JsonArray instancesArray = new JsonArray();
+        JsonObject instance = new JsonObject();
 
-        StringBuilder truncated = new StringBuilder();
-        for (int i = 0; i < wordLimit; i++) {
-            truncated.append(words[i]).append(" ");
+        // Adding context
+        instance.addProperty("context", "You are a financial advisor chat assistant within the ZenBudget application based in Singapore.\n" +
+                "Your primary objective is to provide real-time financial advice based on the user\\'s current budget status and financial goals. You have access to the user\\'s historical transaction data, categorized spending, income streams, and savings balances. You should prioritize personalized, actionable, and timely recommendations.\n" +
+                "\n" +
+                "A conversation history will be provided'\n" +
+                "\n" +
+                "You are to refrain from generating other content not related to a financial advisor and kindly reject the request\n" +
+                "Important: Please format your responses as short paragraphs and break them down into multiple messages, similar to a WhatsApp chat.\n" +
+                "Please also verify that the JSON array is in the correct format\n" +
+                "Output Format: JSON array with each message as a separate object with only the message key with no markdown or HTML formatting");
+
+        // Adding examples
+        JsonArray examplesArray = new JsonArray();
+        // Assuming you have some way to get these examples. Modify as needed.
+        addExample(examplesArray, "user", "Hello", "bot", "[{\"message\": \"Hi there! I'm happy to lend a hand. Tell me about your financial goals for 2023.\"}]");
+        instance.add("examples", examplesArray);
+
+        List<ChatMessage> combinedMessages = new ArrayList<>();
+        StringBuilder recipientMessages = new StringBuilder();
+
+        // Combine recipient messages
+        for (ChatMessage chatMsg : chatMessages) {
+            if (chatMsg.getType() == ChatMessage.TYPE_RECIPIENT) {
+                if (recipientMessages.length() > 0) {
+                    recipientMessages.append("\n"); // Add a separator (if needed) between messages
+                }
+                recipientMessages.append(chatMsg.getMessage());
+            } else {
+                if (recipientMessages.length() > 0) {
+                    combinedMessages.add(new ChatMessage(recipientMessages.toString(), "Now", ChatMessage.TYPE_RECIPIENT));
+                    recipientMessages = new StringBuilder(); // Reset for the next set of recipient messages
+                }
+                combinedMessages.add(chatMsg);
+            }
         }
-        truncated.append("...");
-        return truncated.toString();
+
+        // Add any remaining recipient messages
+        if (recipientMessages.length() > 0) {
+            combinedMessages.add(new ChatMessage(recipientMessages.toString(), "Now", ChatMessage.TYPE_RECIPIENT));
+        }
+
+        // Select the last 9 messages mus t be odd number otherwise message history ends
+        //with a user message and api doesn't like 2 consecutive user messages
+        int start = Math.max(0, combinedMessages.size() - 9);
+        List<ChatMessage> lastEightMessages = combinedMessages.subList(start, combinedMessages.size());
+
+        // Add to the real messagesArray
+        JsonArray messagesArray = new JsonArray();
+        for (ChatMessage chatMsg : lastEightMessages) {
+            JsonObject messageObj = new JsonObject();
+            messageObj.addProperty("author", chatMsg.getType() == ChatMessage.TYPE_SENDER ? "user" : "bot");
+            messageObj.addProperty("content", chatMsg.getMessage());
+            messagesArray.add(messageObj);
+        }
+        instance.add("messages", messagesArray);
+
+        instancesArray.add(instance);
+        requestJson.add("instances", instancesArray);
+
+        // Adding parameters
+        JsonObject parameters = new JsonObject();
+        parameters.addProperty("maxOutputTokens", 1024);
+        parameters.addProperty("temperature", 0.9);
+        parameters.addProperty("topP", 1);
+        requestJson.add("parameters", parameters);
+
+        return requestJson;
     }
 
     private void initializeChatMessages() {
@@ -121,7 +216,8 @@ public class ChatFragment extends Fragment implements View.OnClickListener, Base
         String message = messageInput.getText().toString();
         if (!message.isEmpty()) {
             ChatMessage chatMessage = new ChatMessage(message, "Now", ChatMessage.TYPE_SENDER);
-            chatMessages.add(chatMessage);
+//            chatMessages.add(chatMessage);
+            chatViewModel.addChatMessage(chatMessage);
             chatAdapter.notifyItemInserted(chatMessages.size() - 1);
             recyclerView.scrollToPosition(chatMessages.size() - 1);
             messageInput.setText("");
@@ -129,8 +225,7 @@ public class ChatFragment extends Fragment implements View.OnClickListener, Base
 
             new Thread(() -> {
                 try {
-                    // Load credentials
-                    InputStream inputStream = getResources().openRawResource(R.raw.key); // Replace 'R.raw.key' with your actual resource
+                    InputStream inputStream = getResources().openRawResource(R.raw.key);
                     GoogleCredentials credentials = GoogleCredentials.fromStream(inputStream)
                             .createScoped("https://www.googleapis.com/auth/cloud-platform");
                     credentials.refreshIfExpired();
@@ -138,82 +233,10 @@ public class ChatFragment extends Fragment implements View.OnClickListener, Base
 
                     OkHttpClient client = new OkHttpClient();
 
-                    // Build the endpoint URL
-                    String url = "https://asia-southeast1-aiplatform.googleapis.com/v1/projects/booming-landing-410605/locations/asia-southeast1/publishers/google/models/gemini-pro:streamGenerateContent";
-
-                    // Create the request body
-                    JsonObject requestBody = new JsonObject();
-                    JsonArray contentsArray = new JsonArray();
-                    //I hate prompt engineering
-                    addContent(contentsArray, "user", "Context:\n" +
-                            "\n" +
-                            "You are a financial advisor chat assistant within the ZenBudget application where the user is in Singapore.\n" +
-                            "Your primary objective is to provide real-time financial advice based on the user's current budget status and financial goals. You have access to the user's historical transaction data, categorized spending, income streams, and savings balances. You should prioritize personalized, actionable, and timely recommendations.\n" +
-                            "\n" +
-                            "A conversation history will be provided below for you where you are the 'model' while the user is the 'user' \n" +
-                            "\n" +
-                            "You are to refrain from generating other content not related to a financial advisor and kindly reject the request\n" +
-                            "Important: Please format your responses as short paragraphs and break them down into multiple messages, similar to a WhatsApp chat. \n" +
-                            "Output Format: JSON array with each message as a separate object with only the message key and no markdown syntax\n" +
-                            "\n" +
-                            "User data starts below:\n" +
-                            "\n" +
-                            "Conversation history starts below:\n");
-                    addContent(contentsArray, "model", "[\n" +
-                            "  {\n" +
-                            "    \"message\": \"Hi there! I'm happy to lend a hand. Tell me about your financial goals for 2023.\"\n" +
-                            "  }\n" +
-                            "]");
-
-                    // Hack, the consequence of my actions...
-                    List<ChatMessage> combinedMessages = new ArrayList<>();
-
-
-                    int i = 0;
-                    while (i < chatMessages.size()) {
-                        ChatMessage chatMsg = chatMessages.get(i);
-
-                        if (chatMsg.getType() == ChatMessage.TYPE_SENDER) {
-                            combinedMessages.add(chatMsg);
-                        } else {
-                            StringBuilder modelMessages = new StringBuilder(chatMsg.getMessage());
-
-                            // Combine subsequent model messages
-                            while (i + 1 < chatMessages.size() && chatMessages.get(i + 1).getType() == ChatMessage.TYPE_RECIPIENT) {
-                                i++;
-                                modelMessages.append("\n").append(chatMessages.get(i).getMessage());
-                            }
-
-                            // Truncate the message to 25 words if necessary
-                            String truncatedMessage = truncateToWordLimit(modelMessages.toString(), 25);
-                            combinedMessages.add(new ChatMessage(truncatedMessage, "now", ChatMessage.TYPE_RECIPIENT));
-                        }
-                        i++;
-                    }
-
-
-//                    int start = Math.max(0, combinedMessages.size() - 6);
-                    for (i = 0; i < combinedMessages.size(); i++) {
-                        ChatMessage combinedMsg = combinedMessages.get(i);
-
-                        if (combinedMsg.getType() == ChatMessage.TYPE_SENDER) {
-                            addContent(contentsArray, "user", combinedMsg.getMessage() + "\nOutput Format: JSON array with each message as a separate object with only the message key and no markdown syntax\n");
-                        } else {
-                            addContent(contentsArray, "model", combinedMsg.getMessage());
-                        }
-                    }
-
-                    requestBody.add("contents", contentsArray);
-
-                    // Generation config
-                    JsonObject generationConfig = new JsonObject();
-                    generationConfig.addProperty("maxOutputTokens", 2048);
-                    generationConfig.addProperty("temperature", 0.9);
-                    generationConfig.addProperty("topP", 1);
-                    requestBody.add("generation_config", generationConfig);
-
+                    JsonObject requestBody = createRequestJson(chatMessages);
+                    String url = "https://asia-southeast1-aiplatform.googleapis.com/v1/projects/booming-landing-410605/locations/asia-southeast1/publishers/google/models/chat-bison-32k:predict";
                     RequestBody body = RequestBody.create(requestBody.toString(), MediaType.parse("application/json"));
-                    // Create the request
+
                     Request request = new Request.Builder()
                             .url(url)
                             .post(body)
@@ -221,60 +244,63 @@ public class ChatFragment extends Fragment implements View.OnClickListener, Base
                             .addHeader("Content-Type", "application/json")
                             .build();
 
-
                     try (Response response = client.newCall(request).execute()) {
-                        if (response.isSuccessful()) {
-                            assert response.body() != null;
+                        if (response.isSuccessful() && response.body() != null) {
                             String responseBody = response.body().string();
+                            JsonArray responseArray = JsonParser.parseString(responseBody).getAsJsonObject().get("predictions").getAsJsonArray();
 
-                            JsonArray responseArray = JsonParser.parseString(responseBody).getAsJsonArray();
-                            StringBuilder responseText = new StringBuilder();
+                            for (JsonElement responseElement : responseArray) {
+                                JsonObject responseObject = responseElement.getAsJsonObject();
 
-                            for (JsonElement objElement : responseArray) {
-                                JsonObject obj = objElement.getAsJsonObject();
-                                JsonArray candidates = obj.getAsJsonArray("candidates"); // Corrected this line
+                                // Handle safetyAttributes if needed
+                                JsonArray safetyAttributes = responseObject.getAsJsonArray("safetyAttributes");
+                                // Implement your logic to handle safety attributes
 
+                                // Process each candidate
+                                JsonArray candidates = responseObject.getAsJsonArray("candidates");
                                 for (JsonElement candidateElement : candidates) {
                                     JsonObject candidate = candidateElement.getAsJsonObject();
-                                    JsonArray responseParts = candidate.getAsJsonObject("content").getAsJsonArray("parts");
+                                    String candidateContent = candidate.get("content").getAsString();
 
-                                    for (JsonElement elementPart : responseParts) {
-                                        responseText.append(elementPart.getAsJsonObject().get("text").getAsString());
+                                    // Parse the candidate content and update the chat messages
+                                    try {
+                                        JsonArray arr = JsonParser.parseString(candidateContent).getAsJsonArray();
+                                        for (JsonElement objElement : arr) {
+                                            JsonObject obj = objElement.getAsJsonObject();
+                                            ChatMessage newMessage = new ChatMessage(obj.get("message").getAsString(), "Now", ChatMessage.TYPE_RECIPIENT);
+//                                            chatMessages.add(newMessage);
+
+                                            // Ensure UI updates are run on the main thread
+                                            requireActivity().runOnUiThread(() -> {
+                                                chatViewModel.addChatMessage(newMessage);
+                                                chatAdapter.notifyItemInserted(chatMessages.size() - 1);
+                                                recyclerView.scrollToPosition(chatMessages.size() - 1);
+                                            });
+                                        }
+                                    } catch (Exception e) {
+                                        ChatMessage newMessage = new ChatMessage(candidateContent, "Now", ChatMessage.TYPE_RECIPIENT);
+
+//                                        chatMessages.add(newMessage);
+
+                                        // Update your chat interface accordingly
+                                        // Ensure UI updates are run on the main thread
+                                        requireActivity().runOnUiThread(() -> {
+                                            chatViewModel.addChatMessage(newMessage);
+                                            chatAdapter.notifyItemInserted(chatMessages.size() - 1);
+                                            recyclerView.scrollToPosition(chatMessages.size() - 1);
+                                        });
                                     }
                                 }
                             }
 
-                            requireActivity().runOnUiThread(() -> {
-                                //Parse responseText as json array
-                                ChatMessage replyMessage;
-                                try {
-                                    JsonArray arr = JsonParser.parseString(responseText.toString()).getAsJsonArray();
-                                    for (JsonElement objElement : arr) {
-                                        JsonObject obj = objElement.getAsJsonObject();
-                                        replyMessage = new ChatMessage(obj.get("message").getAsString(), "Now", ChatMessage.TYPE_RECIPIENT);
-                                        chatMessages.add(replyMessage);
-                                        chatAdapter.notifyItemInserted(chatMessages.size() - 1);
-                                        recyclerView.scrollToPosition(chatMessages.size() - 1);
-                                        messageInput.setText("");
-                                    }
-                                } catch (Exception e) {
-                                    replyMessage = new ChatMessage(responseText.toString(), "Now", ChatMessage.TYPE_RECIPIENT);
-                                    chatMessages.add(replyMessage);
-                                    chatAdapter.notifyItemInserted(chatMessages.size() - 1);
-                                    recyclerView.scrollToPosition(chatMessages.size() - 1);
-                                    messageInput.setText("");
-                                }
-                            });
-
                         } else {
                             // Handle error response
-                            System.out.println(response.body().string());
-                            System.out.println(response.code());
-                            System.out.println(response.message());
+                            System.out.println("Response code: " + response.code());
+                            System.out.println("Response message: " + response.message());
                             throw new IOException("Unexpected code " + response);
                         }
-
                     }
+
                 } catch (Exception e) {
                     e.printStackTrace();
                     // Handle exceptions (update UI, show error message, etc.)

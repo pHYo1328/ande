@@ -12,7 +12,7 @@ import java.util.List;
 
 public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
-    private final List<ChatMessage> chatMessages;
+    private List<ChatMessage> chatMessages;
 
     public ChatAdapter(List<ChatMessage> chatMessages) {
         this.chatMessages = chatMessages;
@@ -49,6 +49,10 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     @Override
     public int getItemCount() {
         return chatMessages.size();
+    }
+
+    public void setChatMessages(List<ChatMessage> chatMessages) {
+        this.chatMessages = chatMessages;
     }
 
     static class SenderViewHolder extends RecyclerView.ViewHolder {
