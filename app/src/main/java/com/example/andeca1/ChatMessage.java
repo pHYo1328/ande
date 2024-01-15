@@ -7,11 +7,13 @@ public class ChatMessage {
     private final String message;
     private final String timestamp;
     private final int type;
+    private boolean isSelected;
 
     public ChatMessage(String message, String timestamp, int type) {
         this.message = message;
         this.timestamp = timestamp;
         this.type = type;
+        this.isSelected = false;
     }
 
     public String getMessage() {
@@ -24,5 +26,13 @@ public class ChatMessage {
 
     public int getType() {
         return type;
+    }
+
+    public boolean getIsSelected() {
+        return isSelected;
+    }
+
+    public void setIsSelected(boolean isSelected) {
+        this.isSelected = isSelected;
     }
 }
