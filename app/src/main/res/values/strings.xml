@@ -1,5 +1,5 @@
-<resources>
-    <string name="app_name">ANDE CA1</string>
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="app_name" tools:ignore="Typos">ANDE CA1</string>
     <string name="title_home">Home</string>
     <string name="title_expense">Expense</string>
     <string name="title_event">Event</string>
@@ -28,4 +28,8 @@
         <item>Event 2</item>
     </string-array>
     <string name="send_message">Send</string>
+    <string name="chat_icon">Chat icon</string>
+    <string name="type_your_message">Type your message</string>
+    <string name="logo">Logo</string>
+    <string name="hardcoded_message">This is a received message</string>
 </resources>

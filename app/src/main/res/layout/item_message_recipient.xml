@@ -10,7 +10,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="start"
-        android:layout_marginStart="16dp"
+        android:layout_marginStart="8dp"
         android:text="8:58 PM"
         android:textAppearance="@style/TextAppearance.Material3.BodySmall" />
 
@@ -23,8 +23,8 @@
             android:id="@+id/profile_icon"
             android:layout_width="48dp"
             android:layout_height="48dp"
-            android:layout_gravity="center_vertical"
-            android:contentDescription="Logo"
+            android:layout_gravity="top"
+            android:contentDescription="@string/logo"
             android:src="@drawable/chat_icon" />
 
         <com.google.android.material.card.MaterialCardView
@@ -41,7 +41,7 @@
                 android:layout_height="wrap_content"
                 android:background="@color/material_dynamic_neutral95"
                 android:padding="16dp"
-                android:text="This is a received message"
+                android:text="@string/hardcoded_message"
                 android:textAppearance="@style/TextAppearance.Material3.BodyLarge" />
         </com.google.android.material.card.MaterialCardView>
     </LinearLayout>
