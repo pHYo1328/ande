@@ -15,14 +15,47 @@
             android:layout_height="?attr/actionBarSize"
             android:background="@color/black">
 
+            <ImageButton
+                android:id="@+id/exit_selection_mode"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:contentDescription="Exit"
+                android:src="@drawable/ic_close"
+                android:layout_gravity="start"
+                android:gravity="center_vertical"
+                android:background="@android:color/transparent"
+                android:visibility="gone" />
+
             <TextView
+                android:id="@+id/toolbar_title"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:text="@string/title_chat"
                 android:textAppearance="@style/TextAppearance.Widget.AppCompat.Toolbar.Title" />
 
+            <TextView
+                android:id="@+id/selection_count"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:text="0 Selected"
+                android:textAppearance="@style/TextAppearance.Widget.AppCompat.Toolbar.Title"
+                android:visibility="gone" />
+
+            <ImageButton
+                android:id="@+id/copy_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@android:color/transparent"
+                android:contentDescription="Copy"
+                android:layout_gravity="end"
+                android:gravity="center_vertical"
+                android:src="@drawable/ic_copy"
+                android:visibility="gone" />
+
         </androidx.appcompat.widget.Toolbar>
+
     </com.google.android.material.appbar.AppBarLayout>
 
     <ImageView

@@ -1,11 +1,15 @@
 package com.example.andeca1;
 
+import static androidx.core.content.ContextCompat.getSystemService;
+
 import android.annotation.SuppressLint;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
+import android.widget.ImageButton;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -22,6 +26,10 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
+import android.content.ClipData;
+import android.content.ClipboardManager;
+import android.content.Context;
+import android.widget.Toast;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -35,7 +43,7 @@ import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
 
-public class ChatFragment extends Fragment implements View.OnClickListener, BaseActivity.KeyboardVisibilityListener {
+public class ChatFragment extends Fragment implements View.OnClickListener, BaseActivity.KeyboardVisibilityListener, ChatAdapter.SelectionModeListener {
 
     private List<ChatMessage> chatMessages;
     private ChatAdapter chatAdapter;
@@ -43,6 +51,7 @@ public class ChatFragment extends Fragment implements View.OnClickListener, Base
     private RecyclerView recyclerView;
     private BottomNavigationView navigationPlaceholder;
     private ChatViewModel chatViewModel;
+    private String copyContent;
 
     @SuppressLint("NotifyDataSetChanged")
     @Override
@@ -52,7 +61,7 @@ public class ChatFragment extends Fragment implements View.OnClickListener, Base
         recyclerView = view.findViewById(R.id.chat_recycler_view);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
 
-        chatAdapter = new ChatAdapter(new ArrayList<>()); // Initialize with empty list
+        chatAdapter = new ChatAdapter(new ArrayList<>(), this); // Initialize with empty list
         recyclerView.setAdapter(chatAdapter);
 
         messageInput = view.findViewById(R.id.message_input);
@@ -60,6 +69,12 @@ public class ChatFragment extends Fragment implements View.OnClickListener, Base
 
         View sendButton = view.findViewById(R.id.send_button);
         sendButton.setOnClickListener(this);
+
+        View copyButton = view.findViewById(R.id.copy_button);
+        copyButton.setOnClickListener(this);
+
+        View closeButton = view.findViewById(R.id.exit_selection_mode);
+        closeButton.setOnClickListener(this);
 
         // Initialize ViewModel
         chatViewModel = new ViewModelProvider(requireActivity()).get(ChatViewModel.class);
@@ -87,7 +102,35 @@ public class ChatFragment extends Fragment implements View.OnClickListener, Base
         });
     }
 
-
+    @Override
+    public void onSelectionModeChanged(int selectedItemCount, List<String> selectedMessages) {
+        ImageButton exitButton = requireActivity().findViewById(R.id.exit_selection_mode);
+        TextView selectionCount = requireActivity().findViewById(R.id.selection_count);
+        ImageButton copyButton = requireActivity().findViewById(R.id.copy_button);
+        TextView toolbarTitle = requireActivity().findViewById(R.id.toolbar_title);
+        copyContent = "";
+        if (selectedMessages != null) {
+            StringBuilder sb = new StringBuilder();
+            for (String message : selectedMessages) {
+                sb.append(message).append("\n");
+            }
+            copyContent = sb.toString();
+        }
+        if (selectedItemCount > 0) {
+            // In selection mode
+            exitButton.setVisibility(View.VISIBLE);
+            selectionCount.setVisibility(View.VISIBLE);
+            copyButton.setVisibility(View.VISIBLE);
+            toolbarTitle.setVisibility(View.GONE);
+            selectionCount.setText(selectedItemCount + " Selected");
+        } else {
+            // Not in selection mode
+            exitButton.setVisibility(View.GONE);
+            selectionCount.setVisibility(View.GONE);
+            copyButton.setVisibility(View.GONE);
+            toolbarTitle.setVisibility(View.VISIBLE);
+        }
+    }
 
     @Override
     public void onResume() {
@@ -209,12 +252,25 @@ public class ChatFragment extends Fragment implements View.OnClickListener, Base
     public void onClick(View view) {
         if (view.getId() == R.id.send_button) {
             sendMessage();
+        } else if (view.getId() == R.id.copy_button) {
+            ClipboardManager clipboard = (ClipboardManager) requireActivity().getSystemService(Context.CLIPBOARD_SERVICE);
+            ClipData clip = ClipData.newPlainText("label", copyContent);
+            assert clipboard != null;
+            clipboard.setPrimaryClip(clip);
+
+            // Optionally show a toast or some confirmation to the user
+            Toast.makeText(requireActivity(), "Text copied to clipboard", Toast.LENGTH_SHORT).show();
+        } else if (view.getId() == R.id.exit_selection_mode) {
+            // Exit selection mode
+            chatAdapter.exitSelectionMode();
         }
     }
 
     private void sendMessage() {
         String message = messageInput.getText().toString();
         if (!message.isEmpty()) {
+            //remove trailing white spaces
+            message = message.trim();
             ChatMessage chatMessage = new ChatMessage(message, "Now", ChatMessage.TYPE_SENDER);
 //            chatMessages.add(chatMessage);
             chatViewModel.addChatMessage(chatMessage);
