@@ -1,7 +1,12 @@
 package com.example.andeca1;
 
+import android.app.Activity;
 import android.app.DatePickerDialog;
+import android.content.Intent;
+import android.graphics.Bitmap;
+import android.net.Uri;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -18,6 +23,10 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.activity.result.ActivityResult;
+import androidx.activity.result.ActivityResultCallback;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -42,7 +51,7 @@ public class ExpenseFragment extends Fragment {
 
 
     private EditText editAmount,editTextDate,editNote;
-    private Button saveButton;
+    private Button saveButton,receiptButton;
     private Spinner spinnerCategory,spinnerEvent;
     private String amount,date,note,category,event;
     @Override
@@ -51,6 +60,7 @@ public class ExpenseFragment extends Fragment {
         editTextDate = (EditText) view.findViewById(R.id.dateEditText);
         editAmount = (EditText) view.findViewById(R.id.spentEditText);
         editNote = (EditText) view.findViewById(R.id.noteEditText);
+        receiptButton = (Button) view.findViewById(R.id.btnReceipt);
 
         saveButton = (Button) view.findViewById(R.id.btnSaveExpense);
         editTextDate.setOnClickListener(new View.OnClickListener() {
@@ -67,10 +77,78 @@ public class ExpenseFragment extends Fragment {
             }
         });
 
+        receiptButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                showCamera();
+            }
+        });
+
         setupCategorySpinner(view);
         setUpEventSpinner(view);
         return view;
     }
+
+    public void showCamera(){
+        // Create an intent to open the camera or gallery
+        Intent cameraIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        Intent galleryIntent = new Intent(Intent.ACTION_PICK, android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+        galleryIntent.setType("image/*");
+
+        // Create a chooser intent to let the user select between camera and gallery
+        Intent chooser = new Intent(Intent.ACTION_CHOOSER);
+        chooser.putExtra(Intent.EXTRA_INTENT, galleryIntent);
+        chooser.putExtra(Intent.EXTRA_TITLE, "Choose an app to proceed");
+
+        // Create a list for the camera intent and add it to the chooser
+        Intent[] intentArray = { cameraIntent };
+        chooser.putExtra(Intent.EXTRA_INITIAL_INTENTS, intentArray);
+
+        // Start the activity with the chooser
+        mGetContent.launch(chooser);
+    }
+
+    // Register activity result callbacks
+    ActivityResultLauncher<Intent> mGetContent = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(),
+            new ActivityResultCallback<ActivityResult>() {
+                @Override
+                public void onActivityResult(ActivityResult result) {
+                    if (result.getResultCode() == Activity.RESULT_OK) {
+                        // There are no request codes
+                        Intent data = result.getData();
+                        if (data != null && data.getData() != null) {
+                            // Handle the image uri from gallery
+                            Uri selectedImageUri = data.getData();
+                            openReceiptFragmentWithImage(selectedImageUri);
+                        } else if (data != null && data.getExtras() != null) {
+                            // Handle the image from camera
+                            Bundle extras = data.getExtras();
+                            Bitmap imageBitmap = (Bitmap) extras.get("data");
+                            openReceiptFragmentWithImage(imageBitmap);
+                        }
+                    }
+                }
+            });
+
+    // Method to open the fragment and pass the image
+    private void openReceiptFragmentWithImage(Uri imageUri) {
+        // Create a new instance of your fragment
+        ReceiptFragment receiptFragment = ReceiptFragment.newInstance(imageUri.toString());
+        // Begin a fragment transaction, replace the container with your fragment
+        getParentFragmentManager().beginTransaction()
+                .replace(R.id.content_frame, receiptFragment) // Use the correct container ID
+                .commit();
+    }
+
+    private void openReceiptFragmentWithImage(Bitmap imageBitmap) {
+        // Create a new instance of your fragment
+        ReceiptFragment receiptFragment = ReceiptFragment.newInstance(imageBitmap);
+        // Begin a fragment transaction, replace the container with your fragment
+        getParentFragmentManager().beginTransaction()
+                .replace(R.id.content_frame, receiptFragment)
+                .commit();
+    }
+
 
     public void showMaterialDatePicker() {
         MaterialDatePicker.Builder<Long> builder = MaterialDatePicker.Builder.datePicker();

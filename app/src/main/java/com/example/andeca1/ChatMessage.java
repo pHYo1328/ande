@@ -9,6 +9,8 @@ public class ChatMessage {
     private final int type;
     private boolean isSelected;
 
+    private boolean isIgnored;
+
     public ChatMessage(String message, String timestamp, int type) {
         this.message = message;
         this.timestamp = timestamp;
@@ -32,7 +34,17 @@ public class ChatMessage {
         return isSelected;
     }
 
+    public boolean getIsIgnored() {
+        return isIgnored;
+    }
+
     public void setIsSelected(boolean isSelected) {
         this.isSelected = isSelected;
     }
+
+    public void setIsIgnored(boolean isIgnored) {
+        this.isIgnored = isIgnored;
+    }
+
+
 }
