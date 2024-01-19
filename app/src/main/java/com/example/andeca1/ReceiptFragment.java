@@ -5,12 +5,12 @@ import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Base64;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
 import android.widget.ImageView;
-import android.widget.ScrollView;
 import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
@@ -19,6 +19,8 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions;
 import com.google.auth.oauth2.GoogleCredentials;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -26,11 +28,12 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import com.google.gson.stream.JsonReader;
 
 import java.io.ByteArrayOutputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
-import java.util.Objects;
+import java.io.StringReader;
 import java.util.concurrent.TimeUnit;
 
 import okhttp3.MediaType;
@@ -68,6 +71,7 @@ public class ReceiptFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
         ImageView imageViewReceipt = view.findViewById(R.id.imageViewReceipt);
 
+
         // Check if we got a URI or Bitmap
         if (getArguments() != null && getArguments().containsKey("image_uri")) {
             Uri imageUri = Uri.parse(getArguments().getString("image_uri"));
@@ -92,18 +96,26 @@ public class ReceiptFragment extends Fragment {
     }
 
     public void sendRequestWithImage(Bitmap imageBitmap) {
+        ImageView imageViewLoading = requireView().findViewById(R.id.imageViewLoading);
         new Thread(() -> {
             try {
-                InputStream inputStream = getResources().openRawResource(R.raw.key); // Replace 'R.raw.key' with your actual resource
+                requireActivity().runOnUiThread(() -> {
+
+                    Glide.with(this).asGif().load(R.drawable.reciept_loading).transition(DrawableTransitionOptions.withCrossFade()).into(imageViewLoading);
+                    imageViewLoading.setVisibility(View.VISIBLE);
+                });
+
+
+                InputStream inputStream = getResources().openRawResource(R.raw.key);
                 GoogleCredentials credentials = GoogleCredentials.fromStream(inputStream)
                         .createScoped("https://www.googleapis.com/auth/cloud-platform");
                 credentials.refreshIfExpired();
                 credentials.refreshAccessToken();
 
                 OkHttpClient client = new OkHttpClient.Builder()
-                        .connectTimeout(20, TimeUnit.SECONDS)
-                        .readTimeout(20, TimeUnit.SECONDS)
-                        .writeTimeout(20, TimeUnit.SECONDS)
+                        .connectTimeout(30, TimeUnit.SECONDS)
+                        .readTimeout(30, TimeUnit.SECONDS)
+                        .writeTimeout(30, TimeUnit.SECONDS)
                         .build();
 
                 // Convert Bitmap to Base64 for inline data
@@ -139,7 +151,7 @@ public class ReceiptFragment extends Fragment {
                         "- Quantity\n" +
                         "- Total (price for each item line)" +
                         "\n" +
-                        "Analyze the receipt in the image above and create a JSON response with the following information:\n" +
+                        "Analyze the receipt in the image above and create a JSON array response with the following information:\n" +
                         "\n" +
                         "- Product name\n" +
                         "- Amount (price per item)\n" +
@@ -217,49 +229,51 @@ public class ReceiptFragment extends Fragment {
                             String combinedText = combinedTextBuilder.toString();
                             sb.append(combinedText);
                         }
-                        //Check is sb is a JSON array
-                        JsonElement je2 = JsonParser.parseString(sb.toString());
+                        //parse bs as json returned from ai
+                        JsonReader reader = new JsonReader(new StringReader(sb.toString()));
+                        reader.setLenient(true);
 
+                        JsonElement je2 = JsonParser.parseReader(reader);
+                        //if malformed, JsonParser throws an error
+                        //otherwise its ai hallucinating
                         JsonArray jsonArray = je2.getAsJsonArray();
 
-                        // Get a reference to the TableLayout from your XML
                         TableLayout tableLayoutItems = requireView().findViewById(R.id.tableLayoutItems);
-                        ScrollView scrollView = requireView().findViewById(R.id.scrollViewItems);
+
                         requireActivity().runOnUiThread(() -> {
 
-                            // Loop through the JSON array to create and add new rows to the table
-                            for (int i = 0;i<5;i++){
-                                for (JsonElement element : jsonArray) {
-                                    // Extract the properties of the current product
-                                    JsonObject obj = element.getAsJsonObject();
-                                    String productName = obj.get("product_name").getAsString();
-                                    String amount = obj.get("amount").getAsString();
-                                    String quantity = obj.get("quantity").getAsString();
-                                    String total = obj.get("total").getAsString();
+                            for (JsonElement element : jsonArray) {
+                                // Extract the properties of the current product
+                                JsonObject obj = element.getAsJsonObject();
+                                String productName = obj.get("product_name").getAsString();
+                                String amount = obj.get("amount").getAsString();
+                                String quantity = obj.get("quantity").getAsString();
+                                String total = obj.get("total").getAsString();
 
-                                    // Create a new row to be added
-                                    TableRow tableRow = new TableRow(getContext());
-                                    tableRow.setLayoutParams(new TableRow.LayoutParams(TableRow.LayoutParams.MATCH_PARENT, TableRow.LayoutParams.WRAP_CONTENT));
+                                // Create a new row to be added
+                                TableRow tableRow = new TableRow(getContext());
 
-                                    TextView textViewProduct = createTextViewWithWrap(productName);
-                                    TextView textViewAmount = createTextViewWithWrap(amount);
-                                    TextView textViewQuantity = createTextViewWithWrap(quantity);
-                                    TextView textViewTotal = createTextViewWithWrap(total);
+                                //Helper fn for consistent padding also no copy pasting like an idiot
+                                TextView textViewProduct = createTextViewWithWrap(productName);
+                                TextView textViewAmount = createTextViewWithWrap(amount);
+                                TextView textViewQuantity = createTextViewWithWrap(quantity);
+                                TextView textViewTotal = createTextViewWithWrap(total);
 
 
-                                    // Create a CheckBox for the action
-                                    CheckBox checkBoxAction = new CheckBox(getContext());
+                                //Checkbox styling...
+                                //css debugging but slow
+                                CheckBox checkBoxAction = new CheckBox(getContext());
+                                TableRow.LayoutParams checkBoxParams = new TableRow.LayoutParams(2);
+                                checkBoxAction.setLayoutParams(checkBoxParams);
+                                // Add the TextViews and CheckBox to the TableRow
+                                tableRow.addView(checkBoxAction);
+                                tableRow.addView(textViewProduct);
+                                tableRow.addView(textViewAmount);
+                                tableRow.addView(textViewQuantity);
+                                tableRow.addView(textViewTotal);
 
-                                    // Add the TextViews and CheckBox to the TableRow
-                                    tableRow.addView(textViewProduct);
-                                    tableRow.addView(textViewAmount);
-                                    tableRow.addView(textViewQuantity);
-                                    tableRow.addView(textViewTotal);
-                                    tableRow.addView(checkBoxAction);
-
-                                    // Add the TableRow to the TableLayout
-                                    scrollView.addView(tableRow, new TableLayout.LayoutParams(TableLayout.LayoutParams.MATCH_PARENT, TableLayout.LayoutParams.WRAP_CONTENT));
-                                }
+                                // Add the TableRow to the TableLayout
+                                tableLayoutItems.addView(tableRow);
                             }
 
                         });
@@ -271,28 +285,37 @@ public class ReceiptFragment extends Fragment {
                         System.out.println(response.body().string());
                         System.out.println(response.message());
                         System.out.println(response.code());
+                        throw new Exception("Request was not successful: " + response);
+
                     }
                 }
             } catch (Exception e) {
                 e.printStackTrace();
+                requireActivity().runOnUiThread(() -> {
+                    TextView textViewError = requireView().findViewById(R.id.textViewError);
+                    textViewError.setVisibility(View.VISIBLE);
+                });
+
             }
+            requireActivity().runOnUiThread(() -> imageViewLoading.setVisibility(View.GONE));
 
         }).start();
-
     }
+
     // Utility method to create a TextView with text wrapping
     private TextView createTextViewWithWrap(String text) {
         TextView textView = new TextView(getContext());
         textView.setText(text);
         textView.setPadding(8, 8, 8, 8);
-        textView.setMaxWidth(convertDpToPixels(120)); // Adjust this value as needed
         textView.setSingleLine(false);
+        textView.setMaxLines(3);
+
+        // Set the layout parameters with weight
+        TableRow.LayoutParams params = new TableRow.LayoutParams();
+        params.gravity = Gravity.CENTER;
+        textView.setLayoutParams(params);
         return textView;
     }
 
-    // Method to convert DP to Pixels for setting maxWidth
-    private int convertDpToPixels(int dp) {
-        float scale = getResources().getDisplayMetrics().density;
-        return (int) (dp * scale + 0.5f);
-    }
+
 }
