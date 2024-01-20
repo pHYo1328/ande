@@ -107,7 +107,7 @@
                 android:maxLines="6"
                 android:minHeight="48dp"
                 android:scrollbars="vertical"
-                android:textColorHint="@color/material_dynamic_neutral70" />
+                android:textColorHint="@color/purple_500" />
 
             <ImageButton
                 android:id="@+id/send_button"

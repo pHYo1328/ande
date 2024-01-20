@@ -15,6 +15,7 @@ import android.view.MotionEvent;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.textfield.TextInputLayout;
+import com.jakewharton.threetenabp.AndroidThreeTen;
 
 public class BaseActivity extends AppCompatActivity {
     public interface KeyboardVisibilityListener {
@@ -24,6 +25,7 @@ public class BaseActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        AndroidThreeTen.init(this);
         setContentView(R.layout.activity_base);
 
         BottomNavigationView bottomNavigationView = findViewById(R.id.bottomNavigationView);
