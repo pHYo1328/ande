@@ -77,7 +77,8 @@
             <CheckBox
                 android:id="@+id/checkBoxSelectAll"
                 android:layout_width="2dp"
-                android:buttonTint="@color/purple_500" />
+                app:buttonTint="@color/purple_500"
+                app:buttonIconTint="@color/white"/>
 
             <TextView
                 android:gravity="center"
@@ -145,7 +146,7 @@
         android:drawablePadding="8dp"
         android:gravity="center"
         android:text="@string/error_message"
-        android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+        android:textAppearance="@style/TextAppearance.AppCompat.Small"
         android:visibility="gone"
         app:drawableStartCompat="@drawable/alert_outline" />
 

@@ -291,7 +291,6 @@ public class ReceiptFragment extends Fragment implements View.OnClickListener {
 
     @Override
     public void onClick(View view){
-        System.out.println("clicked");
         if(view.getId() == R.id.checkBoxSelectAll){
             selectAll();
         }
