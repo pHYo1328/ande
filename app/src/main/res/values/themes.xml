@@ -20,4 +20,10 @@
         <item name="colorPrimary">@color/purple_500</item>
         <item name="colorOnPrimary">@color/white</item>
     </style>
+
+    <style name="SpinnerWhiteText" parent="Widget.AppCompat.Spinner">
+        <item name="android:textColor">@color/white</item>
+        <!-- You can also customize other text properties if needed -->
+    </style>
+
 </resources>

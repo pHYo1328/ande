@@ -97,7 +97,7 @@ public class NewEventFragment extends Fragment {
                 String endDateStr = dateFormatForDB.format(endDate.getTime());
                 long eventId = db.createEvent(eventTitle, finalStartDateStr,endDateStr,budgetValue);
                 Bundle bundle = new Bundle();
-                bundle.putString("eventId",String.valueOf(eventId) );
+                bundle.putInt("eventId",(int) eventId);
                 bundle.putString("startDate",finalStartDateStr);
                 bundle.putString("endDate",endDateStr);
                 NewSubEventFragment newSubEventFragment = new NewSubEventFragment();

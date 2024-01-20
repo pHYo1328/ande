@@ -61,6 +61,26 @@ public class DbHelper extends SQLiteOpenHelper {
         return eventId;
     }
 
+    public Event getEventByID(int eventId){
+        Event event = null;
+        SQLiteDatabase db = this.getReadableDatabase();
+        String selectQuery = "SELECT * FROM events WHERE id = ?";
+        Cursor cursor = db.rawQuery(selectQuery,new String[]{String.valueOf(eventId)});
+        if(cursor.moveToFirst()){
+            do{
+                int id = cursor.getInt(cursor.getColumnIndexOrThrow("id"));
+                String eventTitle = cursor.getString(cursor.getColumnIndexOrThrow("event_title"));
+                String startDate = cursor.getString(cursor.getColumnIndexOrThrow("start_date"));
+                String endDate = cursor.getString(cursor.getColumnIndexOrThrow("end_date"));
+                double budget = cursor.getDouble(cursor.getColumnIndexOrThrow("budget"));
+                event = new Event(id,eventTitle,startDate,endDate,budget);
+            }while (cursor.moveToNext());
+        }
+        cursor.close();
+        db.close();
+        return event;
+    }
+
     public List<Event> getAllEvents() {
         List<Event> eventList = new ArrayList<>();
         SQLiteDatabase db = this.getReadableDatabase();
@@ -181,27 +201,26 @@ public class DbHelper extends SQLiteOpenHelper {
         return subEventId;
     }
 
-    public List<SubEvent> getAllSubEventsForEvent(int eventId) {
-        List<SubEvent> subEventList = new ArrayList<>();
-        String selectQuery = "SELECT * FROM subEvents WHERE event_id = ?";
+    public SubEvent getSubEventById(int subEventId){
+
+        SubEvent subEvent = null;
+        String selectQuery = "SELECT * FROM subEvents WHERE id = ?";
         SQLiteDatabase db = this.getWritableDatabase();
-        Cursor cursor = db.rawQuery(selectQuery, new String[]{String.valueOf(eventId)});
+        Cursor cursor = db.rawQuery(selectQuery, new String[]{String.valueOf(subEventId)});
         if (cursor.moveToFirst()) {
             do {
-                int subEventId = cursor.getInt(cursor.getColumnIndexOrThrow("id"));
                 String subEventTitle = cursor.getString(cursor.getColumnIndexOrThrow("subEvent_title"));
                 String subEventDate = cursor.getString(cursor.getColumnIndexOrThrow("subEvent_date"));
                 String startTime = cursor.getString(cursor.getColumnIndexOrThrow("start_time"));
                 String endTime = cursor.getString(cursor.getColumnIndexOrThrow("end_time"));
                 double subEventBudget = cursor.getDouble(cursor.getColumnIndexOrThrow("budget"));
-
-                SubEvent subEvent = new SubEvent(subEventId, subEventTitle, subEventDate, startTime, endTime, subEventBudget, eventId);
-                subEventList.add(subEvent);
+                int eventId = cursor.getInt(cursor.getColumnIndexOrThrow("event_id"));
+                subEvent = new SubEvent(subEventId, subEventTitle, subEventDate, startTime, endTime, subEventBudget, eventId);
             } while (cursor.moveToNext());
         }
         cursor.close();
         db.close();
-        return subEventList;
+        return subEvent;
     }
 
     public int updateSubEvent(int subEventId, String subEventTitle, String subEventDate, String startTime, String endTime, double budget) {

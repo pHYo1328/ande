@@ -81,4 +81,12 @@ public class SubEvent {
     public void setEventId(Integer eventId) {
         this.eventId = eventId;
     }
+
+    public Integer getId() {
+        return id;
+    }
+
+    public void setId(Integer id) {
+        this.id = id;
+    }
 }
