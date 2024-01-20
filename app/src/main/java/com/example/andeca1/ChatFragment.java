@@ -9,6 +9,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -19,6 +20,7 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.Glide;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.auth.oauth2.GoogleCredentials;
 import com.google.gson.JsonArray;
@@ -269,6 +271,12 @@ public class ChatFragment extends Fragment implements View.OnClickListener, Base
     private void sendMessage() {
         String message = messageInput.getText().toString();
         if (!message.isEmpty()) {
+            View sendButton = requireActivity().findViewById(R.id.send_button);
+            ImageView loadingSpinner = requireActivity().findViewById(R.id.loading_spinner);
+            sendButton.setVisibility(View.GONE);
+            loadingSpinner.setVisibility(View.VISIBLE);
+            Glide.with(this).asGif().load(R.drawable.loading_spinner).into(loadingSpinner);
+
             //remove trailing white spaces
             message = message.trim();
             ChatMessage chatMessage = new ChatMessage(message, "Now", ChatMessage.TYPE_SENDER);
@@ -361,6 +369,11 @@ public class ChatFragment extends Fragment implements View.OnClickListener, Base
                     e.printStackTrace();
                     // Handle exceptions (update UI, show error message, etc.)
                 }
+                requireActivity().runOnUiThread(() -> {
+                    sendButton.setVisibility(View.VISIBLE);
+                    loadingSpinner.setVisibility(View.GONE);
+                });
+
             }).start();
 
 
