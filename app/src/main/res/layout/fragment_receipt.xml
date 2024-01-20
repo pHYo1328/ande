@@ -75,7 +75,9 @@
         <TableRow tools:ignore="UselessParent">
 
             <CheckBox
-                android:layout_width="2dp"/>
+                android:id="@+id/checkBoxSelectAll"
+                android:layout_width="2dp"
+                android:buttonTint="@color/purple_500" />
 
             <TextView
                 android:gravity="center"
@@ -97,30 +99,20 @@
                 android:padding="8dp"
                 android:text="@string/receipt_subtotal" />
         </TableRow>
+        <com.google.android.material.divider.MaterialDivider
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recyclerViewItems"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
     </TableLayout>
 
 
-    <com.google.android.material.divider.MaterialDivider
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/tableLayoutHeader" />
+
     <!-- Scrollable Table Content -->
-    <ScrollView
-        android:id="@+id/scrollViewItems"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/tableLayoutHeader">
 
-        <TableLayout
-            android:id="@+id/tableLayoutItems"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:stretchColumns="*">
-            <!-- This for some reason makes my rows positionally correct -->
-
-
-        </TableLayout>
-    </ScrollView>
     <!-- Add to Expenses Button -->
     <Button
         android:id="@+id/buttonAddToExpenses"
@@ -134,8 +126,7 @@
         android:elevation="8dp"
         android:text="@string/add_to_expenses"
         android:textAppearance="@style/TextAppearance.AppCompat.Small"
-        app:backgroundTint="@color/purple_button"
-        app:strokeColor="@null" />
+        app:backgroundTint="@color/purple_500" />
 
     <ImageView
         android:id="@+id/imageViewLoading"

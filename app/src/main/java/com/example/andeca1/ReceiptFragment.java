@@ -5,19 +5,18 @@ import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Base64;
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
 import android.widget.ImageView;
-import android.widget.TableLayout;
-import android.widget.TableRow;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions;
@@ -34,6 +33,8 @@ import java.io.ByteArrayOutputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.io.StringReader;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import okhttp3.MediaType;
@@ -42,9 +43,10 @@ import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
 
-public class ReceiptFragment extends Fragment {
+public class ReceiptFragment extends Fragment implements View.OnClickListener {
 
-    // Factory method to create a new instance of the fragment using the provided parameters
+    private List<ReceiptItem> receiptItems;
+    private ReceiptItemAdapter adapter;
     public static ReceiptFragment newInstance(String imageUri) {
         ReceiptFragment fragment = new ReceiptFragment();
         Bundle args = new Bundle();
@@ -71,18 +73,23 @@ public class ReceiptFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
         ImageView imageViewReceipt = view.findViewById(R.id.imageViewReceipt);
 
+        View allCheckbox = view.findViewById(R.id.checkBoxSelectAll);
+        allCheckbox.setOnClickListener(this);
+
+        receiptItems = new ArrayList<>();
+        RecyclerView recyclerView = requireActivity().findViewById(R.id.recyclerViewItems);
+        adapter = new ReceiptItemAdapter(receiptItems);
+        recyclerView.setAdapter(adapter);
+        recyclerView.setLayoutManager(new LinearLayoutManager(requireActivity()));
+
 
         // Check if we got a URI or Bitmap
         if (getArguments() != null && getArguments().containsKey("image_uri")) {
             Uri imageUri = Uri.parse(getArguments().getString("image_uri"));
             try {
-                // Open an input stream to the image URI using ContentResolver
                 InputStream imageStream = requireContext().getContentResolver().openInputStream(imageUri);
-                // Decode the input stream to a Bitmap
                 Bitmap imageBitmap = BitmapFactory.decodeStream(imageStream);
-                // Set the Bitmap to ImageView
                 imageViewReceipt.setImageBitmap(imageBitmap);
-                // Send the Bitmap with your request
                 sendRequestWithImage(imageBitmap);
             } catch (FileNotFoundException e) {
                 // Handle the exception if the image file is not found
@@ -238,43 +245,23 @@ public class ReceiptFragment extends Fragment {
                         //otherwise its ai hallucinating
                         JsonArray jsonArray = je2.getAsJsonArray();
 
-                        TableLayout tableLayoutItems = requireView().findViewById(R.id.tableLayoutItems);
-
                         requireActivity().runOnUiThread(() -> {
 
+
+
                             for (JsonElement element : jsonArray) {
-                                // Extract the properties of the current product
                                 JsonObject obj = element.getAsJsonObject();
                                 String productName = obj.get("product_name").getAsString();
                                 String amount = obj.get("amount").getAsString();
                                 String quantity = obj.get("quantity").getAsString();
                                 String total = obj.get("total").getAsString();
 
-                                // Create a new row to be added
-                                TableRow tableRow = new TableRow(getContext());
-
-                                //Helper fn for consistent padding also no copy pasting like an idiot
-                                TextView textViewProduct = createTextViewWithWrap(productName);
-                                TextView textViewAmount = createTextViewWithWrap(amount);
-                                TextView textViewQuantity = createTextViewWithWrap(quantity);
-                                TextView textViewTotal = createTextViewWithWrap(total);
-
-
-                                //Checkbox styling...
-                                //css debugging but slow
-                                CheckBox checkBoxAction = new CheckBox(getContext());
-                                TableRow.LayoutParams checkBoxParams = new TableRow.LayoutParams(2);
-                                checkBoxAction.setLayoutParams(checkBoxParams);
-                                // Add the TextViews and CheckBox to the TableRow
-                                tableRow.addView(checkBoxAction);
-                                tableRow.addView(textViewProduct);
-                                tableRow.addView(textViewAmount);
-                                tableRow.addView(textViewQuantity);
-                                tableRow.addView(textViewTotal);
-
-                                // Add the TableRow to the TableLayout
-                                tableLayoutItems.addView(tableRow);
+                                receiptItems.add(new ReceiptItem(productName, amount, quantity, total));
+                                adapter.notifyItemInserted(receiptItems.size() - 1);
                             }
+
+
+
 
                         });
 
@@ -302,19 +289,23 @@ public class ReceiptFragment extends Fragment {
         }).start();
     }
 
-    // Utility method to create a TextView with text wrapping
-    private TextView createTextViewWithWrap(String text) {
-        TextView textView = new TextView(getContext());
-        textView.setText(text);
-        textView.setPadding(8, 8, 8, 8);
-        textView.setSingleLine(false);
-        textView.setMaxLines(3);
+    @Override
+    public void onClick(View view){
+        System.out.println("clicked");
+        if(view.getId() == R.id.checkBoxSelectAll){
+            selectAll();
+        }
+    }
 
-        // Set the layout parameters with weight
-        TableRow.LayoutParams params = new TableRow.LayoutParams();
-        params.gravity = Gravity.CENTER;
-        textView.setLayoutParams(params);
-        return textView;
+    public void selectAll(){
+        CheckBox checkBox = requireActivity().findViewById(R.id.checkBoxSelectAll);
+
+        List<ReceiptItem> receiptItems = adapter.getReceiptItems();
+        for(ReceiptItem item : receiptItems){
+            item.setChecked(checkBox.isChecked());
+            adapter.notifyItemChanged(receiptItems.indexOf(item));
+        }
+
     }
 
 

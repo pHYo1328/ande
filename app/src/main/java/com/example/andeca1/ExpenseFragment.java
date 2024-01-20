@@ -1,7 +1,6 @@
 package com.example.andeca1;
 
 import android.app.Activity;
-import android.app.DatePickerDialog;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.Uri;
@@ -18,8 +17,6 @@ import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.Toast;
 
-import androidx.activity.result.ActivityResult;
-import androidx.activity.result.ActivityResultCallback;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
@@ -39,40 +36,24 @@ import java.util.TimeZone;
 
 public class ExpenseFragment extends Fragment {
 
-
     private EditText editAmount,editTextDate,editNote;
-    private Button saveButton,receiptButton;
     private Spinner spinnerCategory,spinnerEvent;
-    private String amount,date,note,category,event;
+    private String category;
+    private String event;
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_expense, container, false);
-        editTextDate = (EditText) view.findViewById(R.id.dateEditText);
-        editAmount = (EditText) view.findViewById(R.id.spentEditText);
-        editNote = (EditText) view.findViewById(R.id.noteEditText);
-        receiptButton = (Button) view.findViewById(R.id.btnReceipt);
+        editTextDate = view.findViewById(R.id.dateEditText);
+        editAmount = view.findViewById(R.id.spentEditText);
+        editNote = view.findViewById(R.id.noteEditText);
+        Button receiptButton = view.findViewById(R.id.btnReceipt);
 
-        saveButton = (Button) view.findViewById(R.id.btnSaveSubEvent);
-        editTextDate.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                showMaterialDatePicker();
-            }
-        });
+        Button saveButton = view.findViewById(R.id.btnSaveSubEvent);
+        editTextDate.setOnClickListener(v -> showMaterialDatePicker());
 
-        saveButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                saveButtonOnClickListener();
-            }
-        });
+        saveButton.setOnClickListener(view1 -> saveButtonOnClickListener());
 
-        receiptButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                showCamera();
-            }
-        });
+        receiptButton.setOnClickListener(view12 -> showCamera());
 
         setupCategorySpinner(view);
         setUpEventSpinner(view);
@@ -83,7 +64,7 @@ public class ExpenseFragment extends Fragment {
         // Create an intent to open the camera or gallery
         Intent cameraIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
         Intent galleryIntent = new Intent(Intent.ACTION_PICK, android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
-        galleryIntent.setType("image/*");
+        galleryIntent.setDataAndType(android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI,"image/*");
 
         // Create a chooser intent to let the user select between camera and gallery
         Intent chooser = new Intent(Intent.ACTION_CHOOSER);
@@ -100,22 +81,19 @@ public class ExpenseFragment extends Fragment {
 
     // Register activity result callbacks
     ActivityResultLauncher<Intent> mGetContent = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(),
-            new ActivityResultCallback<ActivityResult>() {
-                @Override
-                public void onActivityResult(ActivityResult result) {
-                    if (result.getResultCode() == Activity.RESULT_OK) {
-                        // There are no request codes
-                        Intent data = result.getData();
-                        if (data != null && data.getData() != null) {
-                            // Handle the image uri from gallery
-                            Uri selectedImageUri = data.getData();
-                            openReceiptFragmentWithImage(selectedImageUri);
-                        } else if (data != null && data.getExtras() != null) {
-                            // Handle the image from camera
-                            Bundle extras = data.getExtras();
-                            Bitmap imageBitmap = (Bitmap) extras.get("data");
-                            openReceiptFragmentWithImage(imageBitmap);
-                        }
+            result -> {
+                if (result.getResultCode() == Activity.RESULT_OK) {
+                    // There are no request codes
+                    Intent data = result.getData();
+                    if (data != null && data.getData() != null) {
+                        // Handle the image uri from gallery
+                        Uri selectedImageUri = data.getData();
+                        openReceiptFragmentWithImage(selectedImageUri);
+                    } else if (data != null && data.getExtras() != null) {
+                        // Handle the image from camera
+                        Bundle extras = data.getExtras();
+                        Bitmap imageBitmap = (Bitmap) extras.get("data");
+                        openReceiptFragmentWithImage(imageBitmap);
                     }
                 }
             });
@@ -162,7 +140,7 @@ public class ExpenseFragment extends Fragment {
 
     private void setupCategorySpinner(View view) {
         spinnerCategory = view.findViewById(R.id.categorySpinner);
-        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(getContext(),
+        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(requireContext(),
                 R.array.categories, android.R.layout.simple_spinner_item);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinnerCategory.setAdapter(adapter);
@@ -172,7 +150,7 @@ public class ExpenseFragment extends Fragment {
 
     private void setUpEventSpinner(View view){
         spinnerEvent = view.findViewById(R.id.eventSpinner);
-        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(getContext(),
+        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(requireContext(),
                 R.array.events, android.R.layout.simple_spinner_item);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinnerEvent.setAdapter(adapter);
@@ -210,9 +188,9 @@ public class ExpenseFragment extends Fragment {
 
     private void saveButtonOnClickListener(){
         FirebaseFirestore db = FirebaseFirestore.getInstance();
-        amount = editAmount.getText().toString().trim();
-        date = editTextDate.getText().toString().trim();
-        note = editNote.getText().toString().trim();
+        String amount = editAmount.getText().toString().trim();
+        String date = editTextDate.getText().toString().trim();
+        String note = editNote.getText().toString().trim();
 
         double amountValue;
         try {
@@ -226,7 +204,7 @@ public class ExpenseFragment extends Fragment {
         }
 
         // Validate the date - make sure it's a valid date
-        SimpleDateFormat format = new SimpleDateFormat("dd/mm/yyyy", Locale.getDefault());
+        SimpleDateFormat format = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault());
         try {
             Date parsedDate = format.parse(date);
             if (parsedDate == null) {
@@ -251,13 +229,13 @@ public class ExpenseFragment extends Fragment {
         }
 
         Map<String, Object> expense = new HashMap<>();
-        expense.put("amount", amount );
+        expense.put("amount", amount);
         expense.put("date", date);
         expense.put("category",category);
-        expense.put("note",note);
+        expense.put("note", note);
         expense.put("event",event);
 
-        Log.d("SaveExpense", "Sending data to Firestore: " + expense.toString());
+        Log.d("SaveExpense", "Sending data to Firestore: " + expense);
         db.collection("expenses").add(expense)
                 .addOnSuccessListener(documentReference -> {
                     Log.d("Firestore", "DocumentSnapshot added with ID: " + documentReference.getId());
