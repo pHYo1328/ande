@@ -1,8 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="wrap_content"
+    android:paddingHorizontal="10dp">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -14,18 +16,37 @@
         app:layout_constraintTop_toTopOf="parent">
 
         <com.google.android.material.textfield.TextInputLayout
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-            android:padding="16dp">
+            android:layout_marginBottom="10dp">
 
             <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/editSubEventTitle"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="Title"
-                android:textColor="@color/black"
                 android:gravity="end"
-                android:textSize="24sp"/>
+                android:hint="Sub Event Title"
+                android:textColor="@color/black"
+                android:textSize="24sp" />
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/editSubBudget"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:gravity="end"
+                android:hint="Estimated Budget"
+                android:textColor="@color/black"
+                android:textSize="16sp" />
         </com.google.android.material.textfield.TextInputLayout>
 
         <TextView
@@ -53,17 +74,68 @@
             android:layout_height="wrap_content"
             android:background="#FFFFFF"
             app:mcv_selectionColor="@color/purple_200"
-            app:mcv_showOtherDates="none"
-            />
+            app:mcv_showOtherDates="none" />
 
-        <Button
-            android:id="@+id/btnAddSubEventDetail"
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginHorizontal="30dp"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/labelStartTime"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/background_purple"
+                android:paddingHorizontal="15dp"
+                android:paddingVertical="10dp"
+                android:text="Start Time"
+                android:textColor="#FFFFFF"
+                android:textSize="16sp" />
+
+            <TextView
+                android:id="@+id/editTextStartTime"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:ems="10"
+                android:gravity="center_horizontal|center_vertical"
+                android:onClick="onClick" />
+
+            <TextView
+                android:id="@+id/labelEndTime"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/background_purple"
+                android:paddingHorizontal="15dp"
+                android:paddingVertical="10dp"
+                android:text="End Time"
+                android:textColor="#FFFFFF"
+                android:textSize="16sp" />
+
+            <TextView
+                android:id="@+id/editTextEndTime"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:ems="10"
+                android:gravity="center_horizontal|center_vertical"
+                android:onClick="onClick" />
+
+        </LinearLayout>
+
+        <Button
+            android:id="@+id/btnSaveSubEvent"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="right"
+            android:layout_marginEnd="20dp"
             android:backgroundTint="#9835D0"
-            android:paddingVertical="20dp"
-            android:text="Add Sub-Event Details"
-            android:textColor="#FFFFFF" />
+            android:drawableEnd="@drawable/baseline_save_24"
+            android:drawablePadding="5dp"
+            android:text="save"
+            android:textColor="#FFFFFF"
+            android:onClick="onClick"/>
+
     </LinearLayout>
+
 </androidx.constraintlayout.widget.ConstraintLayout>

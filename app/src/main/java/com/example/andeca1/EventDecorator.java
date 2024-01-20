@@ -1,29 +1,21 @@
 package com.example.andeca1;
-
-import android.content.Context;
 import android.graphics.Color;
-import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
+import android.text.style.ForegroundColorSpan;
 
 import com.prolificinteractive.materialcalendarview.CalendarDay;
 import com.prolificinteractive.materialcalendarview.DayViewDecorator;
 import com.prolificinteractive.materialcalendarview.DayViewFacade;
+import com.prolificinteractive.materialcalendarview.spans.DotSpan;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.List;
 
 public class EventDecorator implements DayViewDecorator {
 
     private final DateRange dateRange;
-
-    private final Drawable backgroundDrawable;
     private CalendarDay currentDate;
 
-    public EventDecorator(DateRange dateRange,Drawable backgroundDrawable) {
+    public EventDecorator(DateRange dateRange) {
         this.dateRange = dateRange;
-        this.backgroundDrawable = backgroundDrawable;
     }
 
     @Override
@@ -33,8 +25,7 @@ public class EventDecorator implements DayViewDecorator {
 
     @Override
     public void decorate(DayViewFacade view) {
-        // Apply the drawable which uses the color of the range
-        view.setBackgroundDrawable(backgroundDrawable);
+        view.addSpan(new DotSpan(10, Color.parseColor("#FF9835D0")));
     }
 
 }

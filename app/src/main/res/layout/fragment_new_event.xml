@@ -16,35 +16,39 @@
         <com.google.android.material.textfield.TextInputLayout
             style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:padding="16dp">
+            android:layout_height="wrap_content">
 
             <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/editTxtEventTitle"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="Title of Event"
-                android:textColor="@color/black"
+                android:layout_margin="10dp"
                 android:gravity="end"
+                android:hint="Title of Event"
+                android:paddingHorizontal="16sp"
+                android:paddingTop="10sp"
+                android:textColor="@color/black"
                 android:textSize="24sp" />
 
         </com.google.android.material.textfield.TextInputLayout>
 
         <com.google.android.material.textfield.TextInputLayout
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-            app:startIconDrawable="@drawable/baseline_money_24"
             app:startIconContentDescription="estimated budget"
-            android:padding="16dp">
+            app:startIconDrawable="@drawable/baseline_money_24">
 
             <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/editTxtBudget"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="Estimated Budget"
-                android:textColor="@color/black"
-                android:inputType="numberDecimal"
+                android:layout_margin="10dp"
                 android:gravity="end"
-                android:textSize="24sp"/>
+                android:hint="Estimated Budget"
+                android:inputType="numberDecimal"
+                android:textColor="@color/black"
+                android:textSize="24sp" />
         </com.google.android.material.textfield.TextInputLayout>
 
         <TextView
@@ -63,11 +67,12 @@
             android:layout_gravity="start"
             android:background="#FFFFFF"
             android:paddingHorizontal="20sp"
+            android:paddingTop="10sp"
             android:textColor="#000000"
             android:textSize="32sp" />
 
         <CalendarView
-            android:id="@+id/calendarView3"
+            android:id="@+id/calendarViewNewEvent"
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
 
@@ -77,17 +82,17 @@
             android:layout_height="wrap_content"
             android:layout_marginHorizontal="30dp"
             android:backgroundTint="#9835D0"
+            android:gravity="center_horizontal"
             android:paddingVertical="20dp"
             android:text="Add Sub-Event"
-            android:textColor="#FFFFFF"
-            />
+            android:textColor="#FFFFFF" />
 
         <Button
             android:id="@+id/btnSaveEvent"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginHorizontal="30dp"
-            android:layout_marginTop="20sp"
+            android:layout_marginTop="20dp"
             android:backgroundTint="#9835D0"
             android:paddingVertical="20dp"
             android:text="Save Event"

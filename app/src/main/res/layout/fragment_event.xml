@@ -30,11 +30,14 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="right"
+            android:background="#000000"
             android:clickable="true"
             android:onClick="onClick"
             android:src="@drawable/baseline_add_24"
-            app:backgroundTint="#9E2E2E"
-            app:fabSize="mini" />
+            app:backgroundTint="#8A8181"
+            app:fabSize="mini"
+            app:rippleColor="@color/white" />
+
     </LinearLayout>
 
     <com.prolificinteractive.materialcalendarview.MaterialCalendarView
@@ -43,9 +46,26 @@
         android:layout_height="wrap_content"
         android:background="#FFFFFF"
         app:mcv_selectionColor="@color/purple_200"
-        app:mcv_showOtherDates="all" />
+        app:mcv_showOtherDates="all" >
+
+    </com.prolificinteractive.materialcalendarview.MaterialCalendarView>
+
+    <TextView
+        android:id="@+id/txtView_no_event"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="10dp"
+        android:layout_marginVertical="10dp"
+        android:background="@drawable/background_purple"
+        android:gravity="center"
+        android:paddingHorizontal="10dp"
+        android:paddingVertical="20dp"
+        android:text="There is no event today."
+        android:textColor="#FFFFFF"
+        android:textSize="16sp" />
 
     <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/event_recycler_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 
