@@ -24,6 +24,7 @@ import com.prolificinteractive.materialcalendarview.CalendarDay;
 import com.prolificinteractive.materialcalendarview.MaterialCalendarView;
 import com.prolificinteractive.materialcalendarview.OnDateSelectedListener;
 
+import org.checkerframework.checker.units.qual.N;
 import org.threeten.bp.LocalDate;
 
 import java.text.ParseException;
@@ -34,7 +35,7 @@ import java.util.List;
 import java.util.Locale;
 
 
-public class EventFragment extends Fragment implements EventsAdapter.OnEventEditListener {
+public class EventFragment extends Fragment implements EventsAdapter.OnEventEditListener,EventsAdapter.OnSubEventEditListener {
     private TextView selectedDate,noEventsTextView;
     private SimpleDateFormat dateFormat = new SimpleDateFormat("EEE, MMM dd, yyyy", Locale.getDefault());
     private Calendar calendar = Calendar.getInstance();
@@ -124,12 +125,23 @@ public class EventFragment extends Fragment implements EventsAdapter.OnEventEdit
         // Handle the edit button click
         Bundle bundle = new Bundle();
         bundle.putInt("eventId", eventId);
-        bundle.putString("selectedDate", selectedCalendarDate);
-        NewEventFragment newEventFragment = new NewEventFragment();
-        newEventFragment.setArguments(bundle);
+        EditEventFragment editEventFragment = new EditEventFragment();
+        editEventFragment.setArguments(bundle);
         FragmentTransaction transaction = requireActivity().getSupportFragmentManager().beginTransaction();
-        transaction.replace(R.id.content_frame, newEventFragment);
-        transaction.addToBackStack(null); // Optional, if you want to add it to the back stack
+        transaction.replace(R.id.content_frame, editEventFragment);
+        transaction.commit();
+    }
+
+    @Override
+    public void onSubEventEditClicked(int subEventId, String startDate, String endDate){
+        Bundle bundle = new Bundle();
+        bundle.putInt("subEventId", subEventId);
+        bundle.putString("startDate", startDate);
+        bundle.putString("endDate",endDate);
+        NewSubEventFragment newSubEvetFragment = new NewSubEventFragment();
+        newSubEvetFragment.setArguments(bundle);
+        FragmentTransaction transaction = requireActivity().getSupportFragmentManager().beginTransaction();
+        transaction.replace(R.id.content_frame,newSubEvetFragment);
         transaction.commit();
     }
 
@@ -146,7 +158,7 @@ public class EventFragment extends Fragment implements EventsAdapter.OnEventEdit
             // If there are events, set up the RecyclerView
             noEventsTextView.setVisibility(View.GONE);
             recyclerView.setVisibility(View.VISIBLE);
-            adapter = new EventsAdapter(eventsOnSelectedDate,this);
+            adapter = new EventsAdapter(eventsOnSelectedDate,this,this);
             recyclerView.setAdapter(adapter);
         }
     }

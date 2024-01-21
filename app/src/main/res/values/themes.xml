@@ -24,4 +24,10 @@
     <style name="Custom.Indicator" parent="Widget.Material3.BottomNavigationView.ActiveIndicator">
         <item name="android:color">#505050</item>
     </style>
+
+    <style name="SpinnerWhiteText" parent="Widget.AppCompat.Spinner">
+        <item name="android:textColor">@color/white</item>
+        <!-- You can also customize other text properties if needed -->
+    </style>
+
 </resources>

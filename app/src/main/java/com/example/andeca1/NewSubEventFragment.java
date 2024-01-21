@@ -51,11 +51,13 @@ public class NewSubEventFragment extends Fragment {
         String txtStartDate,txtEndDate;
         Date startDate = null,endDate = null;
         Integer eventId = null;
+        Integer subEventId = null;
         SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
         if (getArguments() != null) {
             txtStartDate = getArguments().getString("startDate");
             txtEndDate = getArguments().getString("endDate");
-            eventId = Integer.parseInt(getArguments().getString("eventId"));
+            eventId = getArguments().getInt("eventId");
+            subEventId = getArguments().getInt("subEventId");
             try {
                 startDate= formatter.parse(txtStartDate);
                 endDate = formatter.parse(txtEndDate);
@@ -69,6 +71,23 @@ public class NewSubEventFragment extends Fragment {
             calendarView.setSelectedDate(startCalendarDay);
             DateRange dateRange = new DateRange(startCalendarDay,endCalendarDay);
             calendarView.addDecorator(new EventDecorator(dateRange));
+            if(subEventId != null && subEventId != 0){
+                SubEvent subEvent = db.getSubEventById(subEventId);
+                editTitle.setText(subEvent.getSubEvent_title());
+                editBudget.setText(String.valueOf(subEvent.getSubEvent_budget()));
+                startTime.setText(subEvent.getStart_time());
+                endTime.setText(subEvent.getEnd_time());
+                try {
+                    selectedCalendarDate = formatter.parse(subEvent.getSubEvent_date());
+                    calendar.setTime(selectedCalendarDate);
+                    CalendarDay selectedDateDB = CalendarDay.from(calendar.get(Calendar.YEAR),calendar.get(Calendar.MONTH)+1,calendar.get(Calendar.DAY_OF_MONTH));
+                    calendarView.setSelectedDate(selectedDateDB);
+
+                } catch (ParseException e) {
+                    throw new RuntimeException(e);
+                }
+
+            }
         }
 
         startTime.setOnClickListener(new View.OnClickListener() {
@@ -92,6 +111,7 @@ public class NewSubEventFragment extends Fragment {
                                     amPm = "AM";
                                 } else {
                                     amPm = "PM";
+                                    selectedHour= selectedHour-12;
                                 }
                                 String timeString = String.format(Locale.getDefault(), "%02d:%02d %s", selectedHour, selectedMinute, amPm);
                                 startTime.setText(timeString);
@@ -153,6 +173,7 @@ public class NewSubEventFragment extends Fragment {
         Date finalStartDate = startDate;
         Date finalEndDate = endDate;
         Integer finalEventId = eventId;
+        Integer finalSubEventId = subEventId;
         saveButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -171,6 +192,12 @@ public class NewSubEventFragment extends Fragment {
                     editBudget.setError("Please enter a valid amount");
                     return;
                 }
+
+                if(selectedCalendarDate == null){
+                    Toast.makeText(getContext(),"Please select date between start date and end date of the event",Toast.LENGTH_LONG);
+                    return;
+                }
+
                 if(selectedCalendarDate.before(finalStartDate) && selectedCalendarDate.after(finalEndDate)){
                     Toast.makeText(getContext(),"Please select date between start date and end date of the event",Toast.LENGTH_LONG);
                     return;
@@ -204,7 +231,11 @@ public class NewSubEventFragment extends Fragment {
                 SimpleDateFormat dateFormatForData = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
                 String subEventDateStr = dateFormatForData.format(selectedCalendarDate);
 
-                db.createSubEvent(title,subEventDateStr,startTimeStr,endTimeStr,budgetValue, finalEventId);
+                if(finalSubEventId != null){
+                    db.updateSubEvent(finalSubEventId,title,subEventDateStr,startTimeStr,endTimeStr,budgetValue);
+                }else{
+                    db.createSubEvent(title,subEventDateStr,startTimeStr,endTimeStr,budgetValue, finalEventId);
+                }
                 editTitle.setText("");
                 editBudget.setText("");
                 startTime.setText("");

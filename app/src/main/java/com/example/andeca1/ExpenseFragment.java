@@ -45,8 +45,11 @@ public class ExpenseFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_expense, container, false);
         editTextDate = view.findViewById(R.id.dateEditText);
         editAmount = view.findViewById(R.id.spentEditText);
-        editNote = view.findViewById(R.id.noteEditText);
+        editNote = view.findViewById(R.id.descEditText);
         Button receiptButton = view.findViewById(R.id.btnReceipt);
+        editTextDate = (EditText) view.findViewById(R.id.dateEditText);
+        editAmount = (EditText) view.findViewById(R.id.spentEditText);
+        editNote = (EditText) view.findViewById(R.id.descEditText);
 
         Button saveButton = view.findViewById(R.id.btnSaveSubEvent);
         editTextDate.setOnClickListener(v -> showMaterialDatePicker());

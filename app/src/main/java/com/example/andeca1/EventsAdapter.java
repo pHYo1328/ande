@@ -19,14 +19,24 @@ public class EventsAdapter extends RecyclerView.Adapter<EventsAdapter.EventViewH
     public interface OnEventEditListener {
         void onEventEditClicked(int eventId,String startDate);
     }
+
+    public interface OnSubEventEditListener {
+        void onSubEventEditClicked(int subEventId, String startDate, String endDate);
+    }
+
+
     private final List<Event> eventList;
     private final OnEventEditListener editButtonClickListener;
+    private final OnSubEventEditListener subEventEditButtonClickListener;
+
 
     // Constructor
-    public EventsAdapter(List<Event> events, OnEventEditListener listener) {
+    public EventsAdapter(List<Event> events, OnEventEditListener eventListener, OnSubEventEditListener subEventListener) {
         this.eventList = events;
-        this.editButtonClickListener = listener;
+        this.editButtonClickListener = eventListener;
+        this.subEventEditButtonClickListener = subEventListener;
     }
+
 
 
     @Override
@@ -84,9 +94,19 @@ public class EventsAdapter extends RecyclerView.Adapter<EventsAdapter.EventViewH
                         TextView subEventTitle = subEventView.findViewById(R.id.txtSubEventTitle);
                         TextView time = subEventView.findViewById(R.id.txtViewTime);
                         TextView subBudget = subEventView.findViewById(R.id.txtSubBudget);
+                        ImageButton btnSubEventEdit = subEventView.findViewById(R.id.btnSubEventEdit);
                         subEventTitle.setText(subEvent.getSubEvent_title());
                         time.setText(subEvent.getStart_time()+" - "+ subEvent.getEnd_time());
                         subBudget.setText(subEvent.getSubEvent_budget().toString());
+                        btnSubEventEdit.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
+                                if (subEventEditButtonClickListener != null) {
+                                    subEventEditButtonClickListener.onSubEventEditClicked(subEvent.getId(),event.getStartDate(), event.getEndDate());
+                                }
+                            }
+                        });
+
                         subEventsContainer.addView(subEventView);
                     }
                 }
