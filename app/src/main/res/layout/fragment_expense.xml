@@ -28,17 +28,18 @@
         </androidx.appcompat.widget.Toolbar>
     </com.google.android.material.appbar.AppBarLayout>
 
-    <Button
+    <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
         android:id="@+id/btnReceipt"
         android:layout_width="wrap_content"
-        android:layout_height="0dp"
-        android:layout_gravity="end"
-        android:layout_marginEnd="10dp"
-        android:backgroundTint="#9835D0"
-        android:drawableStart="@drawable/sparkling"
-        android:paddingHorizontal="10dp"
-        android:text="Receipt Scanning"
-        android:textColor="@color/white" />
+        android:layout_height="wrap_content"
+        android:layout_margin="8dp"
+        android:layout_gravity="bottom|end"
+        app:iconTint="@color/white"
+        android:contentDescription="@string/button_receipt_scanning"
+        android:text="@string/button_receipt_scanning"
+        android:textColor="@color/white"
+        app:backgroundTint="@color/purple_button"
+        app:icon="@drawable/sparkling"/>
 
     <com.google.android.material.textfield.TextInputLayout
         style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
@@ -162,7 +163,8 @@
             android:layout_height="match_parent"
             android:layout_marginHorizontal="20dp"
             android:src="@drawable/event"
-            app:srcCompat="@drawable/event" />
+            app:srcCompat="@drawable/event"
+            android:contentDescription="TODO" />
 
         <Spinner
             android:id="@+id/eventSpinner"

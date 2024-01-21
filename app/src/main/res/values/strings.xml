@@ -43,7 +43,7 @@
     <string name="receipt_image">Receipt Image</string>
     <string name="add_to_expenses">Add to\nexpenses</string>
     <string name="exit">Exit</string>
-    <string name="error_message">An Error has occured, please try again later.</string>
+    <string name="error_message">An Error has occurred, please try again later.</string>
     <string name="btn_event_edit">Edit event button</string>
     <string name="event_budget">Budget</string>
     <string name="event_title">Event Title</string>
@@ -51,4 +51,5 @@
     <string name="_45">45%</string>
     <string name="image_view">image_view</string>
     <string name="button_save">Save</string>
+    <string name="button_receipt_scanning">Receipt Scanning</string>
 </resources>

@@ -111,24 +111,32 @@
             android:layout_height="wrap_content" />
     </TableLayout>
 
-
-
-    <!-- Scrollable Table Content -->
-
-    <!-- Add to Expenses Button -->
-    <Button
-        android:id="@+id/buttonAddToExpenses"
-        style="@style/Widget.Material3.Button.ElevatedButton"
+<!--    <Button-->
+<!--        android:id="@+id/buttonAddToExpenses"-->
+<!--        style="@style/Widget.Material3.Button.ElevatedButton"-->
+<!--        android:layout_width="wrap_content"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:layout_alignParentEnd="true"-->
+<!--        android:layout_alignParentBottom="true"-->
+<!--        android:layout_marginHorizontal="8dp"-->
+<!--        android:layout_marginVertical="8dp"-->
+<!--        android:elevation="8dp"-->
+<!--        android:text="@string/add_to_expenses"-->
+<!--        android:textAppearance="@style/TextAppearance.AppCompat.Small"-->
+<!--        app:backgroundTint="@color/purple_500" />-->
+    <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
+        android:id="@+id/extended_fab"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_margin="16dp"
+        android:layout_gravity="bottom|end"
+        android:maxLines="2"
+        app:backgroundTint="@color/purple_button"
+        android:textColor="@color/white"
         android:layout_alignParentEnd="true"
         android:layout_alignParentBottom="true"
-        android:layout_marginHorizontal="8dp"
-        android:layout_marginVertical="8dp"
-        android:elevation="8dp"
-        android:text="@string/add_to_expenses"
-        android:textAppearance="@style/TextAppearance.AppCompat.Small"
-        app:backgroundTint="@color/purple_500" />
+        android:contentDescription="@string/add_to_expenses"
+        android:text="@string/add_to_expenses"/>
 
     <ImageView
         android:id="@+id/imageViewLoading"
