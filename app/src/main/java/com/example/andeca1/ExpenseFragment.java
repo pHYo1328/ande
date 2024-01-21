@@ -101,20 +101,21 @@ public class ExpenseFragment extends Fragment {
                 }
             });
 
-    // Method to open the fragment and pass the image
+    // open the fragment and pass the image uri for google photos/gallery
     private void openReceiptFragmentWithImage(Uri imageUri) {
         // Create a new instance of your fragment
         ReceiptFragment receiptFragment = ReceiptFragment.newInstance(imageUri.toString());
-        // Begin a fragment transaction, replace the container with your fragment
+        // Fragment transaction, change out fragment
         getParentFragmentManager().beginTransaction()
-                .replace(R.id.content_frame, receiptFragment) // Use the correct container ID
+                .replace(R.id.content_frame, receiptFragment)
                 .commit();
     }
 
+    //Image bitmap if camera used
     private void openReceiptFragmentWithImage(Bitmap imageBitmap) {
-        // Create a new instance of your fragment
+
         ReceiptFragment receiptFragment = ReceiptFragment.newInstance(imageBitmap);
-        // Begin a fragment transaction, replace the container with your fragment
+        // Begin a fragment transaction, change out fragment
         getParentFragmentManager().beginTransaction()
                 .replace(R.id.content_frame, receiptFragment)
                 .commit();

@@ -43,10 +43,11 @@ import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
 
-public class ReceiptFragment extends Fragment implements View.OnClickListener {
+public class ReceiptFragment extends Fragment{
 
     private List<ReceiptItem> receiptItems;
     private ReceiptItemAdapter adapter;
+
     public static ReceiptFragment newInstance(String imageUri) {
         ReceiptFragment fragment = new ReceiptFragment();
         Bundle args = new Bundle();
@@ -73,8 +74,12 @@ public class ReceiptFragment extends Fragment implements View.OnClickListener {
         super.onViewCreated(view, savedInstanceState);
         ImageView imageViewReceipt = view.findViewById(R.id.imageViewReceipt);
 
+        //Trying another way without public void onClick
         View allCheckbox = view.findViewById(R.id.checkBoxSelectAll);
-        allCheckbox.setOnClickListener(this);
+        allCheckbox.setOnClickListener(v -> selectAll());
+
+        View closeReceipt = view.findViewById(R.id.exit_selection_mode);
+        closeReceipt.setOnClickListener(v -> closeReceipt());
 
         receiptItems = new ArrayList<>();
         RecyclerView recyclerView = requireActivity().findViewById(R.id.recyclerViewItems);
@@ -87,6 +92,7 @@ public class ReceiptFragment extends Fragment implements View.OnClickListener {
         if (getArguments() != null && getArguments().containsKey("image_uri")) {
             Uri imageUri = Uri.parse(getArguments().getString("image_uri"));
             try {
+                //Convert the URI to a Bitmap
                 InputStream imageStream = requireContext().getContentResolver().openInputStream(imageUri);
                 Bitmap imageBitmap = BitmapFactory.decodeStream(imageStream);
                 imageViewReceipt.setImageBitmap(imageBitmap);
@@ -248,7 +254,6 @@ public class ReceiptFragment extends Fragment implements View.OnClickListener {
                         requireActivity().runOnUiThread(() -> {
 
 
-
                             for (JsonElement element : jsonArray) {
                                 JsonObject obj = element.getAsJsonObject();
                                 String productName = obj.get("product_name").getAsString();
@@ -261,10 +266,8 @@ public class ReceiptFragment extends Fragment implements View.OnClickListener {
                             }
 
 
-
-
                         });
-
+                        throw new Exception("test");
                     } else {
                         // Handle the error response here
                         System.out.println("Request was not successful: " + response);
@@ -279,7 +282,7 @@ public class ReceiptFragment extends Fragment implements View.OnClickListener {
             } catch (Exception e) {
                 e.printStackTrace();
                 requireActivity().runOnUiThread(() -> {
-                    TextView textViewError = requireView().findViewById(R.id.textViewError);
+                    TextView textViewError = requireActivity().findViewById(R.id.textViewError);
                     textViewError.setVisibility(View.VISIBLE);
                 });
 
@@ -289,22 +292,24 @@ public class ReceiptFragment extends Fragment implements View.OnClickListener {
         }).start();
     }
 
-    @Override
-    public void onClick(View view){
-        if(view.getId() == R.id.checkBoxSelectAll){
-            selectAll();
-        }
-    }
 
-    public void selectAll(){
+
+    public void selectAll() {
         CheckBox checkBox = requireActivity().findViewById(R.id.checkBoxSelectAll);
 
         List<ReceiptItem> receiptItems = adapter.getReceiptItems();
-        for(ReceiptItem item : receiptItems){
+        for (ReceiptItem item : receiptItems) {
             item.setChecked(checkBox.isChecked());
             adapter.notifyItemChanged(receiptItems.indexOf(item));
         }
 
+    }
+
+    public void closeReceipt() {
+        //Replace fragment with ExpenseFragment
+        getParentFragmentManager().beginTransaction()
+                .replace(R.id.content_frame, new ExpenseFragment())
+                .commit();
     }
 
 

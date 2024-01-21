@@ -19,7 +19,7 @@
             android:id="@+id/txtViewDate"
             android:layout_width="100dp"
             android:layout_height="match_parent"
-            android:text="TextView"
+            android:text="@string/textview"
             android:textColor="@color/white"
             android:textSize="16sp" />
 
@@ -31,7 +31,7 @@
             android:background="#CCCCCC" />
 
         <LinearLayout
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:orientation="vertical">
@@ -40,7 +40,7 @@
                 android:id="@+id/eventTitle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Event Title"
+                android:text="@string/event_title"
                 android:textColor="#FFFFFF"
                 android:textSize="20sp"
                 android:textStyle="bold" />
@@ -49,7 +49,7 @@
                 android:id="@+id/txtViewBudget"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="budget"
+                android:text="@string/event_budget"
                 android:textColor="#FFFFFF"
                 android:textSize="16sp" />
 
@@ -60,7 +60,8 @@
             android:layout_width="50dp"
             android:layout_height="match_parent"
             android:background="#9835D0"
-            android:src="@drawable/baseline_edit_square_24" />
+            android:src="@drawable/baseline_edit_square_24"
+            android:contentDescription="@string/btn_event_edit" />
 
     </LinearLayout>
 
@@ -70,6 +71,7 @@
         android:layout_height="wrap_content"
         android:orientation="vertical"
         android:paddingLeft="16dp"
+        android:paddingRight="16dp"
         android:visibility="visible">
         <!-- Sub-events will be dynamically added here -->
     </LinearLayout>

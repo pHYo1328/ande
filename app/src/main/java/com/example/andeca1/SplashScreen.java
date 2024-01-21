@@ -15,22 +15,19 @@ public class SplashScreen extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_splash_screen);
-        Thread splashThread = new Thread() {
-
-            public void run() {
-                try {
-                    sleep(5000);
-                }  catch(InterruptedException e) {
-                    e.printStackTrace();
-                } finally
-                {
-                    Intent intent = new Intent(SplashScreen.this, BaseActivity.class);
-                    startActivity(intent);
-                    finish();
-                }
-
+        Thread splashThread = new Thread(() -> {
+            try {
+                Thread.sleep(5000);
+            }  catch(InterruptedException e) {
+                e.printStackTrace();
+            } finally
+            {
+                Intent intent = new Intent(SplashScreen.this, BaseActivity.class);
+                startActivity(intent);
+                finish();
             }
-        };
+
+        });
         splashThread.start();
     }
 

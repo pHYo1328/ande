@@ -81,7 +81,7 @@
             android:layout_height="wrap_content"
             android:orientation="horizontal">
 
-            <TextView
+            <Button
                 android:id="@+id/labelStartTime"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -98,10 +98,9 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:ems="10"
-                android:gravity="center_horizontal|center_vertical"
-                android:onClick="onClick" />
+                android:gravity="center_horizontal|center_vertical"/>
 
-            <TextView
+            <Button
                 android:id="@+id/labelEndTime"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -118,8 +117,7 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:ems="10"
-                android:gravity="center_horizontal|center_vertical"
-                android:onClick="onClick" />
+                android:gravity="center_horizontal|center_vertical"/>
 
         </LinearLayout>
 
@@ -132,9 +130,8 @@
             android:backgroundTint="#9835D0"
             android:drawableEnd="@drawable/baseline_save_24"
             android:drawablePadding="5dp"
-            android:text="save"
-            android:textColor="#FFFFFF"
-            android:onClick="onClick"/>
+            android:text="@string/button_save"
+            android:textColor="#FFFFFF"/>
 
     </LinearLayout>
 

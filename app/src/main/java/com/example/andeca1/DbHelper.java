@@ -135,7 +135,7 @@ public class DbHelper extends SQLiteOpenHelper {
                 Log.d("checkData","eventId"+ eventId);
                 String startDate = cursor.getString(cursor.getColumnIndexOrThrow("start_date"));
                 String endDate = cursor.getString(cursor.getColumnIndexOrThrow("end_date"));
-                Double eventBudget = cursor.getDouble(cursor.getColumnIndexOrThrow("eventBudget"));
+                double eventBudget = cursor.getDouble(cursor.getColumnIndexOrThrow("eventBudget"));
                 int subEventId = cursor.getInt(cursor.getColumnIndexOrThrow("subEvent_id"));
                 String subEventTitle = cursor.getString(cursor.getColumnIndexOrThrow("subEvent_title"));
                 String subEventDate = cursor.getString(cursor.getColumnIndexOrThrow("subEvent_date"));
@@ -165,7 +165,7 @@ public class DbHelper extends SQLiteOpenHelper {
                 }
             } while (cursor.moveToNext());
         }
-        Log.d("checkDate","db "+selectedDate+eventList.toString());
+        Log.d("checkDate","db "+selectedDate+ eventList);
         cursor.close();
 
         return eventList;

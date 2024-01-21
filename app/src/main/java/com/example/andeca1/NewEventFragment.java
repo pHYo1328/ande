@@ -2,7 +2,6 @@ package com.example.andeca1;
 
 import android.icu.util.Calendar;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -22,13 +21,14 @@ import java.util.Date;
 import java.util.Locale;
 
 public class NewEventFragment extends Fragment {
-    private EditText editEventTitle,editBudget;
-    private Button addSubEventButton,saveButton;
+    private EditText editEventTitle, editBudget;
+    private Button addSubEventButton, saveButton;
     private CalendarView calendarView;
     private TextView selectedDateStr;
     private DbHelper db;
     private Date startDate;
     private Date endDate;
+
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_new_event, container, false);
@@ -45,7 +45,7 @@ public class NewEventFragment extends Fragment {
         SimpleDateFormat dateFormat = new SimpleDateFormat("EEE, MMM dd, yyyy", Locale.getDefault());
         SimpleDateFormat dateFormatForDB = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
         Calendar calendar = Calendar.getInstance();
-        calendar.set(calendar.get(android.icu.util.Calendar.YEAR),calendar.get(android.icu.util.Calendar.MONTH),calendar.get(Calendar.DAY_OF_MONTH));
+        calendar.set(calendar.get(android.icu.util.Calendar.YEAR), calendar.get(android.icu.util.Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH));
         selectedDateStr.setText(dateFormat.format(calendar.getTime()));
         endDate = calendar.getTime();
 
@@ -53,95 +53,86 @@ public class NewEventFragment extends Fragment {
         if (getArguments() != null) {
             startDateStr = getArguments().getString("selectedDate");
             try {
-                startDate= dateFormatForDB.parse(startDateStr);
+                assert startDateStr != null;
+                startDate = dateFormatForDB.parse(startDateStr);
             } catch (ParseException e) {
                 throw new RuntimeException(e);
             }
         }
-        calendarView.setOnDateChangeListener(new CalendarView.OnDateChangeListener() {
-            @Override
-            public void onSelectedDayChange(@NonNull CalendarView view, int year, int month, int dayOfMonth) {
-                Calendar selectedDate = Calendar.getInstance();
-                selectedDate.set(year, month, dayOfMonth);
-                String formattedDate = dateFormat.format(selectedDate.getTime());
-                endDate = selectedDate.getTime();
-                selectedDateStr.setText(formattedDate);
-            }
+        calendarView.setOnDateChangeListener((view1, year, month, dayOfMonth) -> {
+            Calendar selectedDate = Calendar.getInstance();
+            selectedDate.set(year, month, dayOfMonth);
+            String formattedDate = dateFormat.format(selectedDate.getTime());
+            endDate = selectedDate.getTime();
+            selectedDateStr.setText(formattedDate);
         });
         String finalStartDateStr = startDateStr;
-        addSubEventButton.setOnClickListener(new View.OnClickListener() {
-            String eventTitle,budget;
-            @Override
-            public void onClick(View view) {
-                eventTitle= editEventTitle.getText().toString().trim();
-                budget = editBudget.getText().toString().trim();
-                double budgetValue;
-                try {
-                    budgetValue = Double.parseDouble(budget);
-                    if (budgetValue <= 0) {
-                        throw new NumberFormatException("Amount must be greater than zero");
-                    }
-                } catch (NumberFormatException e) {
-                    editBudget.setError("Please enter a valid amount");
-                    return;
+        addSubEventButton.setOnClickListener(view12 -> {
+            String eventTitle, budget;
+            eventTitle = editEventTitle.getText().toString().trim();
+            budget = editBudget.getText().toString().trim();
+            double budgetValue;
+            try {
+                budgetValue = Double.parseDouble(budget);
+                if (budgetValue <= 0) {
+                    throw new NumberFormatException("Amount must be greater than zero");
                 }
-
-                if(eventTitle == null){
-                    editEventTitle.setError("Please enter a event title");
-                    return;
-                }
-                if(endDate.before(startDate)){
-                    Toast.makeText(getContext(),"Event end date shouldn't before start date",Toast.LENGTH_LONG);
-                    return;
-                }
-                String endDateStr = dateFormatForDB.format(endDate.getTime());
-                long eventId = db.createEvent(eventTitle, finalStartDateStr,endDateStr,budgetValue);
-                Bundle bundle = new Bundle();
-                bundle.putInt("eventId",(int) eventId);
-                bundle.putString("startDate",finalStartDateStr);
-                bundle.putString("endDate",endDateStr);
-                NewSubEventFragment newSubEventFragment = new NewSubEventFragment();
-                newSubEventFragment.setArguments(bundle);
-                FragmentTransaction transaction = getActivity().getSupportFragmentManager().beginTransaction();
-                transaction.replace(R.id.content_frame, newSubEventFragment);
-                transaction.commit();
+            } catch (NumberFormatException e) {
+                editBudget.setError("Please enter a valid amount");
+                return;
             }
+
+            if (eventTitle.isEmpty()) {
+                editEventTitle.setError("Please enter a event title");
+                return;
+            }
+            if (endDate.before(startDate)) {
+                Toast.makeText(getContext(), "Event end date shouldn't before start date", Toast.LENGTH_LONG).show();
+                return;
+            }
+            String endDateStr = dateFormatForDB.format(endDate.getTime());
+            long eventId = db.createEvent(eventTitle, finalStartDateStr, endDateStr, budgetValue);
+            Bundle bundle = new Bundle();
+            bundle.putString("eventId", String.valueOf(eventId));
+            bundle.putString("startDate", finalStartDateStr);
+            bundle.putString("endDate", endDateStr);
+            NewSubEventFragment newSubEventFragment = new NewSubEventFragment();
+            newSubEventFragment.setArguments(bundle);
+            FragmentTransaction transaction = requireActivity().getSupportFragmentManager().beginTransaction();
+            transaction.replace(R.id.content_frame, newSubEventFragment);
+            transaction.commit();
         });
 
 
-        saveButton.setOnClickListener(new View.OnClickListener() {
-            String eventTitle,budget;
-            @Override
-            public void onClick(View view) {
-                eventTitle= editEventTitle.getText().toString().trim();
-                budget = editBudget.getText().toString().trim();
-                double budgetValue;
-                try {
-                    budgetValue = Double.parseDouble(budget);
-                    if (budgetValue <= 0) {
-                        throw new NumberFormatException("Amount must be greater than zero");
-                    }
-                } catch (NumberFormatException e) {
-                    editBudget.setError("Please enter a valid amount");
-                    return;
+        saveButton.setOnClickListener(view1 -> {
+            String eventTitle, budget;
+            eventTitle = editEventTitle.getText().toString().trim();
+            budget = editBudget.getText().toString().trim();
+            double budgetValue;
+            try {
+                budgetValue = Double.parseDouble(budget);
+                if (budgetValue <= 0) {
+                    throw new NumberFormatException("Amount must be greater than zero");
                 }
-
-                if(eventTitle == null){
-                    editEventTitle.setError("Please enter a event title");
-                    return;
-                }
-
-                if(endDate.before(startDate)){
-                    Toast.makeText(getContext(),"Event end date shouldn't before start date",Toast.LENGTH_LONG);
-                    return;
-                }
-                String endDateStr = dateFormatForDB.format(endDate.getTime());
-                db.createEvent(eventTitle, finalStartDateStr,endDateStr,budgetValue);
-                FragmentTransaction transaction = getActivity().getSupportFragmentManager().beginTransaction();
-                transaction.replace(R.id.content_frame, new EventFragment());
-                transaction.commit();
-
+            } catch (NumberFormatException e) {
+                editBudget.setError("Please enter a valid amount");
+                return;
             }
+
+            if (eventTitle.isEmpty()) {
+                editEventTitle.setError("Please enter a event title");
+                return;
+            }
+
+            if (endDate.before(startDate)) {
+                Toast.makeText(getContext(), "Event end date shouldn't before start date", Toast.LENGTH_LONG).show();
+                return;
+            }
+            String endDateStr = dateFormatForDB.format(endDate.getTime());
+            db.createEvent(eventTitle, finalStartDateStr, endDateStr, budgetValue);
+            FragmentTransaction transaction = requireActivity().getSupportFragmentManager().beginTransaction();
+            transaction.replace(R.id.content_frame, new EventFragment());
+            transaction.commit();
         });
 
         return view;

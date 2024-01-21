@@ -26,17 +26,18 @@
             android:textSize="32sp" />
 
         <com.google.android.material.floatingactionbutton.FloatingActionButton
+            style="@style/Widget.Material3.FloatingActionButton.Primary"
             android:id="@+id/floatingActionButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="right"
+            android:layout_gravity="end"
             android:background="#000000"
             android:clickable="true"
-            android:onClick="onClick"
             android:src="@drawable/baseline_add_24"
             app:backgroundTint="#8A8181"
             app:fabSize="mini"
-            app:rippleColor="@color/white" />
+            app:rippleColor="@color/white"
+            android:contentDescription="TODO" />
 
     </LinearLayout>
 

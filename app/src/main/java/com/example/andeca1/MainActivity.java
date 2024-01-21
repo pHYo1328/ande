@@ -1,7 +1,5 @@
 package com.example.andeca1;
 
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -9,12 +7,7 @@ import android.os.Bundle;
 import android.text.SpannableString;
 import android.text.Spanned;
 import android.text.style.AbsoluteSizeSpan;
-import android.view.MenuItem;
 import android.widget.TextView;
-import android.widget.Toast;
-
-import com.google.android.material.bottomnavigation.BottomNavigationView;
-import com.google.android.material.navigation.NavigationBarView;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -23,14 +16,6 @@ import java.util.Date;
 import java.util.List;
 
 public class MainActivity extends BaseActivity {
-
-    private RecyclerView recyclerView;
-    private recyclerViewAdapter adapter;
-    private List<recycleItem> items;
-
-
-
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
@@ -38,7 +23,7 @@ public class MainActivity extends BaseActivity {
         setContentView(R.layout.activity_main);
         TextView textView = findViewById(R.id.textView2);
         String text = "Welcome Back,\nJohn";
-        items = new ArrayList<>();
+        List<recycleItem> items = new ArrayList<>();
 
         SpannableString spannableString = new SpannableString(text);
 
@@ -46,18 +31,21 @@ public class MainActivity extends BaseActivity {
 
         spannableString.setSpan(new AbsoluteSizeSpan(25, true), 15, text.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
         textView.setText(spannableString);
-        recyclerView = findViewById(R.id.recyclerView);
+        RecyclerView recyclerView = findViewById(R.id.recyclerView);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
-        SimpleDateFormat inputFormat = new SimpleDateFormat("yyyy-MM-dd");
-        SimpleDateFormat outputFormat = new SimpleDateFormat("MM-dd");
+        SimpleDateFormat inputFormat = new SimpleDateFormat("yyyy-MM-dd", java.util.Locale.getDefault());
+        SimpleDateFormat outputFormat = new SimpleDateFormat("MM-dd", java.util.Locale.getDefault());
 
         try {
             Date date1 = inputFormat.parse("2023-10-01");
             Date date2 = inputFormat.parse("2023-11-15");
             Date date3 = inputFormat.parse("2023-12-20");
 
+            assert date1 != null;
             String formattedDate1 = outputFormat.format(date1);
+            assert date2 != null;
             String formattedDate2 = outputFormat.format(date2);
+            assert date3 != null;
             String formattedDate3 = outputFormat.format(date3);
 
             items.add(new recycleItem("October", 90, formattedDate1, R.drawable.oct, "$69.20 Left"));
@@ -68,7 +56,7 @@ public class MainActivity extends BaseActivity {
             e.printStackTrace();
         }
 
-        adapter = new recyclerViewAdapter(items);
+        recyclerViewAdapter adapter = new recyclerViewAdapter(items);
         recyclerView.setAdapter(adapter);
     }
 }

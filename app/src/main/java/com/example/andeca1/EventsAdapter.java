@@ -1,16 +1,14 @@
 package com.example.andeca1;
 
-import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import androidx.fragment.app.FragmentTransaction;
+import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 import java.util.List;
 
@@ -39,6 +37,7 @@ public class EventsAdapter extends RecyclerView.Adapter<EventsAdapter.EventViewH
 
 
 
+    @NonNull
     @Override
     public EventViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.event_item, parent, false);
@@ -72,15 +71,12 @@ public class EventsAdapter extends RecyclerView.Adapter<EventsAdapter.EventViewH
 
         void bind(Event event) {
             eventTitle.setText(event.getEventName());
-            date.setText(event.getStartDate()+" - "+event.getEndDate());
-            budget.setText("budget: $"+event.getBudget());
-            btnEventEdit.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    if (editButtonClickListener != null) {
-                        Log.d("checkData","eventId "+ event.getId());
-                        editButtonClickListener.onEventEditClicked(event.getId(),event.getStartDate());
-                    }
+            date.setText(String.format("%s - %s", event.getStartDate(), event.getEndDate()));
+            budget.setText(String.format("budget: $%s", event.getBudget()));
+            btnEventEdit.setOnClickListener(view -> {
+                if (editButtonClickListener != null) {
+                    Log.d("checkData","eventId "+ event.getId());
+                    editButtonClickListener.onEventEditClicked(event.getId(),event.getStartDate());
                 }
             });
             subEventsContainer.removeAllViews();
@@ -96,8 +92,8 @@ public class EventsAdapter extends RecyclerView.Adapter<EventsAdapter.EventViewH
                         TextView subBudget = subEventView.findViewById(R.id.txtSubBudget);
                         ImageButton btnSubEventEdit = subEventView.findViewById(R.id.btnSubEventEdit);
                         subEventTitle.setText(subEvent.getSubEvent_title());
-                        time.setText(subEvent.getStart_time()+" - "+ subEvent.getEnd_time());
-                        subBudget.setText(subEvent.getSubEvent_budget().toString());
+                        time.setText(String.format("%s - %s", subEvent.getStart_time(), subEvent.getEnd_time()));
+                        subBudget.setText(String.format("%s", subEvent.getSubEvent_budget()));
                         btnSubEventEdit.setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View view) {

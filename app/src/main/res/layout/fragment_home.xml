@@ -27,11 +27,6 @@
         app:layout_constraintTop_toBottomOf="@id/textView2"/>
 
 
-    <Spinner
-        android:id="@+id/spinner"
-        android:layout_width="409dp"
-        android:layout_height="wrap_content"
-        tools:layout_editor_absoluteX="1dp"
-        tools:layout_editor_absoluteY="183dp" />
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -1,15 +1,11 @@
 package com.example.andeca1;
 
-import android.graphics.Color;
-import android.graphics.drawable.ColorDrawable;
-import android.graphics.drawable.Drawable;
 import android.icu.util.Calendar;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.CalendarView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -22,9 +18,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.prolificinteractive.materialcalendarview.CalendarDay;
 import com.prolificinteractive.materialcalendarview.MaterialCalendarView;
-import com.prolificinteractive.materialcalendarview.OnDateSelectedListener;
 
-import org.checkerframework.checker.units.qual.N;
 import org.threeten.bp.LocalDate;
 
 import java.text.ParseException;
@@ -86,34 +80,28 @@ public class EventFragment extends Fragment implements EventsAdapter.OnEventEdit
         for (DateRange range : dateRanges) {
             calendarView.addDecorator(new EventDecorator(range));
         }
-        calendarView.setOnDateChangedListener(new OnDateSelectedListener() {
-            @Override
-            public void onDateSelected(@NonNull MaterialCalendarView widget, @NonNull CalendarDay date, boolean selected) {
-                calendar.set(date.getYear(), date.getMonth()-1, date.getDay());
-                SimpleDateFormat dateFormatForData = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
-                selectedCalendarDate = dateFormatForData.format(calendar.getTime());
-                Log.d("checkDate",selectedCalendarDate);
-                widget.invalidateDecorators();
-                selectedDate.setText(dateFormat.format(calendar.getTime()));
-                setRecyclerView(db);
-            }
+        calendarView.setOnDateChangedListener((widget, date, selected) -> {
+            calendar.set(date.getYear(), date.getMonth()-1, date.getDay());
+            SimpleDateFormat dateFormatForData1 = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
+            selectedCalendarDate = dateFormatForData1.format(calendar.getTime());
+            Log.d("checkDate",selectedCalendarDate);
+            widget.invalidateDecorators();
+            selectedDate.setText(dateFormat.format(calendar.getTime()));
+            setRecyclerView(db);
         });
 
-        addButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if(selectedCalendarDate != null){
-                    Bundle bundle = new Bundle();
-                    bundle.putString("selectedDate", selectedCalendarDate);
-                    NewEventFragment newEventFragment = new NewEventFragment();
-                    newEventFragment.setArguments(bundle);
-                    FragmentTransaction transaction = getActivity().getSupportFragmentManager().beginTransaction();
-                    transaction.replace(R.id.content_frame, newEventFragment);
-                    transaction.commit();
-                }
-                else{
-                    Toast.makeText(getContext(),"Please select Event Start Date",Toast.LENGTH_LONG);
-                }
+        addButton.setOnClickListener(view1 -> {
+            if(selectedCalendarDate != null){
+                Bundle bundle = new Bundle();
+                bundle.putString("selectedDate", selectedCalendarDate);
+                NewEventFragment newEventFragment = new NewEventFragment();
+                newEventFragment.setArguments(bundle);
+                FragmentTransaction transaction = requireActivity().getSupportFragmentManager().beginTransaction();
+                transaction.replace(R.id.content_frame, newEventFragment);
+                transaction.commit();
+            }
+            else{
+                Toast.makeText(getContext(),"Please select Event Start Date",Toast.LENGTH_LONG).show();
             }
         });
 
