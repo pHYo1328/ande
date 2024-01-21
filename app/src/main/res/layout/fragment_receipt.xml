@@ -78,8 +78,8 @@
                 android:id="@+id/checkBoxSelectAll"
                 android:layout_width="2dp"
                 android:layout_height="48dp"
-                app:buttonTint="@color/purple_500"
-                app:buttonIconTint="@color/white"/>
+                app:buttonIconTint="@color/white"
+                app:buttonTint="@color/purple_500" />
 
             <TextView
                 android:gravity="center"
@@ -101,60 +101,54 @@
                 android:padding="8dp"
                 android:text="@string/receipt_subtotal" />
         </TableRow>
+
         <com.google.android.material.divider.MaterialDivider
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"/>
+            android:layout_height="wrap_content" />
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/recyclerViewItems"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
+            android:layout_height="match_parent"
+            android:clipToPadding="false"
+            android:paddingBottom="80dp" />
+
     </TableLayout>
 
-<!--    <Button-->
-<!--        android:id="@+id/buttonAddToExpenses"-->
-<!--        style="@style/Widget.Material3.Button.ElevatedButton"-->
-<!--        android:layout_width="wrap_content"-->
-<!--        android:layout_height="wrap_content"-->
-<!--        android:layout_alignParentEnd="true"-->
-<!--        android:layout_alignParentBottom="true"-->
-<!--        android:layout_marginHorizontal="8dp"-->
-<!--        android:layout_marginVertical="8dp"-->
-<!--        android:elevation="8dp"-->
-<!--        android:text="@string/add_to_expenses"-->
-<!--        android:textAppearance="@style/TextAppearance.AppCompat.Small"-->
-<!--        app:backgroundTint="@color/purple_500" />-->
     <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
-        android:id="@+id/extended_fab"
+        android:id="@+id/add_to_expenses"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_margin="16dp"
-        android:layout_gravity="bottom|end"
-        android:maxLines="2"
-        app:backgroundTint="@color/purple_button"
-        android:textColor="@color/white"
         android:layout_alignParentEnd="true"
         android:layout_alignParentBottom="true"
+        android:layout_gravity="bottom|end"
+        android:layout_margin="16dp"
         android:contentDescription="@string/add_to_expenses"
-        android:text="@string/add_to_expenses"/>
+        android:maxLines="2"
+        android:text="@string/add_to_expenses"
+        android:textColor="@color/white"
+        app:backgroundTint="@color/purple_button" />
 
-    <ImageView
+
+    <com.google.android.material.progressindicator.CircularProgressIndicator
         android:id="@+id/imageViewLoading"
-        android:layout_width="100dp"
-        android:layout_height="100dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:layout_below="@id/tableLayoutHeader"
+        app:indicatorSize="80dp"
+        app:trackThickness="8dp"
         android:layout_centerInParent="true"
-        android:contentDescription="@string/loading"
-        android:visibility="gone" />
+        android:indeterminate="true"
+        app:indicatorColor="@color/purple_button" />
 
     <TextView
         android:id="@+id/textViewError"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_below="@id/tableLayoutHeader"
         android:layout_centerInParent="true"
         android:drawablePadding="8dp"
         android:gravity="center"
-        android:layout_below="@id/tableLayoutHeader"
         android:text="@string/error_message"
         android:textAppearance="@style/TextAppearance.AppCompat.Small"
         android:visibility="gone"

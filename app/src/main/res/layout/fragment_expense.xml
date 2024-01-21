@@ -98,7 +98,6 @@
             android:focusable="false"
             android:gravity="end"
             android:inputType="none"
-            android:onClick="showDatePickerDialog"
             android:textAppearance="@style/TextAppearance.AppCompat.Medium"
             android:textColor="@color/black"
             android:textSize="14sp" />

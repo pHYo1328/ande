@@ -1,6 +1,8 @@
 package com.example.andeca1;
 
 public class ReceiptItem {
+
+    private Integer id;
     private String productName;
     private String amount;
     private String quantity;
@@ -9,7 +11,11 @@ public class ReceiptItem {
     private boolean isChecked = false;
 
     // Constructor
-    public ReceiptItem(String productName, String amount, String quantity, String total) {
+    public ReceiptItem() {
+    }
+
+    public ReceiptItem(Integer id, String productName, String amount, String quantity, String total) {
+        this.id = id;
         this.productName = productName;
         this.amount = amount;
         this.quantity = quantity;
@@ -58,4 +64,11 @@ public class ReceiptItem {
         this.isChecked = isChecked;
     }
 
+    public Integer getId() {
+        return id;
+    }
+
+    public void setId(Integer id) {
+        this.id = id;
+    }
 }

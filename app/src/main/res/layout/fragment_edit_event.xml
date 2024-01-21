@@ -140,8 +140,7 @@
                 android:layout_marginHorizontal="30dp"
                 android:layout_marginBottom="10dp"
                 android:paddingVertical="20dp"
-                android:textColor="#FFFFFF"
-                android:onClick="onClick"/>
+                android:textColor="#FFFFFF"/>
 
         </LinearLayout>
     </ScrollView>
