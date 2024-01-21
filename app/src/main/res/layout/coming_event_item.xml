@@ -39,7 +39,7 @@
         android:background="@color/design_default_color_background"
         android:orientation="vertical"
         android:padding="35dp">
-        > <!-- Background image set here -->
+        <!-- Background image set here -->
 
         <!-- First Inner LinearLayout -->
         <LinearLayout

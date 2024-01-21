@@ -4,6 +4,7 @@
     import android.view.View;
     import android.view.ViewGroup;
 
+    import androidx.annotation.NonNull;
     import androidx.recyclerview.widget.RecyclerView;
 
     import java.util.List;
@@ -18,8 +19,9 @@
             this.items = items;
         }
 
+        @NonNull
         @Override
-        public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
             View view;
             if (viewType == TYPE_CURRENT) {
                 view = LayoutInflater.from(parent.getContext()).inflate(R.layout.current_event_item, parent, false);
@@ -35,7 +37,7 @@
         }
 
         @Override
-        public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
+        public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
             if (getItemViewType(position) == TYPE_CURRENT) {
                 CurrentViewHolder currentHolder = (CurrentViewHolder) holder;
                 recycleItem item = items.get(position);

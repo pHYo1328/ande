@@ -22,7 +22,7 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     private final SelectionModeListener selectionModeListener;
     int selectedItemCount = 0;
     private List<ChatMessage> chatMessages;
-    private List<String> selectedMessages = new ArrayList<>();
+    private final List<String> selectedMessages = new ArrayList<>();
 
     public ChatAdapter(List<ChatMessage> chatMessages, SelectionModeListener listener) {
 

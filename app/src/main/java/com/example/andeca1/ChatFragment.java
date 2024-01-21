@@ -1,6 +1,5 @@
 package com.example.andeca1;
 
-import static androidx.core.content.ContextCompat.getSystemService;
 
 import android.annotation.SuppressLint;
 import android.os.Bundle;
@@ -15,7 +14,6 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -38,6 +36,7 @@ import java.io.InputStream;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
@@ -124,7 +123,8 @@ public class ChatFragment extends Fragment implements View.OnClickListener, Base
             selectionCount.setVisibility(View.VISIBLE);
             copyButton.setVisibility(View.VISIBLE);
             toolbarTitle.setVisibility(View.GONE);
-            selectionCount.setText(selectedItemCount + " Selected");
+            String selectionCountText = selectedItemCount + " Selected";
+            selectionCount.setText(selectionCountText);
         } else {
             // Not in selection mode
             exitButton.setVisibility(View.GONE);
@@ -151,14 +151,14 @@ public class ChatFragment extends Fragment implements View.OnClickListener, Base
         navigationPlaceholder.setVisibility(keyboardVisible ? View.GONE : View.VISIBLE);
     }
 
-    private static void addExample(JsonArray examplesArray, String inputAuthor, String inputContent, String outputAuthor, String outputContent) {
+    private static void addExample(JsonArray examplesArray, String inputContent, String outputContent) {
         JsonObject example = new JsonObject();
         JsonObject input = new JsonObject();
         JsonObject output = new JsonObject();
 
-        input.addProperty("author", inputAuthor);
+        input.addProperty("author", "user");
         input.addProperty("content", inputContent);
-        output.addProperty("author", outputAuthor);
+        output.addProperty("author", "bot");
         output.addProperty("content", outputContent);
 
         example.add("input", input);
@@ -185,7 +185,8 @@ public class ChatFragment extends Fragment implements View.OnClickListener, Base
         // Adding examples
         JsonArray examplesArray = new JsonArray();
         // Assuming you have some way to get these examples. Modify as needed.
-        addExample(examplesArray, "user", "Hello", "bot", "[{\"message\": \"Hi there! I'm happy to lend a hand. Tell me about your financial goals for 2023.\"}]");
+        addExample(examplesArray, "Hello", "[{\"message\": \"Hi there! I'm happy to lend a hand. Tell me about your financial goals for 2023.\"}]");
+        addExample(examplesArray,"I want to buy a house", "[{\"message\": \"Great! Let's start by looking at your current budget.\"}]");
         instance.add("examples", examplesArray);
 
         List<ChatMessage> combinedMessages = new ArrayList<>();
@@ -193,6 +194,9 @@ public class ChatFragment extends Fragment implements View.OnClickListener, Base
 
         // Combine recipient messages
         for (ChatMessage chatMsg : chatMessages) {
+            if (chatMsg.getIsIgnored()) {
+                continue;
+            }
             if (chatMsg.getType() == ChatMessage.TYPE_RECIPIENT) {
                 if (recipientMessages.length() > 0) {
                     recipientMessages.append("\n"); // Add a separator (if needed) between messages
@@ -240,16 +244,6 @@ public class ChatFragment extends Fragment implements View.OnClickListener, Base
         return requestJson;
     }
 
-    private void initializeChatMessages() {
-        chatMessages = new ArrayList<>();
-        /*
- Add two sample messages
-        chatMessages.add(new ChatMessage("Hi there!", "10:15 AM", ChatMessage.TYPE_RECIPIENT));
-        chatMessages.add(new ChatMessage("Hello!", "10:16 AM", ChatMessage.TYPE_SENDER));
-*/
-    }
-
-
     @Override
     public void onClick(View view) {
         if (view.getId() == R.id.send_button) {
@@ -295,7 +289,12 @@ public class ChatFragment extends Fragment implements View.OnClickListener, Base
                     credentials.refreshIfExpired();
                     credentials.refreshAccessToken();
 
-                    OkHttpClient client = new OkHttpClient();
+                    OkHttpClient client = new OkHttpClient.Builder()
+                            .connectTimeout(20, TimeUnit.SECONDS)
+                            .readTimeout(20, TimeUnit.SECONDS)
+                            .writeTimeout(20, TimeUnit.SECONDS)
+                            .build();
+
 
                     JsonObject requestBody = createRequestJson(chatMessages);
                     String url = "https://asia-southeast1-aiplatform.googleapis.com/v1/projects/booming-landing-410605/locations/asia-southeast1/publishers/google/models/chat-bison-32k:predict";
@@ -317,7 +316,7 @@ public class ChatFragment extends Fragment implements View.OnClickListener, Base
                                 JsonObject responseObject = responseElement.getAsJsonObject();
 
                                 // Handle safetyAttributes if needed
-                                JsonArray safetyAttributes = responseObject.getAsJsonArray("safetyAttributes");
+//                                JsonArray safetyAttributes = responseObject.getAsJsonArray("safetyAttributes");
                                 // Implement your logic to handle safety attributes
 
                                 // Process each candidate
@@ -361,7 +360,10 @@ public class ChatFragment extends Fragment implements View.OnClickListener, Base
                             // Handle error response
                             System.out.println("Response code: " + response.code());
                             System.out.println("Response message: " + response.message());
+                            chatMessage.setIsIgnored(true);
+                            requireActivity().runOnUiThread(() -> Toast.makeText(requireActivity(), "Something went wrong, Please try again", Toast.LENGTH_SHORT).show());
                             throw new IOException("Unexpected code " + response);
+
                         }
                     }
 

@@ -9,7 +9,7 @@ public class Event {
     private String endDate;
     private String eventName;
     private double budget;
-    private List<SubEvent> subEvents;
+    private final List<SubEvent> subEvents;
 
     private Boolean isExpanded =false;
 
@@ -46,25 +46,16 @@ public class Event {
         return startDate;
     }
 
-    public void setStartDate(String startDate) {
-        this.startDate = startDate;
-    }
+
 
     public String getEndDate() {
         return endDate;
-    }
-
-    public void setEndDate(String endDate) {
-        this.endDate = endDate;
     }
 
     public String getEventName() {
         return eventName;
     }
 
-    public void setEventName(String eventName) {
-        this.eventName = eventName;
-    }
 
     public double getBudget() {
         return budget;
@@ -78,14 +69,9 @@ public class Event {
         return subEvents;
     }
 
-    public void setSubEvents(List<SubEvent> subEvents) {
-        this.subEvents = subEvents;
-    }
+
     public void addSubEvent(SubEvent subEvent){
         this.subEvents.add(subEvent);
     }
 
-    public Boolean IsExpanded(){
-        return isExpanded;
-    }
 }
