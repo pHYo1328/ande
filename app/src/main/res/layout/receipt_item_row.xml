@@ -11,110 +11,75 @@
         android:layout_height="48dp"
         app:buttonTint="@color/purple_500"
         app:buttonIconTint="@color/white" />
-
-    <TextView
-        android:id="@+id/textViewProduct"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_weight="1"
-        android:gravity="center"
-        android:maxLines="3"
-        android:text="@string/receipt_product"
-        android:padding="7dp" />
-
     <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/textInputLayoutProduct"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         app:boxStrokeWidth="0dp"
         app:cursorColor="@color/black"
-        android:layout_weight="1"
-        android:visibility="gone">
+        android:layout_weight="1">
 
         <com.google.android.material.textfield.TextInputEditText
+
             android:id="@+id/editTextProduct"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="center"
             android:maxLines="3"
+            android:text="@string/receipt_product"
+            android:singleLine="false"
             android:padding="7dp" />
+
     </com.google.android.material.textfield.TextInputLayout>
 
-    <TextView
-        android:id="@+id/textViewAmount"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_weight="1"
-        android:gravity="center"
-        android:text="@string/receipt_amount"
-        android:padding="7dp" />
-
     <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/textInputLayoutAmount"
         android:layout_width="0dp"
-        android:layout_height="wrap_content"
         app:boxStrokeWidth="0dp"
+        android:layout_height="wrap_content"
         app:cursorColor="@color/black"
-        android:layout_weight="1"
-        android:visibility="gone">
+        android:layout_weight="1">
 
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/editTextAmount"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="center"
+            android:text="@string/receipt_amount"
             android:padding="7dp" />
+
     </com.google.android.material.textfield.TextInputLayout>
 
-    <TextView
-        android:id="@+id/textViewQuantity"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_weight="1"
-        android:gravity="center"
-        android:text="@string/receipt_quantity"
-        android:padding="7dp" />
-
     <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/textInputLayoutQuantity"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         app:boxStrokeWidth="0dp"
         app:cursorColor="@color/black"
-        android:layout_weight="1"
-        android:visibility="gone">
+        android:layout_weight="1">
 
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/editTextQuantity"
             android:layout_width="96dp"
             android:layout_height="wrap_content"
             android:gravity="center"
-            android:padding="7dp" />
+            android:padding="7dp"
+            android:text="@string/receipt_quantity" />
+
     </com.google.android.material.textfield.TextInputLayout>
 
-    <TextView
-        android:id="@+id/textViewTotal"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_weight="1"
-        android:gravity="center"
-        android:text="@string/receipt_subtotal"
-        android:padding="7dp" />
-
     <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/textInputLayoutTotal"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         app:boxStrokeWidth="0dp"
         app:cursorColor="@color/black"
-        android:layout_weight="1"
-        android:visibility="gone">
+        android:layout_weight="1">
 
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/editTextTotal"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="center"
+            android:text="@string/receipt_subtotal"
             android:padding="7dp" />
+
     </com.google.android.material.textfield.TextInputLayout>
+
 </LinearLayout>
