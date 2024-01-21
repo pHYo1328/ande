@@ -10,16 +10,16 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
 import android.widget.ImageView;
-import android.widget.TextView;
+import android.widget.LinearLayout;
+import android.widget.ScrollView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 
-import com.bumptech.glide.Glide;
-import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions;
+import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.google.android.material.progressindicator.CircularProgressIndicator;
+import com.google.android.material.textfield.TextInputEditText;
 import com.google.auth.oauth2.GoogleCredentials;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -33,8 +33,8 @@ import java.io.ByteArrayOutputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.io.StringReader;
-import java.util.ArrayList;
-import java.util.List;
+
+import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
 import okhttp3.MediaType;
@@ -43,10 +43,8 @@ import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
 
-public class ReceiptFragment extends Fragment{
-
-    private List<ReceiptItem> receiptItems;
-    private ReceiptItemAdapter adapter;
+public class ReceiptFragment extends Fragment implements BaseActivity.KeyboardVisibilityListener {
+    private BottomNavigationView navigationPlaceholder;
 
     public static ReceiptFragment newInstance(String imageUri) {
         ReceiptFragment fragment = new ReceiptFragment();
@@ -74,6 +72,8 @@ public class ReceiptFragment extends Fragment{
         super.onViewCreated(view, savedInstanceState);
         ImageView imageViewReceipt = view.findViewById(R.id.imageViewReceipt);
 
+        navigationPlaceholder = requireActivity().findViewById(R.id.bottomNavigationView);
+
         //Trying another way without public void onClick
         View allCheckbox = view.findViewById(R.id.checkBoxSelectAll);
         allCheckbox.setOnClickListener(v -> selectAll());
@@ -81,18 +81,17 @@ public class ReceiptFragment extends Fragment{
         View closeReceipt = view.findViewById(R.id.exit_selection_mode);
         closeReceipt.setOnClickListener(v -> closeReceipt());
 
-        receiptItems = new ArrayList<>();
-        RecyclerView recyclerView = requireActivity().findViewById(R.id.recyclerViewItems);
-        adapter = new ReceiptItemAdapter(receiptItems);
-        recyclerView.setAdapter(adapter);
-        recyclerView.setLayoutManager(new LinearLayoutManager(requireActivity()));
-
+        View addToExpenses = view.findViewById(R.id.add_to_expenses);
+        addToExpenses.setEnabled(false);
+        addToExpenses.setVisibility(View.GONE);
+        addToExpenses.setOnClickListener(v -> addToExpenses());
 
         // Check if we got a URI or Bitmap
         if (getArguments() != null && getArguments().containsKey("image_uri")) {
             Uri imageUri = Uri.parse(getArguments().getString("image_uri"));
             try {
                 //Convert the URI to a Bitmap
+
                 InputStream imageStream = requireContext().getContentResolver().openInputStream(imageUri);
                 Bitmap imageBitmap = BitmapFactory.decodeStream(imageStream);
                 imageViewReceipt.setImageBitmap(imageBitmap);
@@ -108,17 +107,72 @@ public class ReceiptFragment extends Fragment{
         }
     }
 
+    public void addToExpenses() {
+        //Loop through scrollview
+        ScrollView scrollView = requireActivity().findViewById(R.id.scrollViewItems);
+        LinearLayout linearLayout = (LinearLayout) scrollView.getChildAt(0);
+        for (int i = 0; i < linearLayout.getChildCount(); i++) {
+
+            View view = linearLayout.getChildAt(i);
+            CheckBox checkBoxItem = view.findViewById(R.id.checkBox);
+            if (!checkBoxItem.isChecked()) {
+                continue;
+            }
+            TextInputEditText editTextProduct = view.findViewById(R.id.editTextProduct);
+            TextInputEditText editTextAmount = view.findViewById(R.id.editTextAmount);
+            TextInputEditText editTextQuantity = view.findViewById(R.id.editTextQuantity);
+            TextInputEditText editTextTotal = view.findViewById(R.id.editTextTotal);
+
+            String productName = Objects.requireNonNull(editTextProduct.getText()).toString();
+            String amount = Objects.requireNonNull(editTextAmount.getText()).toString();
+            String quantity = Objects.requireNonNull(editTextQuantity.getText()).toString();
+            String total = Objects.requireNonNull(editTextTotal.getText()).toString();
+
+            System.out.println(productName + amount + quantity + total);
+        }
+
+    }
+
+    public void selectAll() {
+        CheckBox checkBox = requireActivity().findViewById(R.id.checkBoxSelectAll);
+        //Loop through scrollview
+        ScrollView scrollView = requireActivity().findViewById(R.id.scrollViewItems);
+        LinearLayout linearLayout = (LinearLayout) scrollView.getChildAt(0);
+        for (int i = 0; i < linearLayout.getChildCount(); i++) {
+            View view = linearLayout.getChildAt(i);
+            CheckBox checkBoxItem = view.findViewById(R.id.checkBox);
+            checkBoxItem.setChecked(checkBox.isChecked());
+        }
+    }
+
+    public void closeReceipt() {
+        //Replace fragment with ExpenseFragment
+        getParentFragmentManager().beginTransaction()
+                .replace(R.id.content_frame, new ExpenseFragment())
+                .commit();
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        ((BaseActivity) requireActivity()).setKeyboardVisibilityListener(this);
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        ((BaseActivity) requireActivity()).setKeyboardVisibilityListener(null);
+    }
+
+    @Override
+    public void onKeyboardVisibilityChanged(boolean keyboardVisible) {
+        navigationPlaceholder.setVisibility(keyboardVisible ? View.GONE : View.VISIBLE);
+    }
+
     public void sendRequestWithImage(Bitmap imageBitmap) {
-        ImageView imageViewLoading = requireView().findViewById(R.id.imageViewLoading);
+        CircularProgressIndicator imageViewLoading = requireView().findViewById(R.id.imageViewLoading);
         new Thread(() -> {
             try {
-                requireActivity().runOnUiThread(() -> {
-
-                    Glide.with(this).asGif().load(R.drawable.reciept_loading).transition(DrawableTransitionOptions.withCrossFade()).into(imageViewLoading);
-                    imageViewLoading.setVisibility(View.VISIBLE);
-                });
-
-
                 InputStream inputStream = getResources().openRawResource(R.raw.key);
                 GoogleCredentials credentials = GoogleCredentials.fromStream(inputStream)
                         .createScoped("https://www.googleapis.com/auth/cloud-platform");
@@ -242,75 +296,66 @@ public class ReceiptFragment extends Fragment{
                             String combinedText = combinedTextBuilder.toString();
                             sb.append(combinedText);
                         }
-                        //parse bs as json returned from ai
                         JsonReader reader = new JsonReader(new StringReader(sb.toString()));
                         reader.setLenient(true);
 
                         JsonElement je2 = JsonParser.parseReader(reader);
-                        //if malformed, JsonParser throws an error
-                        //otherwise its ai hallucinating
+
                         JsonArray jsonArray = je2.getAsJsonArray();
-
                         requireActivity().runOnUiThread(() -> {
-
+                            ScrollView scrollView = requireActivity().findViewById(R.id.scrollViewItems);
+                            LinearLayout linearLayout = new LinearLayout(requireActivity());
+                            linearLayout.setOrientation(LinearLayout.VERTICAL);
 
                             for (JsonElement element : jsonArray) {
+                                // Parse the JSON and create ReceiptItem objects
                                 JsonObject obj = element.getAsJsonObject();
                                 String productName = obj.get("product_name").getAsString();
                                 String amount = obj.get("amount").getAsString();
                                 String quantity = obj.get("quantity").getAsString();
                                 String total = obj.get("total").getAsString();
 
-                                receiptItems.add(new ReceiptItem(productName, amount, quantity, total));
-                                adapter.notifyItemInserted(receiptItems.size() - 1);
+                                // Inflate the receipt_item_row layout and set its data
+                                View itemView = LayoutInflater.from(requireActivity()).inflate(R.layout.receipt_item_row, linearLayout, false);
+
+                                TextInputEditText editTextProduct = itemView.findViewById(R.id.editTextProduct);
+                                TextInputEditText editTextAmount = itemView.findViewById(R.id.editTextAmount);
+                                TextInputEditText editTextQuantity = itemView.findViewById(R.id.editTextQuantity);
+                                TextInputEditText editTextTotal = itemView.findViewById(R.id.editTextTotal);
+
+                                // Set the data to the views
+                                editTextProduct.setText(productName);
+                                editTextAmount.setText(amount);
+                                editTextQuantity.setText(quantity);
+                                editTextTotal.setText(total);
+
+                                // Add the view to the linear layout
+                                linearLayout.addView(itemView);
                             }
+                            scrollView.addView(linearLayout);
 
-
+                            View addToExpenses = requireActivity().findViewById(R.id.add_to_expenses);
+                            addToExpenses.setVisibility(View.VISIBLE);
+                            addToExpenses.setEnabled(true);
+                            imageViewLoading.setProgressCompat(100, true);
+                            imageViewLoading.setVisibility(View.GONE);
                         });
-                        throw new Exception("test");
-                    } else {
-                        // Handle the error response here
-                        System.out.println("Request was not successful: " + response);
-                        assert response.body() != null;
-                        System.out.println(response.body().string());
-                        System.out.println(response.message());
-                        System.out.println(response.code());
-                        throw new Exception("Request was not successful: " + response);
+
 
                     }
                 }
             } catch (Exception e) {
                 e.printStackTrace();
-                requireActivity().runOnUiThread(() -> {
-                    TextView textViewError = requireActivity().findViewById(R.id.textViewError);
-                    textViewError.setVisibility(View.VISIBLE);
-                });
-
             }
-            requireActivity().runOnUiThread(() -> imageViewLoading.setVisibility(View.GONE));
-
-        }).start();
-    }
 
 
-
-    public void selectAll() {
-        CheckBox checkBox = requireActivity().findViewById(R.id.checkBoxSelectAll);
-
-        List<ReceiptItem> receiptItems = adapter.getReceiptItems();
-        for (ReceiptItem item : receiptItems) {
-            item.setChecked(checkBox.isChecked());
-            adapter.notifyItemChanged(receiptItems.indexOf(item));
         }
+        ).start();
 
-    }
 
-    public void closeReceipt() {
-        //Replace fragment with ExpenseFragment
-        getParentFragmentManager().beginTransaction()
-                .replace(R.id.content_frame, new ExpenseFragment())
-                .commit();
     }
 
 
 }
+
+

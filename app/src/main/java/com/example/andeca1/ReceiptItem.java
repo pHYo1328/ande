@@ -1,15 +1,19 @@
 package com.example.andeca1;
 
 public class ReceiptItem {
+
     private String productName;
     private String amount;
     private String quantity;
     private String total;
-
     private boolean isChecked = false;
 
     // Constructor
+    public ReceiptItem() {
+    }
+
     public ReceiptItem(String productName, String amount, String quantity, String total) {
+
         this.productName = productName;
         this.amount = amount;
         this.quantity = quantity;
