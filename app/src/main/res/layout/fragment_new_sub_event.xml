@@ -1,14 +1,26 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:paddingHorizontal="10dp">
+    android:layout_height="match_parent"
 
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="1dp"
+        android:layout_marginTop="1dp"
+        android:layout_marginEnd="1dp"
+        android:layout_marginBottom="1dp"
+        android:paddingHorizontal="10dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         android:orientation="vertical"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -26,9 +38,10 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:gravity="end"
-                android:hint="Sub Event Title"
+                android:hint="@string/sub_event_title"
+                android:textAppearance="@style/TextAppearance.AppCompat.Medium"
                 android:textColor="@color/black"
-                android:textSize="24sp" />
+                android:textSize="14sp" />
 
         </com.google.android.material.textfield.TextInputLayout>
 
@@ -44,17 +57,17 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="10dp"
                 android:gravity="end"
-                android:hint="Estimated Budget"
+                android:hint="@string/estimated_budget"
+                android:textAppearance="@style/TextAppearance.AppCompat.Medium"
                 android:textColor="@color/black"
-                android:textSize="16sp" />
+                android:textSize="14sp" />
         </com.google.android.material.textfield.TextInputLayout>
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_weight="0"
             android:paddingHorizontal="16sp"
-            android:text="Select Sub Event Date"
+            android:text="@string/select_sub_event_date"
             android:textColor="#000000"
             android:textSize="16sp" />
 
@@ -76,56 +89,57 @@
             app:mcv_selectionColor="@color/purple_200"
             app:mcv_showOtherDates="none" />
 
-        <LinearLayout
+        <com.google.android.material.textfield.TextInputLayout
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal">
+            android:hint="@string/sub_event_end_time"
+            android:padding="16dp"
+            app:startIconContentDescription="Sub-Event End Time"
+            app:startIconDrawable="@drawable/baseline_access_time_24_black"
+            android:layout_marginBottom="10dp">
 
-            <Button
-                android:id="@+id/labelStartTime"
-                android:layout_width="wrap_content"
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/editStartTime"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="@drawable/background_purple"
-                android:paddingHorizontal="15dp"
-                android:paddingVertical="10dp"
-                android:text="Start Time"
-                android:textColor="#FFFFFF"
-                android:textSize="16sp" />
+                android:gravity="end"
+                android:inputType="none"
+                android:focusable="false"
+                android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+                android:textColor="@color/black"
+                android:textSize="14sp" />
 
-            <TextView
-                android:id="@+id/editTextStartTime"
-                android:layout_width="wrap_content"
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/endTimeTextInputLayout"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/sub_event_end_time"
+            android:padding="16dp"
+            app:startIconContentDescription="Sub-Event End Time"
+            app:startIconDrawable="@drawable/baseline_access_time_24_black">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/editEndTime"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:ems="10"
-                android:gravity="center_horizontal|center_vertical"/>
+                android:focusable="false"
+                android:gravity="end"
+                android:inputType="none"
+                android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+                android:textColor="@color/black"
+                android:textSize="14sp" />
 
-            <Button
-                android:id="@+id/labelEndTime"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:background="@drawable/background_purple"
-                android:paddingHorizontal="15dp"
-                android:paddingVertical="10dp"
-                android:text="End Time"
-                android:textColor="#FFFFFF"
-                android:textSize="16sp" />
-
-            <TextView
-                android:id="@+id/editTextEndTime"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:ems="10"
-                android:gravity="center_horizontal|center_vertical"/>
-
-        </LinearLayout>
+        </com.google.android.material.textfield.TextInputLayout>
 
         <Button
             android:id="@+id/btnSaveSubEvent"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="right"
+            android:layout_gravity="end"
             android:layout_marginEnd="20dp"
             android:backgroundTint="#9835D0"
             android:drawableEnd="@drawable/baseline_save_24"
@@ -134,5 +148,5 @@
             android:textColor="#FFFFFF"/>
 
     </LinearLayout>
-
+    </ScrollView>
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical">
@@ -22,7 +21,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
-                android:text="Expense Logging"
+                android:text="@string/expense_logging"
                 android:textAppearance="@style/TextAppearance.Widget.AppCompat.Toolbar.Title" />
 
         </androidx.appcompat.widget.Toolbar>
@@ -45,7 +44,7 @@
         style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Expense Title"
+        android:hint="@string/expense_title"
         android:padding="16dp"
         app:startIconContentDescription="amount of money spent"
         app:startIconDrawable="@drawable/baseline_subtitles_24">
@@ -65,7 +64,7 @@
         style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Amount of money spent"
+        android:hint="@string/amount_of_money_spent"
         android:padding="16dp"
         app:startIconContentDescription="amount of money spent"
         app:startIconDrawable="@drawable/baseline_attach_money_24_black">
@@ -86,7 +85,7 @@
         style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Date"
+        android:hint="@string/date"
         android:padding="16dp"
         app:startIconContentDescription="Date"
         app:startIconDrawable="@drawable/baseline_access_time_24_black">
@@ -115,7 +114,9 @@
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:layout_marginHorizontal="20dp"
-            app:srcCompat="@drawable/price_tag" />
+            app:srcCompat="@drawable/price_tag"
+            android:contentDescription="@string/price_tag_icon"
+            />
 
         <Spinner
             android:id="@+id/categorySpinner"
@@ -135,7 +136,7 @@
         style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Description"
+        android:hint="@string/description"
         android:padding="16dp"
         app:startIconContentDescription="Description"
         app:startIconDrawable="@drawable/note">
@@ -163,7 +164,7 @@
             android:layout_marginHorizontal="20dp"
             android:src="@drawable/event"
             app:srcCompat="@drawable/event"
-            android:contentDescription="TODO" />
+            android:contentDescription="@string/todo" />
 
         <Spinner
             android:id="@+id/eventSpinner"
@@ -180,7 +181,7 @@
         android:id="@+id/btnSaveSubEvent"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="right"
+        android:layout_gravity="end"
         android:layout_marginEnd="20dp"
         android:backgroundTint="#9835D0"
         android:drawableEnd="@drawable/baseline_save_24"

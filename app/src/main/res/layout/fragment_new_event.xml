@@ -24,7 +24,7 @@
                 android:layout_height="wrap_content"
                 android:layout_margin="10dp"
                 android:gravity="end"
-                android:hint="Title of Event"
+                android:hint="@string/title_of_event"
                 android:paddingHorizontal="16sp"
                 android:paddingTop="10sp"
                 android:textColor="@color/black"
@@ -45,7 +45,7 @@
                 android:layout_height="wrap_content"
                 android:layout_margin="10dp"
                 android:gravity="end"
-                android:hint="Estimated Budget"
+                android:hint="@string/estimated_budget"
                 android:inputType="numberDecimal"
                 android:textColor="@color/black"
                 android:textSize="24sp" />
@@ -53,10 +53,10 @@
 
         <TextView
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_height="0dp"
             android:layout_weight="0"
             android:paddingHorizontal="16sp"
-            android:text="Select Event End Date"
+            android:text="@string/end_date"
             android:textColor="#000000"
             android:textSize="16sp" />
 
@@ -84,7 +84,7 @@
             android:backgroundTint="#9835D0"
             android:gravity="center_horizontal"
             android:paddingVertical="20dp"
-            android:text="Add Sub-Event"
+            android:text="@string/add_sub_event"
             android:textColor="#FFFFFF" />
 
         <Button
@@ -95,7 +95,7 @@
             android:layout_marginTop="10dp"
             android:backgroundTint="#9835D0"
             android:paddingVertical="20dp"
-            android:text="Save Event"
+            android:text="@string/save_event"
             android:textColor="#FFFFFF" />
 
     </LinearLayout>

@@ -6,6 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
+    android:paddingHorizontal="10dp"
     tools:context=".EventFragment">
 
     <LinearLayout
@@ -17,27 +18,25 @@
 
         <TextView
             android:id="@+id/selected_date"
-            android:layout_width="350sp"
+            android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:layout_gravity="start"
+            android:layout_weight="1"
             android:background="#FFFFFF"
             android:paddingHorizontal="20sp"
             android:textColor="#000000"
             android:textSize="32sp" />
 
-        <com.google.android.material.floatingactionbutton.FloatingActionButton
-            style="@style/Widget.Material3.FloatingActionButton.Primary"
+        <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
             android:id="@+id/floatingActionButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="end"
-            android:background="#000000"
-            android:clickable="true"
-            android:src="@drawable/baseline_add_24"
-            app:backgroundTint="#8A8181"
-            app:fabSize="mini"
-            app:rippleColor="@color/white"
-            android:contentDescription="TODO" />
+            android:layout_weight="0"
+            android:textColor="@color/white"
+            app:background="@drawable/background_purple"
+            app:backgroundTint="@color/black"
+            app:icon="@drawable/baseline_add_24"
+            app:iconTint="@color/white" />
 
     </LinearLayout>
 
@@ -47,7 +46,7 @@
         android:layout_height="wrap_content"
         android:background="#FFFFFF"
         app:mcv_selectionColor="@color/purple_200"
-        app:mcv_showOtherDates="all" >
+        app:mcv_showOtherDates="all">
 
     </com.prolificinteractive.materialcalendarview.MaterialCalendarView>
 
@@ -61,7 +60,7 @@
         android:gravity="center"
         android:paddingHorizontal="10dp"
         android:paddingVertical="20dp"
-        android:text="There is no event today."
+        android:text="@string/no_event_text"
         android:textColor="#FFFFFF"
         android:textSize="16sp" />
 

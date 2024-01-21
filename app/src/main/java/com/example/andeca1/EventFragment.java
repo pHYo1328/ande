@@ -12,10 +12,11 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
+import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton;
 import com.prolificinteractive.materialcalendarview.CalendarDay;
 import com.prolificinteractive.materialcalendarview.MaterialCalendarView;
 
@@ -31,10 +32,9 @@ import java.util.Locale;
 
 public class EventFragment extends Fragment implements EventsAdapter.OnEventEditListener,EventsAdapter.OnSubEventEditListener {
     private TextView selectedDate,noEventsTextView;
-    private SimpleDateFormat dateFormat = new SimpleDateFormat("EEE, MMM dd, yyyy", Locale.getDefault());
-    private Calendar calendar = Calendar.getInstance();
+    private final SimpleDateFormat dateFormat = new SimpleDateFormat("EEE, MMM dd, yyyy", Locale.getDefault());
+    private final Calendar calendar = Calendar.getInstance();
     private String selectedCalendarDate;
-    private FloatingActionButton addButton;
     private List<Event> eventsOnSelectedDate;
     private RecyclerView recyclerView;
     private EventsAdapter adapter;
@@ -47,7 +47,7 @@ public class EventFragment extends Fragment implements EventsAdapter.OnEventEdit
         selectedDate = view.findViewById(R.id.selected_date);
         calendar.set(calendar.get(Calendar.YEAR),calendar.get(Calendar.MONTH),calendar.get(Calendar.DAY_OF_MONTH));
         selectedDate.setText(dateFormat.format(calendar.getTime()));
-        addButton = view.findViewById(R.id.floatingActionButton);
+        ExtendedFloatingActionButton addButton = view.findViewById(R.id.floatingActionButton);
         recyclerView = view.findViewById(R.id.event_recycler_view);
         noEventsTextView = view.findViewById(R.id.txtView_no_event);
 
@@ -59,27 +59,9 @@ public class EventFragment extends Fragment implements EventsAdapter.OnEventEdit
         selectedCalendarDate = dateFormatForData.format(calendar.getTime());
 
         DbHelper db = new DbHelper(this.getContext());
-        setRecyclerView(db);
+        setRecyclerView(db,calendarView);
+        addDecorator(db,calendarView);
 
-        List<DateRange> dateRanges = new ArrayList<>();
-        List <Event> events = db.getAllEvents();
-        for(Event event : events){
-            Date startDate,endDate;
-            try {
-                startDate= dateFormatForData.parse(event.getStartDate());
-                endDate = dateFormatForData.parse(event.getEndDate()); calendar.setTime(startDate);
-                CalendarDay startCalendarDay = CalendarDay.from(calendar.get(Calendar.YEAR),calendar.get(Calendar.MONTH)+1,calendar.get(Calendar.DAY_OF_MONTH));
-                calendar.setTime(endDate);
-                CalendarDay endCalendarDay = CalendarDay.from(calendar.get(Calendar.YEAR),calendar.get(Calendar.MONTH)+1,calendar.get(Calendar.DAY_OF_MONTH));
-                dateRanges.add(new DateRange(startCalendarDay,endCalendarDay));
-            } catch (ParseException e) {
-                throw new RuntimeException(e);
-            }
-
-        }
-        for (DateRange range : dateRanges) {
-            calendarView.addDecorator(new EventDecorator(range));
-        }
         calendarView.setOnDateChangedListener((widget, date, selected) -> {
             calendar.set(date.getYear(), date.getMonth()-1, date.getDay());
             SimpleDateFormat dateFormatForData1 = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
@@ -87,7 +69,7 @@ public class EventFragment extends Fragment implements EventsAdapter.OnEventEdit
             Log.d("checkDate",selectedCalendarDate);
             widget.invalidateDecorators();
             selectedDate.setText(dateFormat.format(calendar.getTime()));
-            setRecyclerView(db);
+            setRecyclerView(db,calendarView);
         });
 
         addButton.setOnClickListener(view1 -> {
@@ -126,18 +108,18 @@ public class EventFragment extends Fragment implements EventsAdapter.OnEventEdit
         bundle.putInt("subEventId", subEventId);
         bundle.putString("startDate", startDate);
         bundle.putString("endDate",endDate);
-        NewSubEventFragment newSubEvetFragment = new NewSubEventFragment();
-        newSubEvetFragment.setArguments(bundle);
+        NewSubEventFragment newSubEventFragment = new NewSubEventFragment();
+        newSubEventFragment.setArguments(bundle);
         FragmentTransaction transaction = requireActivity().getSupportFragmentManager().beginTransaction();
-        transaction.replace(R.id.content_frame,newSubEvetFragment);
+        transaction.replace(R.id.content_frame,newSubEventFragment);
         transaction.commit();
     }
 
-    private void setRecyclerView(DbHelper db){
+    private void setRecyclerView(DbHelper db,MaterialCalendarView calendarView){
         eventsOnSelectedDate = db.getAllEventsOnSelectedDate(selectedCalendarDate);
-
-        Log.d("checkData", String.valueOf(eventsOnSelectedDate.isEmpty()));
         recyclerView.setLayoutManager(new LinearLayoutManager(this.getContext()));
+
+
         if (eventsOnSelectedDate.isEmpty()) {
             // If there are no events, show the no events message and hide the RecyclerView
             noEventsTextView.setVisibility(View.VISIBLE);
@@ -146,8 +128,58 @@ public class EventFragment extends Fragment implements EventsAdapter.OnEventEdit
             // If there are events, set up the RecyclerView
             noEventsTextView.setVisibility(View.GONE);
             recyclerView.setVisibility(View.VISIBLE);
+            ItemTouchHelper.SimpleCallback simpleItemTouchCallback = new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT) {
+
+                @Override
+                public boolean onMove(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder, @NonNull RecyclerView.ViewHolder target) {
+                    // not important if we're not implementing drag and drop
+                    return false;
+                }
+
+                @Override
+                public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
+                    int position = viewHolder.getAdapterPosition();
+                    Event eventToRemove = eventsOnSelectedDate.get(position);
+                    eventsOnSelectedDate.remove(position);
+                    db.deleteEvent(eventToRemove.getId());
+                    adapter.notifyItemRemoved(position);
+                    addDecorator(db, calendarView);
+                    if(eventsOnSelectedDate.size()==0){
+                        noEventsTextView.setVisibility(View.VISIBLE);
+                    }
+                }
+            };
             adapter = new EventsAdapter(eventsOnSelectedDate,this,this);
             recyclerView.setAdapter(adapter);
+            ItemTouchHelper itemTouchHelper = new ItemTouchHelper(simpleItemTouchCallback);
+            itemTouchHelper.attachToRecyclerView(recyclerView);
         }
     }
+
+    private void addDecorator(DbHelper db, MaterialCalendarView calendarView) {
+        calendarView.removeDecorators();
+        List<DateRange> dateRanges = new ArrayList<>();
+        SimpleDateFormat dateFormatForData = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
+        List<Event> events = db.getAllEvents();
+
+        for (Event event : events) {
+            Date startDate, endDate;
+            try {
+                startDate = dateFormatForData.parse(event.getStartDate());
+                endDate = dateFormatForData.parse(event.getEndDate());
+                calendar.setTime(startDate);
+                CalendarDay startCalendarDay = CalendarDay.from(calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH) + 1, calendar.get(Calendar.DAY_OF_MONTH));
+                calendar.setTime(endDate);
+                CalendarDay endCalendarDay = CalendarDay.from(calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH) + 1, calendar.get(Calendar.DAY_OF_MONTH));
+                dateRanges.add(new DateRange(startCalendarDay, endCalendarDay));
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
+        }
+
+        for (DateRange range : dateRanges) {
+            calendarView.addDecorator(new EventDecorator(range));
+        }
+    }
+
 }

@@ -52,4 +52,23 @@
     <string name="image_view">image_view</string>
     <string name="button_save">Save</string>
     <string name="button_receipt_scanning">Receipt Scanning</string>
+    <string name="no_event_text">There is no event today.</string>
+    <string name="expense_logging">Expense Logging</string>
+    <string name="expense_title">Expense Title</string>
+    <string name="amount_of_money_spent">Amount of money spent</string>
+    <string name="date">Date</string>
+    <string name="price_tag_icon">price tag icon</string>
+    <string name="description">Description</string>
+    <string name="todo">TODO</string>
+    <string name="estimated_budget">Estimated Budget</string>
+    <string name="start_date">start date</string>
+    <string name="end_date">end date</string>
+    <string name="add_sub_event">Add Sub Event</string>
+    <string name="save_event">Save Event</string>
+    <string name="title_of_event">Title of Event</string>
+    <string name="sub_event_title">Sub Event Title</string>
+    <string name="select_sub_event_date">Select Sub Event Date</string>
+    <string name="sub_event_end_time">Sub-Event End Time</string>
+    <string name="budget">budget</string>
+    <string name="sub_event_edit">sub-event edit</string>
 </resources>

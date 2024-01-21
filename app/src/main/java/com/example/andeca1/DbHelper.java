@@ -157,7 +157,7 @@ public class DbHelper extends SQLiteOpenHelper {
                     }
                 }
 
-                // If the event is not in the list, add both the event and subevent
+                // If the event is not in the list, add both the event and sub-event
                 if (!eventExists) {
 
                     event.addSubEvent(subEvent);
@@ -171,14 +171,14 @@ public class DbHelper extends SQLiteOpenHelper {
         return eventList;
     }
 
-    public int updateEvent(int eventId, String eventTitle, String startDate, String endDate,Double budget) {
+    public void updateEvent(int eventId, String eventTitle, String startDate, String endDate,Double budget) {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues values = new ContentValues();
         values.put("event_title", eventTitle);
         values.put("start_date", startDate);
         values.put("end_date",endDate);
         values.put("budget",budget);
-        return db.update("events", values, "id=?", new String[]{String.valueOf(eventId)});
+        db.update("events", values, "id=?", new String[]{String.valueOf(eventId)});
     }
 
     public void deleteEvent(int eventId) {
@@ -187,7 +187,7 @@ public class DbHelper extends SQLiteOpenHelper {
         db.close();
     }
 
-    public long createSubEvent(String subEventTitle, String subEventDate, String startTime, String endTime, double budget, int eventId) {
+    public void createSubEvent(String subEventTitle, String subEventDate, String startTime, String endTime, double budget, Long eventId) {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues values = new ContentValues();
         values.put("subEvent_title", subEventTitle);
@@ -196,9 +196,8 @@ public class DbHelper extends SQLiteOpenHelper {
         values.put("end_time", endTime);
         values.put("budget", budget);
         values.put("event_id", eventId);
-        long subEventId = db.insert("subEvents", null, values);
+        db.insert("subEvents", null, values);
         db.close();
-        return subEventId;
     }
 
     public SubEvent getSubEventById(int subEventId){
@@ -223,7 +222,7 @@ public class DbHelper extends SQLiteOpenHelper {
         return subEvent;
     }
 
-    public int updateSubEvent(int subEventId, String subEventTitle, String subEventDate, String startTime, String endTime, double budget) {
+    public void updateSubEvent(int subEventId, String subEventTitle, String subEventDate, String startTime, String endTime, double budget) {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues values = new ContentValues();
         values.put("subEvent_title", subEventTitle);
@@ -231,7 +230,7 @@ public class DbHelper extends SQLiteOpenHelper {
         values.put("start_time", startTime);
         values.put("end_time", endTime);
         values.put("budget", budget);
-        return db.update("subEvents", values, "id=?", new String[]{String.valueOf(subEventId)});
+        db.update("subEvents", values, "id=?", new String[]{String.valueOf(subEventId)});
     }
 
     public void deleteSubEvent(int subEventId) {

@@ -22,8 +22,6 @@ import java.util.Locale;
 
 public class NewEventFragment extends Fragment {
     private EditText editEventTitle, editBudget;
-    private Button addSubEventButton, saveButton;
-    private CalendarView calendarView;
     private TextView selectedDateStr;
     private DbHelper db;
     private Date startDate;
@@ -33,11 +31,11 @@ public class NewEventFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_new_event, container, false);
 
-        addSubEventButton = view.findViewById(R.id.btnAddSubEvent);
-        saveButton = view.findViewById(R.id.btnSaveEvent);
+        Button addSubEventButton = view.findViewById(R.id.btnAddSubEvent);
+        Button saveButton = view.findViewById(R.id.btnSaveEvent);
         editEventTitle = view.findViewById(R.id.editTxtEventTitle);
         editBudget = view.findViewById(R.id.editTxtBudget);
-        calendarView = view.findViewById(R.id.calendarViewNewEvent);
+        CalendarView calendarView = view.findViewById(R.id.calendarViewNewEvent);
         selectedDateStr = view.findViewById(R.id.selected_date);
 
         db = new DbHelper(getActivity());
@@ -93,7 +91,7 @@ public class NewEventFragment extends Fragment {
             String endDateStr = dateFormatForDB.format(endDate.getTime());
             long eventId = db.createEvent(eventTitle, finalStartDateStr, endDateStr, budgetValue);
             Bundle bundle = new Bundle();
-            bundle.putString("eventId", String.valueOf(eventId));
+            bundle.putLong("eventId", eventId);
             bundle.putString("startDate", finalStartDateStr);
             bundle.putString("endDate", endDateStr);
             NewSubEventFragment newSubEventFragment = new NewSubEventFragment();

@@ -94,12 +94,9 @@ public class EventsAdapter extends RecyclerView.Adapter<EventsAdapter.EventViewH
                         subEventTitle.setText(subEvent.getSubEvent_title());
                         time.setText(String.format("%s - %s", subEvent.getStart_time(), subEvent.getEnd_time()));
                         subBudget.setText(String.format("%s", subEvent.getSubEvent_budget()));
-                        btnSubEventEdit.setOnClickListener(new View.OnClickListener() {
-                            @Override
-                            public void onClick(View view) {
-                                if (subEventEditButtonClickListener != null) {
-                                    subEventEditButtonClickListener.onSubEventEditClicked(subEvent.getId(),event.getStartDate(), event.getEndDate());
-                                }
+                        btnSubEventEdit.setOnClickListener(v->{
+                            if (subEventEditButtonClickListener != null) {
+                                subEventEditButtonClickListener.onSubEventEditClicked(subEvent.getId(),event.getStartDate(), event.getEndDate());
                             }
                         });
 
