@@ -204,6 +204,7 @@ public class NewSubEventFragment extends Fragment {
                 }
                 if(title == null){
                     editTitle.setError("Please enter a event title");
+                    return;
                 }
 
                 SimpleDateFormat timeFormat = new SimpleDateFormat("hh:mm a", Locale.getDefault());
@@ -221,10 +222,6 @@ public class NewSubEventFragment extends Fragment {
                     }
                 } catch (ParseException e) {
                     Toast.makeText(getContext(), "Invalid time format", Toast.LENGTH_LONG).show();
-                    return;
-                }
-
-                if(finalEventId == null){
                     return;
                 }
 
