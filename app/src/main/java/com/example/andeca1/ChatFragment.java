@@ -104,7 +104,7 @@ public class ChatFragment extends Fragment implements View.OnClickListener, Base
     }
 
     @Override
-    public void onSelectionModeChanged(int selectedItemCount, List<String> selectedMessages) {
+    public void onSelectionModeChanged(int selectedItemCount, List<ChatMessage> selectedMessages) {
         ImageButton exitButton = requireActivity().findViewById(R.id.exit_selection_mode);
         TextView selectionCount = requireActivity().findViewById(R.id.selection_count);
         ImageButton copyButton = requireActivity().findViewById(R.id.copy_button);
@@ -112,8 +112,8 @@ public class ChatFragment extends Fragment implements View.OnClickListener, Base
         copyContent = "";
         if (selectedMessages != null) {
             StringBuilder sb = new StringBuilder();
-            for (String message : selectedMessages) {
-                sb.append(message).append("\n");
+            for (ChatMessage message : selectedMessages) {
+                sb.append(message.getMessage()).append("\n");
             }
             copyContent = sb.toString();
         }
@@ -127,6 +127,7 @@ public class ChatFragment extends Fragment implements View.OnClickListener, Base
             selectionCount.setText(selectionCountText);
         } else {
             // Not in selection mode
+            copyContent = "";
             exitButton.setVisibility(View.GONE);
             selectionCount.setVisibility(View.GONE);
             copyButton.setVisibility(View.GONE);
@@ -186,7 +187,7 @@ public class ChatFragment extends Fragment implements View.OnClickListener, Base
         JsonArray examplesArray = new JsonArray();
         // Assuming you have some way to get these examples. Modify as needed.
         addExample(examplesArray, "Hello", "[{\"message\": \"Hi there! I'm happy to lend a hand. Tell me about your financial goals for 2023.\"}]");
-        addExample(examplesArray,"I want to buy a house", "[{\"message\": \"Great! Let's start by looking at your current budget.\"}]");
+        addExample(examplesArray, "I want to buy a house", "[{\"message\": \"Great! Let's start by looking at your current budget.\"}]");
         instance.add("examples", examplesArray);
 
         List<ChatMessage> combinedMessages = new ArrayList<>();
@@ -253,11 +254,13 @@ public class ChatFragment extends Fragment implements View.OnClickListener, Base
             ClipData clip = ClipData.newPlainText("label", copyContent);
             assert clipboard != null;
             clipboard.setPrimaryClip(clip);
-
+            chatAdapter.exitSelectionMode();
+            copyContent = "";
             // Optionally show a toast or some confirmation to the user
             Toast.makeText(requireActivity(), "Text copied to clipboard", Toast.LENGTH_SHORT).show();
         } else if (view.getId() == R.id.exit_selection_mode) {
             // Exit selection mode
+            copyContent = "";
             chatAdapter.exitSelectionMode();
         }
     }

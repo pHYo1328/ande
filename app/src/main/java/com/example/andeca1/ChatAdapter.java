@@ -4,25 +4,23 @@ import android.annotation.SuppressLint;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageButton;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.List;
 
 public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     public interface SelectionModeListener {
-        void onSelectionModeChanged(int selectedItemCount, List<String> selectedMessages);
+        void onSelectionModeChanged(int selectedItemCount, List<ChatMessage> selectedMessages);
     }
 
     private final SelectionModeListener selectionModeListener;
     int selectedItemCount = 0;
     private List<ChatMessage> chatMessages;
-    private final List<String> selectedMessages = new ArrayList<>();
+    private final List<ChatMessage> selectedMessages = new ArrayList<>();
 
     public ChatAdapter(List<ChatMessage> chatMessages, SelectionModeListener listener) {
 
@@ -85,10 +83,10 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
         if (message.getIsSelected()) {
             selectedItemCount += 1;
-            selectedMessages.add(message.getMessage());
+            selectedMessages.add(message);
         } else {
             selectedItemCount -= 1;
-            selectedMessages.remove(message.getMessage());
+            selectedMessages.remove(message);
         }
         if (selectionModeListener != null) {
             selectionModeListener.onSelectionModeChanged(selectedItemCount, selectedMessages);
@@ -101,6 +99,7 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         for (ChatMessage message : chatMessages) {
             message.setIsSelected(false);
         }
+        selectedMessages.clear();
         selectedItemCount = 0;
         notifyDataSetChanged();
         selectionModeListener.onSelectionModeChanged(0, null);

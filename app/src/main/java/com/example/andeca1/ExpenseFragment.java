@@ -15,6 +15,7 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Spinner;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.activity.result.ActivityResultLauncher;
@@ -23,6 +24,7 @@ import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 
 import com.google.android.material.datepicker.MaterialDatePicker;
+import com.google.android.material.textfield.TextInputEditText;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.text.ParseException;
@@ -40,6 +42,15 @@ public class ExpenseFragment extends Fragment {
     private Spinner spinnerCategory,spinnerEvent;
     private String category;
     private String event;
+
+    public static ExpenseFragment newInstance(String amount, String description) {
+        ExpenseFragment fragment = new ExpenseFragment();
+        Bundle args = new Bundle();
+        args.putString("amount_key", amount);
+        args.putString("description_key", description);
+        fragment.setArguments(args);
+        return fragment;
+    }
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_expense, container, false);
@@ -47,14 +58,25 @@ public class ExpenseFragment extends Fragment {
         editAmount = view.findViewById(R.id.spentEditText);
         editNote = view.findViewById(R.id.descEditText);
         Button receiptButton = view.findViewById(R.id.btnReceipt);
-        editTextDate = (EditText) view.findViewById(R.id.dateEditText);
-        editAmount = (EditText) view.findViewById(R.id.spentEditText);
-        editNote = (EditText) view.findViewById(R.id.descEditText);
+        editTextDate = view.findViewById(R.id.dateEditText);
+        editAmount = view.findViewById(R.id.spentEditText);
+        editNote = view.findViewById(R.id.descEditText);
 
         Button saveButton = view.findViewById(R.id.btnSaveSubEvent);
         editTextDate.setOnClickListener(v -> showMaterialDatePicker());
 
         saveButton.setOnClickListener(view1 -> saveButtonOnClickListener());
+
+        if (getArguments() != null) {
+            String amount = getArguments().getString("amount_key");
+            String description = getArguments().getString("description_key");
+
+            // Assuming you have a TextView for the title
+            TextView expenseTitleView = view.findViewById(R.id.expenseTitle);
+
+            editAmount.setText(amount);
+            editNote.setText(description);
+        }
 
         receiptButton.setOnClickListener(view12 -> showCamera());
 

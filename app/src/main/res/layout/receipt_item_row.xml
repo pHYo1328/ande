@@ -43,6 +43,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="center"
+            android:inputType="numberDecimal"
             android:text="@string/receipt_amount"
             android:padding="7dp" />
 
@@ -60,6 +61,7 @@
             android:layout_width="96dp"
             android:layout_height="wrap_content"
             android:gravity="center"
+            android:inputType="number"
             android:padding="7dp"
             android:text="@string/receipt_quantity" />
 
@@ -76,6 +78,7 @@
             android:id="@+id/editTextTotal"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:inputType="numberDecimal"
             android:gravity="center"
             android:text="@string/receipt_subtotal"
             android:padding="7dp" />

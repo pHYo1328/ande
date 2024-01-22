@@ -111,6 +111,9 @@ public class ReceiptFragment extends Fragment implements BaseActivity.KeyboardVi
         //Loop through scrollview
         ScrollView scrollView = requireActivity().findViewById(R.id.scrollViewItems);
         LinearLayout linearLayout = (LinearLayout) scrollView.getChildAt(0);
+        double totalAmount = 0;
+        StringBuilder finalDescription = new StringBuilder();
+
         for (int i = 0; i < linearLayout.getChildCount(); i++) {
 
             View view = linearLayout.getChildAt(i);
@@ -127,9 +130,18 @@ public class ReceiptFragment extends Fragment implements BaseActivity.KeyboardVi
             String amount = Objects.requireNonNull(editTextAmount.getText()).toString();
             String quantity = Objects.requireNonNull(editTextQuantity.getText()).toString();
             String total = Objects.requireNonNull(editTextTotal.getText()).toString();
-
-            System.out.println(productName + amount + quantity + total);
+            //add to totalAmount
+            //if quantity or total is not a double, skip
+            if (quantity.matches("\\d+(\\.\\d+)?") && total.matches("\\d+(\\.\\d+)?")) {
+                totalAmount += Double.parseDouble(amount) * Double.parseDouble(quantity);
+            }
+            //add to finalDescription
+            finalDescription.append(productName).append("   |  $").append(amount).append(" x ").append(quantity).append(" = $").append(total).append("\n");
         }
+        ExpenseFragment expenseFragment = ExpenseFragment.newInstance(String.valueOf(totalAmount), finalDescription.toString());
+        getParentFragmentManager().beginTransaction()
+                .replace(R.id.content_frame, expenseFragment)
+                .commit();
 
     }
 
