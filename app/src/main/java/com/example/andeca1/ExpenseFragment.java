@@ -1,76 +1,148 @@
 package com.example.andeca1;
 
-import android.app.DatePickerDialog;
+import android.app.Activity;
+import android.content.Intent;
+import android.graphics.Bitmap;
+import android.net.Uri;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.text.SpannableString;
-import android.text.Spanned;
-import android.text.style.AbsoluteSizeSpan;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.datepicker.MaterialDatePicker;
-import com.google.firebase.Firebase;
+import com.google.android.material.textfield.TextInputEditText;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.TimeZone;
 
 public class ExpenseFragment extends Fragment {
 
-
     private EditText editAmount,editTextDate,editNote;
-    private Button saveButton;
     private Spinner spinnerCategory,spinnerEvent;
-    private String amount,date,note,category,event;
+    private String category;
+    private String event;
+
+    public static ExpenseFragment newInstance(String amount, String description) {
+        ExpenseFragment fragment = new ExpenseFragment();
+        Bundle args = new Bundle();
+        args.putString("amount_key", amount);
+        args.putString("description_key", description);
+        fragment.setArguments(args);
+        return fragment;
+    }
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_expense, container, false);
-        editTextDate = (EditText) view.findViewById(R.id.dateEditText);
-        editAmount = (EditText) view.findViewById(R.id.spentEditText);
-        editNote = (EditText) view.findViewById(R.id.noteEditText);
+        editTextDate = view.findViewById(R.id.dateEditText);
+        editAmount = view.findViewById(R.id.spentEditText);
+        editNote = view.findViewById(R.id.descEditText);
+        Button receiptButton = view.findViewById(R.id.btnReceipt);
+        editTextDate = view.findViewById(R.id.dateEditText);
+        editAmount = view.findViewById(R.id.spentEditText);
+        editNote = view.findViewById(R.id.descEditText);
 
-        saveButton = (Button) view.findViewById(R.id.btnSaveExpense);
-        editTextDate.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                showMaterialDatePicker();
-            }
-        });
+        Button saveButton = view.findViewById(R.id.btnSaveSubEvent);
+        editTextDate.setOnClickListener(v -> showMaterialDatePicker());
 
-        saveButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                saveButtonOnClickListener();
-            }
-        });
+        saveButton.setOnClickListener(view1 -> saveButtonOnClickListener());
+
+        if (getArguments() != null) {
+            String amount = getArguments().getString("amount_key");
+            String description = getArguments().getString("description_key");
+
+            // Assuming you have a TextView for the title
+            TextView expenseTitleView = view.findViewById(R.id.expenseTitle);
+
+            editAmount.setText(amount);
+            editNote.setText(description);
+        }
+
+        receiptButton.setOnClickListener(view12 -> showCamera());
 
         setupCategorySpinner(view);
         setUpEventSpinner(view);
         return view;
     }
+
+    public void showCamera(){
+        // Create an intent to open the camera or gallery
+        Intent cameraIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        Intent galleryIntent = new Intent(Intent.ACTION_PICK, android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+        galleryIntent.setDataAndType(android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI,"image/*");
+
+        // Create a chooser intent to let the user select between camera and gallery
+        Intent chooser = new Intent(Intent.ACTION_CHOOSER);
+        chooser.putExtra(Intent.EXTRA_INTENT, galleryIntent);
+        chooser.putExtra(Intent.EXTRA_TITLE, "Choose an app to proceed");
+
+        // Create a list for the camera intent and add it to the chooser
+        Intent[] intentArray = { cameraIntent };
+        chooser.putExtra(Intent.EXTRA_INITIAL_INTENTS, intentArray);
+
+        // Start the activity with the chooser
+        mGetContent.launch(chooser);
+    }
+
+    // Register activity result callbacks
+    ActivityResultLauncher<Intent> mGetContent = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(),
+            result -> {
+                if (result.getResultCode() == Activity.RESULT_OK) {
+                    // There are no request codes
+                    Intent data = result.getData();
+                    if (data != null && data.getData() != null) {
+                        // Handle the image uri from gallery
+                        Uri selectedImageUri = data.getData();
+                        openReceiptFragmentWithImage(selectedImageUri);
+                    } else if (data != null && data.getExtras() != null) {
+                        // Handle the image from camera
+                        Bundle extras = data.getExtras();
+                        Bitmap imageBitmap = (Bitmap) extras.get("data");
+                        openReceiptFragmentWithImage(imageBitmap);
+                    }
+                }
+            });
+
+    // open the fragment and pass the image uri for google photos/gallery
+    private void openReceiptFragmentWithImage(Uri imageUri) {
+        // Create a new instance of your fragment
+        ReceiptFragment receiptFragment = ReceiptFragment.newInstance(imageUri.toString());
+        // Fragment transaction, change out fragment
+        getParentFragmentManager().beginTransaction()
+                .replace(R.id.content_frame, receiptFragment)
+                .commit();
+    }
+
+    //Image bitmap if camera used
+    private void openReceiptFragmentWithImage(Bitmap imageBitmap) {
+
+        ReceiptFragment receiptFragment = ReceiptFragment.newInstance(imageBitmap);
+        // Begin a fragment transaction, change out fragment
+        getParentFragmentManager().beginTransaction()
+                .replace(R.id.content_frame, receiptFragment)
+                .commit();
+    }
+
 
     public void showMaterialDatePicker() {
         MaterialDatePicker.Builder<Long> builder = MaterialDatePicker.Builder.datePicker();
@@ -94,7 +166,7 @@ public class ExpenseFragment extends Fragment {
 
     private void setupCategorySpinner(View view) {
         spinnerCategory = view.findViewById(R.id.categorySpinner);
-        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(getContext(),
+        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(requireContext(),
                 R.array.categories, android.R.layout.simple_spinner_item);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinnerCategory.setAdapter(adapter);
@@ -104,7 +176,7 @@ public class ExpenseFragment extends Fragment {
 
     private void setUpEventSpinner(View view){
         spinnerEvent = view.findViewById(R.id.eventSpinner);
-        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(getContext(),
+        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(requireContext(),
                 R.array.events, android.R.layout.simple_spinner_item);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinnerEvent.setAdapter(adapter);
@@ -142,9 +214,9 @@ public class ExpenseFragment extends Fragment {
 
     private void saveButtonOnClickListener(){
         FirebaseFirestore db = FirebaseFirestore.getInstance();
-        amount = editAmount.getText().toString().trim();
-        date = editTextDate.getText().toString().trim();
-        note = editNote.getText().toString().trim();
+        String amount = editAmount.getText().toString().trim();
+        String date = editTextDate.getText().toString().trim();
+        String note = editNote.getText().toString().trim();
 
         double amountValue;
         try {
@@ -158,7 +230,7 @@ public class ExpenseFragment extends Fragment {
         }
 
         // Validate the date - make sure it's a valid date
-        SimpleDateFormat format = new SimpleDateFormat("dd/mm/yyyy", Locale.getDefault());
+        SimpleDateFormat format = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault());
         try {
             Date parsedDate = format.parse(date);
             if (parsedDate == null) {
@@ -183,13 +255,13 @@ public class ExpenseFragment extends Fragment {
         }
 
         Map<String, Object> expense = new HashMap<>();
-        expense.put("amount", amount );
+        expense.put("amount", amount);
         expense.put("date", date);
         expense.put("category",category);
-        expense.put("note",note);
+        expense.put("note", note);
         expense.put("event",event);
 
-        Log.d("SaveExpense", "Sending data to Firestore: " + expense.toString());
+        Log.d("SaveExpense", "Sending data to Firestore: " + expense);
         db.collection("expenses").add(expense)
                 .addOnSuccessListener(documentReference -> {
                     Log.d("Firestore", "DocumentSnapshot added with ID: " + documentReference.getId());

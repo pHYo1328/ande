@@ -1,31 +1,193 @@
-<?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ProfileFragment" >
+    tools:context=".ProfileFragment">
 
-    <LinearLayout
+    <com.google.android.material.appbar.AppBarLayout
+        android:id="@+id/app_bar_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical">
+        android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar">
+
+        <androidx.appcompat.widget.Toolbar
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            android:background="@color/black">
+
+            <TextView
+                android:id="@+id/toolbar_title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:text="@string/title_profile"
+                android:textAppearance="@style/TextAppearance.Widget.AppCompat.Toolbar.Title" />
+        </androidx.appcompat.widget.Toolbar>
+
+    </com.google.android.material.appbar.AppBarLayout>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <View
+            android:id="@+id/profileHeaderBackground"
+            android:layout_width="match_parent"
+            android:layout_height="200dp"
+            android:background="@drawable/rounded_corner" />
 
         <TextView
-            android:id="@+id/txtCurrentUserEmail"
-            android:layout_width="match_parent"
+            android:id="@+id/profileName"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textSize="32sp" />
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="100dp"
+            android:text="John"
+            android:textAppearance="@style/TextAppearance.AppCompat.Large"
+            android:textColor="@color/white" />
+
+        <TextView
+            android:id="@+id/profileEmail"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/profileName"
+            android:layout_centerHorizontal="true"
+            android:text="JohnDoe@gmail.com"
+            android:textAppearance="@style/TextAppearance.AppCompat.Small"
+            android:textColor="@color/white" />
 
         <Button
-            android:id="@+id/btnLogout"
+            android:id="@+id/editProfileButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/profileEmail"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="16dp"
+            android:background="@drawable/rounded_edit"
+            app:backgroundTint="@color/edit_button"
+            android:textAppearance="@style/TextAppearance.AppCompat"
+            android:text="Edit Profile" />
+
+        <!-- Details section with Total Saved, Goals Achieved, and Date Joined -->
+        <LinearLayout
+            android:id="@+id/detailsSection"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginHorizontal="32dp"
-            android:layout_marginVertical="64dp"
-            android:backgroundTint="@color/budget_purple"
-            android:padding="16dp"
+            android:layout_below="@id/editProfileButton"
+            android:orientation="vertical"
+            android:layout_marginTop="28dp"
+            android:showDividers="middle">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:showDividers="middle"
+                android:weightSum="2">
+
+                <LinearLayout
+                    android:id="@+id/saveSection"
+                    android:layout_width="0dp"
+                    android:layout_height="72dp"
+                    android:layout_gravity="start"
+                    android:orientation="vertical"
+                    android:showDividers="middle"
+                    android:layout_weight="1">
+
+                    <TextView
+                        android:id="@+id/totalSavedLabel"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:text="Total Saved"
+                        android:textAppearance="@style/TextAppearance.AppCompat.Medium" />
+
+                    <TextView
+                        android:id="@+id/totalSavedAmount"
+                        android:layout_gravity="center"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="$280.98"
+                        android:textSize="24sp"
+                        android:textStyle="bold" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/goalsSection"
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:gravity="top">
+
+                    <TextView
+                        android:id="@+id/goalsAchievedLabel"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center_horizontal"
+                        android:text="Goals Achieved"
+                        android:textAppearance="@style/TextAppearance.AppCompat.Medium" />
+
+                    <TextView
+                        android:id="@+id/goalsAchievedAmount"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center_horizontal"
+                        android:text="5"
+                        android:textSize="24sp"
+                        android:textStyle="bold" />
+                </LinearLayout>
+
+
+            </LinearLayout>
+
+
+            <TextView
+                android:id="@+id/dateJoinedLabel"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginTop="16dp"
+                android:text="Date Joined"
+                android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+                android:textStyle="bold"/>
+
+            <TextView
+                android:layout_gravity="center"
+                android:id="@+id/dateJoinedDate"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="11/22/2023"
+                android:textSize="18sp" />
+
+        </LinearLayout>
+
+        <Button
+            android:id="@+id/deleteDataButton"
+            style="@style/Widget.Material3.Button.OutlinedButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/detailsSection"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="220dp"
+            android:text="Delete Data"
+            android:textAppearance="@style/TextAppearance.AppCompat.Small"
+            android:textColor="@color/danger"
+            app:strokeColor="@color/danger" />
+
+        <Button
+            android:id="@+id/logoutButton"
+            style="@style/Widget.Material3.Button.OutlinedButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/deleteDataButton"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="16dp"
             android:text="Logout"
-            android:textColor="@color/white"
-            android:textSize="16sp" />
-    </LinearLayout>
-</ScrollView>
+            android:textAppearance="@style/TextAppearance.AppCompat.Small"
+            android:textColor="@color/danger"
+            app:strokeColor="@color/danger" />
+    </RelativeLayout>
+</FrameLayout>

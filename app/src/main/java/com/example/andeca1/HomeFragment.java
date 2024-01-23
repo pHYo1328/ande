@@ -39,8 +39,8 @@ public class HomeFragment extends Fragment {
 
         recyclerView = view.findViewById(R.id.recyclerView);
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
-        SimpleDateFormat inputFormat = new SimpleDateFormat("yyyy-MM-dd");
-        SimpleDateFormat outputFormat = new SimpleDateFormat("MM-dd");
+        SimpleDateFormat inputFormat = new SimpleDateFormat("yyyy-MM-dd", java.util.Locale.getDefault());
+        SimpleDateFormat outputFormat = new SimpleDateFormat("MM-dd", java.util.Locale.getDefault());
         items = new ArrayList<>();
 
         try {
@@ -48,8 +48,11 @@ public class HomeFragment extends Fragment {
             Date date2 = inputFormat.parse("2023-11-15");
             Date date3 = inputFormat.parse("2023-12-20");
 
+            assert date1 != null;
             String formattedDate1 = outputFormat.format(date1);
+            assert date2 != null;
             String formattedDate2 = outputFormat.format(date2);
+            assert date3 != null;
             String formattedDate3 = outputFormat.format(date3);
 
             items.add(new recycleItem("October", 90, formattedDate1, R.drawable.oct, "$69.20 Left"));

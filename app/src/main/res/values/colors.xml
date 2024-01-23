@@ -14,4 +14,9 @@
     <color name="selected_message_background">#A8A8A8</color>
     <color name="budget_purple_text_highlight_color">#809C27B0</color>
     <color name="mtrl_background">#e0e0e0</color>
+    <color name="red">#FF0000</color>
+    <color name="edit_button">#6750A4</color>
+    <color name="danger">#B3261E</color>
+    <color name="purple_button">#9835D0</color>
+    <color name="transparent">#00000000</color>
 </resources>

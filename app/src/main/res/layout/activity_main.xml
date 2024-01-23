@@ -25,7 +25,6 @@
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:paddingBottom="30sp"
-        app:layout_constraintBottom_toTopOf="@id/bottomNavigationView"
         app:layout_constraintTop_toBottomOf="@id/textView2" />
 
 

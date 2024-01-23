@@ -3,18 +3,14 @@ package com.example.andeca1;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 
-import android.content.Context;
 import android.graphics.Rect;
 import android.os.Bundle;
 import android.view.View;
-import android.view.ViewParent;
-import android.view.ViewTreeObserver;
-import android.view.inputmethod.InputMethodManager;
-import android.widget.EditText;
-import android.view.MotionEvent;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
-import com.google.android.material.textfield.TextInputLayout;
+import com.jakewharton.threetenabp.AndroidThreeTen;
+
+import java.util.HashMap;
 
 public class BaseActivity extends AppCompatActivity {
     public interface KeyboardVisibilityListener {
@@ -24,31 +20,23 @@ public class BaseActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        AndroidThreeTen.init(this);
         setContentView(R.layout.activity_base);
 
         BottomNavigationView bottomNavigationView = findViewById(R.id.bottomNavigationView);
         setupKeyboardVisibilityListener();
         bottomNavigationView.setOnItemSelectedListener(item -> {
-            Fragment selectedFragment = null;
+            HashMap<Integer, Fragment> fragmentMap = new HashMap<>();
+            fragmentMap.put(R.id.navigation_expense, new ExpenseFragment());
+            fragmentMap.put(R.id.navigation_event, new EventFragment());
+            fragmentMap.put(R.id.navigation_chat, new ChatFragment());
+            fragmentMap.put(R.id.navigation_profile, new ProfileFragment());
 
-            switch (item.getItemId()) {
-                case R.id.navigation_home:
-                    selectedFragment = new HomeFragment();
-                    break;
-                case R.id.navigation_expense:
-                    selectedFragment = new ExpenseFragment();
-                    break;
-                case R.id.navigation_event:
-                    selectedFragment = new EventFragment();
-                    break;
-                case R.id.navigation_chat:
-                    selectedFragment = new ChatFragment();
-                    break;
-                case R.id.navigation_profile:
-                    selectedFragment = new ProfileFragment();
-                    break;
-                default:
-                    selectedFragment = new HomeFragment();
+            //Switch isn't viable cause R.id is no longer final
+            //And I don't want a long if else
+            Fragment selectedFragment = fragmentMap.get(item.getItemId());
+            if (selectedFragment == null) {
+                selectedFragment = new HomeFragment(); // Fallback to home fragment
             }
 
             getSupportFragmentManager().beginTransaction()

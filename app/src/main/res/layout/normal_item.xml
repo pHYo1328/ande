@@ -1,5 +1,6 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_margin="10dp"
@@ -16,8 +17,9 @@
         android:layout_height="wrap_content"
         android:background="@color/design_default_color_background"
         android:orientation="vertical"
-        android:padding="35dp">
-        > <!-- Background image set here -->
+        android:padding="35dp"
+        tools:ignore="UselessParent">
+        <!-- Background image set here -->
 
         <!-- First Inner LinearLayout -->
         <LinearLayout
@@ -29,18 +31,19 @@
                 android:id="@+id/event_name"
                 android:layout_width="226dp"
                 android:layout_height="wrap_content"
-                android:text="TextView"
+                android:text="@string/textview"
                 android:textColor="@color/white"
-                android:textSize="25dp"
+                android:textSize="25sp"
                 android:textStyle="bold" />
 
 
             <ImageButton
                 android:id="@+id/imageView2"
-                android:layout_width="wrap_content"
+                android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
-                app:srcCompat="@drawable/ic_baseline_more_horiz_24" />
+                app:srcCompat="@drawable/ic_baseline_more_horiz_24"
+                android:contentDescription="@string/image_view" />
 
         </LinearLayout>
 
@@ -55,7 +58,7 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="TextView"
+                android:text="@string/textview"
                 android:textColor="@color/white" />
 
             <RelativeLayout
@@ -80,9 +83,9 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_centerInParent="true"
-                    android:text="45%"
+                    android:text="@string/_45"
                     android:textColor="@color/white"
-                    android:textSize="10sp" />
+                    android:textSize="11sp" />
             </RelativeLayout>
 
         </LinearLayout>
