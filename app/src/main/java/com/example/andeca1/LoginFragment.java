@@ -7,6 +7,8 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -43,6 +45,8 @@ public class LoginFragment extends Fragment {
         TextInputLayout layoutLoginEmail = view.findViewById(R.id.layoutLoginEmail);
         TextInputLayout layoutLoginPassword = view.findViewById(R.id.layoutLoginPassword);
 
+        txtLoginEmail.addTextChangedListener(new ClearErrorTextWatcher(layoutLoginEmail));
+        txtLoginPassword.addTextChangedListener(new ClearErrorTextWatcher(layoutLoginPassword));
 
         btnLogin.setOnClickListener(v -> {
             boolean error = false;
@@ -103,6 +107,28 @@ public class LoginFragment extends Fragment {
 
 
         });
+    }
+
+    // TextWatcher to clear errors when text changes
+    private static class ClearErrorTextWatcher implements TextWatcher {
+        private final TextInputLayout textInputLayout;
+
+        public ClearErrorTextWatcher(TextInputLayout textInputLayout) {
+            this.textInputLayout = textInputLayout;
+        }
+
+        @Override
+        public void beforeTextChanged(CharSequence charSequence, int start, int before, int count) {}
+
+        @Override
+        public void onTextChanged(CharSequence charSequence, int start, int before, int count) {}
+
+        @Override
+        public void afterTextChanged(Editable editable) {
+            // Clear errors when text changes
+            textInputLayout.setError(null);
+            textInputLayout.setErrorEnabled(false);
+        }
     }
 
 }

@@ -19,4 +19,6 @@
     <color name="danger">#B3261E</color>
     <color name="purple_button">#9835D0</color>
     <color name="transparent">#00000000</color>
+    <color name="m3_textinput_outline">#79747E</color>
+    <color name="m3_hint_foreground">#601D1B20</color>
 </resources>

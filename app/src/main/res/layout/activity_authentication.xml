@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/white"
     tools:context=".Authentication">
 
     <LinearLayout
@@ -22,9 +23,11 @@
             android:layout_height="wrap_content"
             android:layout_marginHorizontal="16dp"
             android:layout_marginTop="4dp"
+            android:background="@color/white"
             android:clipToPadding="false"
             app:tabIndicator="@color/black"
             app:tabIndicatorColor="@color/budget_purple"
+            app:tabIndicatorFullWidth="true"
             app:tabIndicatorGravity="bottom"
             app:tabIndicatorHeight="3dp"
             app:tabRippleColor="@android:color/transparent"

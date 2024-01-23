@@ -36,16 +36,17 @@
                 android:id="@+id/layoutLoginEmail"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="8dp"
-                app:cursorColor="@color/black"
-                app:cursorErrorColor="@color/black"
-                app:hintTextColor="@color/black">
+                android:layout_marginTop="8dp"
+                app:boxBackgroundMode="outline"
+                app:boxStrokeColor="@color/m3_textinput_outline"
+                app:hintTextColor="@color/black"
+                app:cursorColor="@color/m3_hint_foreground"
+                android:hint="Email">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/txtLoginEmail"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:hint="Email"
                     android:inputType="textEmailAddress"
                     android:textColorHighlight="@color/budget_purple_text_highlight_color" />
             </com.google.android.material.textfield.TextInputLayout>
@@ -54,15 +55,18 @@
                 android:id="@+id/layoutLoginPassword"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                app:cursorColor="@color/black"
+                android:layout_marginTop="4dp"
+                app:boxBackgroundMode="outline"
+                app:boxStrokeColor="@color/m3_textinput_outline"
                 app:hintTextColor="@color/black"
+                app:cursorColor="@color/m3_hint_foreground"
+                android:hint="Password"
                 app:passwordToggleEnabled="true">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/txtLoginPassword"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:hint="Password"
                     android:inputType="textPassword"
                     android:textColorHighlight="@color/budget_purple_text_highlight_color" />
 
@@ -79,7 +83,8 @@
                 android:padding="16dp"
                 android:text="Login"
                 android:textColor="@color/white"
-                android:textSize="16sp" />
+                android:textSize="16sp"
+                app:cornerRadius="10dp" />
 
         </LinearLayout>
 

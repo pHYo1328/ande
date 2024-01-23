@@ -26,10 +26,14 @@
             android:id="@+id/layoutFirstName"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="64dp"
+            android:layout_marginTop="4dp"
+            app:boxBackgroundMode="outline"
+            app:boxStrokeColor="@color/m3_textinput_outline"
+            app:hintTextColor="@color/black"
+            app:cursorColor="@color/m3_hint_foreground"
             android:hint="First name"
-            app:cursorColor="@color/black"
-            app:hintTextColor="@color/black">
+            >
+
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/txtFirstName"
@@ -44,10 +48,13 @@
             android:id="@+id/layoutLastName"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
+            android:layout_marginTop="4dp"
+            app:boxBackgroundMode="outline"
+            app:boxStrokeColor="@color/m3_textinput_outline"
+            app:hintTextColor="@color/black"
+            app:cursorColor="@color/m3_hint_foreground"
             android:hint="Last name"
-            app:cursorColor="@color/black"
-            app:hintTextColor="@color/black">
+            >
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/txtLastName"
@@ -63,10 +70,13 @@
             android:id="@+id/layoutEmail"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
+            android:layout_marginTop="4dp"
+            app:boxBackgroundMode="outline"
+            app:boxStrokeColor="@color/m3_textinput_outline"
+            app:hintTextColor="@color/black"
+            app:cursorColor="@color/m3_hint_foreground"
             android:hint="Email"
-            app:cursorColor="@color/black"
-            app:hintTextColor="@color/black">
+            >
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/txtEmailRegister"
@@ -82,15 +92,17 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="32dp"
-            app:cursorColor="@color/black"
+            app:boxBackgroundMode="outline"
+            app:boxStrokeColor="@color/m3_textinput_outline"
             app:hintTextColor="@color/black"
+            app:cursorColor="@color/m3_hint_foreground"
+            android:hint="Password"
             app:passwordToggleEnabled="true">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/txtPassword"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="Password"
                 android:inputType="textPassword"
                 android:textColorHighlight="@color/budget_purple_text_highlight_color" />
 
@@ -100,16 +112,18 @@
             android:id="@+id/layoutConfirmPassword"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            app:cursorColor="@color/black"
+            android:layout_marginTop="4dp"
+            app:boxBackgroundMode="outline"
+            app:boxStrokeColor="@color/m3_textinput_outline"
             app:hintTextColor="@color/black"
+            app:cursorColor="@color/m3_hint_foreground"
+            android:hint="Confirm Password"
             app:passwordToggleEnabled="true">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/txtConfirmPassword"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="Confirm Password"
                 android:inputType="textPassword"
                 android:textColorHighlight="@color/budget_purple_text_highlight_color" />
 
@@ -125,7 +139,8 @@
             android:padding="16dp"
             android:text="Create Account"
             android:textColor="@color/white"
-            android:textSize="16sp" />
+            android:textSize="16sp"
+            app:cornerRadius="10dp" />
 
     </LinearLayout>
 </ScrollView>

@@ -2,6 +2,7 @@ package com.example.andeca1;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -23,14 +24,15 @@ public class ProfileFragment extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         mAuth = FirebaseAuth.getInstance();
+        Log.d("ProfileFragment", "onCreateView: " + mAuth.getCurrentUser().getUid());
 
         return inflater.inflate(R.layout.fragment_profile, container, false);
     }
 
     @Override
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
-        btnLogout = view.findViewById(R.id.btnLogout);
-        txtEmail = view.findViewById(R.id.txtCurrentUserEmail);
+        btnLogout = view.findViewById(R.id.logoutButton);
+        txtEmail = view.findViewById(R.id.profileEmail);
 
         txtEmail.setText(mAuth.getCurrentUser().getEmail());
         btnLogout.setOnClickListener(v -> {
