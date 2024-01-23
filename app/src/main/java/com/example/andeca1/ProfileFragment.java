@@ -24,9 +24,7 @@ public class ProfileFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         mAuth = FirebaseAuth.getInstance();
 
-        View view = inflater.inflate(R.layout.fragment_profile, container, false);
-
-        return view;
+        return inflater.inflate(R.layout.fragment_profile, container, false);
     }
 
     @Override
@@ -35,14 +33,11 @@ public class ProfileFragment extends Fragment {
         txtEmail = view.findViewById(R.id.txtCurrentUserEmail);
 
         txtEmail.setText(mAuth.getCurrentUser().getEmail());
-        btnLogout.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                mAuth.signOut();
-                getActivity().finish();
-                Intent i = new Intent(getActivity(), Authentication.class);
-                startActivity(i);
-            }
+        btnLogout.setOnClickListener(v -> {
+            mAuth.signOut();
+            getActivity().finish();
+            Intent i = new Intent(getActivity(), Authentication.class);
+            startActivity(i);
         });
     }
 }
