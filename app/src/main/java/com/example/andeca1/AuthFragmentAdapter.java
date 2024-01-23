@@ -7,13 +7,6 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.viewpager2.adapter.FragmentStateAdapter;
 
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-
-import java.util.ArrayList;
-import java.util.List;
-
 public class AuthFragmentAdapter extends FragmentStateAdapter {
     public AuthFragmentAdapter(AppCompatActivity activity) {
         super(activity);

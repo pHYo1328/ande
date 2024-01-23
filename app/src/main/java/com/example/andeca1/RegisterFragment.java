@@ -4,7 +4,6 @@ import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.viewpager2.widget.ViewPager2;
 
@@ -36,49 +35,45 @@ public class RegisterFragment extends Fragment {
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-        Bundle args = getArguments();
 
         btnRegister = view.findViewById(R.id.btnRegister);
-        btnRegister.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                TextView txtEmail = view.findViewById(R.id.txtEmailRegister);
-                TextView txtPassword = view.findViewById(R.id.txtPassword);
-                TextView txtConfirmPassword = view.findViewById(R.id.txtConfirmPassword);
+        btnRegister.setOnClickListener(v -> {
+            TextView txtEmail = view.findViewById(R.id.txtEmailRegister);
+            TextView txtPassword = view.findViewById(R.id.txtPassword);
+            TextView txtConfirmPassword = view.findViewById(R.id.txtConfirmPassword);
 
-                String email = txtEmail.getText().toString();
-                String password = txtPassword.getText().toString();
-                String confirmPassword = txtConfirmPassword.getText().toString();
+            String email = txtEmail.getText().toString();
+            String password = txtPassword.getText().toString();
+            String confirmPassword = txtConfirmPassword.getText().toString();
 
-                if (email.isEmpty() || password.isEmpty() || confirmPassword.isEmpty()) {
-                    Toast.makeText(getActivity(), "Please fill all the fields", Toast.LENGTH_SHORT).show();
-                    return;
-                }
+            if (email.isEmpty() || password.isEmpty() || confirmPassword.isEmpty()) {
+                Toast.makeText(getActivity(), "Please fill all the fields", Toast.LENGTH_SHORT).show();
+                return;
+            }
 
-                if (password.equals(confirmPassword)) {
-                    mAuth.createUserWithEmailAndPassword(email, password)
-                            .addOnCompleteListener(getActivity(), task -> {
-                                if (task.isSuccessful()) {
-                                    // Sign in success, update UI with the signed-in user's information
-                                    Toast.makeText(getActivity(), "Successfully registered", Toast.LENGTH_SHORT).show();
-                                    Log.d("RegisterFragment", "createUserWithEmail:success");
+            if (password.equals(confirmPassword)) {
+                mAuth.createUserWithEmailAndPassword(email, password)
+                        .addOnCompleteListener(getActivity(), task -> {
+                            if (task.isSuccessful()) {
+                                // Sign in success, update UI with the signed-in user's information
+                                Toast.makeText(getActivity(), "Successfully registered", Toast.LENGTH_SHORT).show();
+                                Log.d("RegisterFragment", "createUserWithEmail:success");
 
-                                    txtEmail.setText("");
-                                    txtPassword.setText("");
-                                    txtConfirmPassword.setText("");
+                                txtEmail.setText("");
+                                txtPassword.setText("");
+                                txtConfirmPassword.setText("");
 
 
-                                    viewPager.setCurrentItem(0, true);
+                                viewPager.setCurrentItem(0, true);
 
-                                } else {
-                                    // If sign in fails, display a message to the user.
-                                    Toast.makeText(getActivity(), task.getException().getMessage(), Toast.LENGTH_LONG).show();
-                                    Log.w("RegisterFragment", "createUserWithEmail:failure", task.getException());
+                            } else {
+                                // If sign in fails, display a message to the user.
+                                Toast.makeText(getActivity(), task.getException().getMessage(), Toast.LENGTH_LONG).show();
+                                Log.w("RegisterFragment", "createUserWithEmail:failure", task.getException());
 
-                                    // updateUI(null);
-                                }
-                            });
-                }
+                                // updateUI(null);
+                            }
+                        });
             }
         });
     }

@@ -14,7 +14,7 @@
             android:id="@+id/txtCurrentUserEmail"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textSize="32dp" />
+            android:textSize="32sp" />
 
         <Button
             android:id="@+id/btnLogout"
