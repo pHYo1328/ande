@@ -27,12 +27,11 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="4dp"
-            app:boxBackgroundMode="outline"
-            app:boxStrokeColor="@color/m3_textinput_outline"
-            app:hintTextColor="@color/black"
-            app:cursorColor="@color/m3_hint_foreground"
             android:hint="First name"
-            >
+            app:boxBackgroundMode="outline"
+            app:boxStrokeColor="@color/mtr_textinput_outline"
+            app:cursorColor="@color/mtr_hint_foreground"
+            app:hintTextColor="@color/black">
 
 
             <com.google.android.material.textfield.TextInputEditText
@@ -50,9 +49,9 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="4dp"
             app:boxBackgroundMode="outline"
-            app:boxStrokeColor="@color/m3_textinput_outline"
+            app:boxStrokeColor="@color/mtr_textinput_outline"
             app:hintTextColor="@color/black"
-            app:cursorColor="@color/m3_hint_foreground"
+            app:cursorColor="@color/mtr_hint_foreground"
             android:hint="Last name"
             >
 
@@ -72,9 +71,9 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="4dp"
             app:boxBackgroundMode="outline"
-            app:boxStrokeColor="@color/m3_textinput_outline"
+            app:boxStrokeColor="@color/mtr_textinput_outline"
             app:hintTextColor="@color/black"
-            app:cursorColor="@color/m3_hint_foreground"
+            app:cursorColor="@color/mtr_hint_foreground"
             android:hint="Email"
             >
 
@@ -93,9 +92,9 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="32dp"
             app:boxBackgroundMode="outline"
-            app:boxStrokeColor="@color/m3_textinput_outline"
+            app:boxStrokeColor="@color/mtr_textinput_outline"
             app:hintTextColor="@color/black"
-            app:cursorColor="@color/m3_hint_foreground"
+            app:cursorColor="@color/mtr_hint_foreground"
             android:hint="Password"
             app:passwordToggleEnabled="true">
 
@@ -114,9 +113,9 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="4dp"
             app:boxBackgroundMode="outline"
-            app:boxStrokeColor="@color/m3_textinput_outline"
+            app:boxStrokeColor="@color/mtr_textinput_outline"
             app:hintTextColor="@color/black"
-            app:cursorColor="@color/m3_hint_foreground"
+            app:cursorColor="@color/mtr_hint_foreground"
             android:hint="Confirm Password"
             app:passwordToggleEnabled="true">
 

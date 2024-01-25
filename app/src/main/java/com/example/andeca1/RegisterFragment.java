@@ -18,18 +18,11 @@ import android.widget.Toast;
 import com.example.andeca1.classes.User;
 import com.example.andeca1.utils.ClearErrorTextWatcher;
 import com.example.andeca1.utils.EmailValidator;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.textfield.TextInputLayout;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseAuthUserCollisionException;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
-
-import java.util.HashMap;
-import java.util.Map;
 
 public class RegisterFragment extends Fragment {
     FirebaseFirestore db = FirebaseFirestore.getInstance();
