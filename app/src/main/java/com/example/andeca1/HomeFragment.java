@@ -13,6 +13,11 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.andeca1.classes.User;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.FirebaseFirestore;
+
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -20,6 +25,8 @@ import java.util.Date;
 import java.util.List;
 
 public class HomeFragment extends Fragment {
+    FirebaseFirestore db = FirebaseFirestore.getInstance();
+    private final FirebaseAuth mAuth = FirebaseAuth.getInstance();
 
     private RecyclerView recyclerView;
     private recyclerViewAdapter adapter;
@@ -29,13 +36,22 @@ public class HomeFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_home, container, false);
 
-        TextView textView = view.findViewById(R.id.textView2);
-        String text = "Welcome Back,\nJohn";
+        TextView txtWelcome = view.findViewById(R.id.txtWelcome);
+        FirebaseUser currentUser = mAuth.getCurrentUser();
+        db.collection("users")
+                .document(currentUser.getUid())
+                .get()
+                .addOnSuccessListener(documentSnapshot -> {
+                    User user = documentSnapshot.toObject(User.class);
+                    String text = "Welcome back, \n" +user.getFirst_name();
 
-        SpannableString spannableString = new SpannableString(text);
-        spannableString.setSpan(new AbsoluteSizeSpan(35, true), 0, 14, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-        spannableString.setSpan(new AbsoluteSizeSpan(25, true), 15, text.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-        textView.setText(spannableString);
+                    SpannableString spannableString = new SpannableString(text);
+                    spannableString.setSpan(new AbsoluteSizeSpan(25, true), 0, 14, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+                    spannableString.setSpan(new AbsoluteSizeSpan(25, true), 15, text.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+                    txtWelcome.setText(spannableString);
+                });
+
+
 
         recyclerView = view.findViewById(R.id.recyclerView);
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));

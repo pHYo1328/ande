@@ -17,6 +17,7 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.andeca1.utils.ClearErrorTextWatcher;
 import com.example.andeca1.utils.EmailValidator;
 import com.google.android.material.textfield.TextInputLayout;
 import com.google.firebase.auth.FirebaseAuth;
@@ -24,14 +25,12 @@ import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException;
 import com.google.firebase.auth.FirebaseUser;
 
 public class LoginFragment extends Fragment {
-    public static final String ARG_OBJECT = "object";
-    private FirebaseAuth mAuth;
+    private final FirebaseAuth mAuth = FirebaseAuth.getInstance();
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
-        mAuth = FirebaseAuth.getInstance();
         return inflater.inflate(R.layout.fragment_login, container, false);
     }
 
@@ -108,27 +107,4 @@ public class LoginFragment extends Fragment {
 
         });
     }
-
-    // TextWatcher to clear errors when text changes
-    private static class ClearErrorTextWatcher implements TextWatcher {
-        private final TextInputLayout textInputLayout;
-
-        public ClearErrorTextWatcher(TextInputLayout textInputLayout) {
-            this.textInputLayout = textInputLayout;
-        }
-
-        @Override
-        public void beforeTextChanged(CharSequence charSequence, int start, int before, int count) {}
-
-        @Override
-        public void onTextChanged(CharSequence charSequence, int start, int before, int count) {}
-
-        @Override
-        public void afterTextChanged(Editable editable) {
-            // Clear errors when text changes
-            textInputLayout.setError(null);
-            textInputLayout.setErrorEnabled(false);
-        }
-    }
-
 }

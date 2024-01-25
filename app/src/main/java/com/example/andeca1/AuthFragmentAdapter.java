@@ -23,7 +23,6 @@ public class AuthFragmentAdapter extends FragmentStateAdapter {
             render = new RegisterFragment();
         }
 
-        args.putInt(LoginFragment.ARG_OBJECT, position + 1);
         render.setArguments(args);
         return render;
     }

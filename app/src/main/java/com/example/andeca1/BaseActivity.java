@@ -17,6 +17,7 @@ public class BaseActivity extends AppCompatActivity {
         void onKeyboardVisibilityChanged(boolean keyboardVisible);
     }
     private KeyboardVisibilityListener keyboardVisibilityListener;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

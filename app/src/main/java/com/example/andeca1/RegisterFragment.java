@@ -15,12 +15,27 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.andeca1.classes.User;
+import com.example.andeca1.utils.ClearErrorTextWatcher;
+import com.example.andeca1.utils.EmailValidator;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.material.textfield.TextInputLayout;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseAuthUserCollisionException;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.FirebaseFirestore;
+
+import java.util.HashMap;
+import java.util.Map;
 
 public class RegisterFragment extends Fragment {
-    private FirebaseAuth mAuth;
+    FirebaseFirestore db = FirebaseFirestore.getInstance();
     ViewPager2 viewPager;
     Button btnRegister;
+    private FirebaseAuth mAuth;
 
     @Nullable
     @Override
@@ -35,46 +50,121 @@ public class RegisterFragment extends Fragment {
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        TextInputLayout layoutEmail = view.findViewById(R.id.layoutEmail);
+        TextInputLayout layoutPassword = view.findViewById(R.id.layoutPassword);
+        TextInputLayout layoutConfirmPassword = view.findViewById(R.id.layoutConfirmPassword);
+        TextInputLayout layoutFirstName = view.findViewById(R.id.layoutFirstName);
+        TextInputLayout layoutLastName = view.findViewById(R.id.layoutLastName);
+
+        TextView txtEmail = view.findViewById(R.id.txtEmailRegister);
+        TextView txtPassword = view.findViewById(R.id.txtPassword);
+        TextView txtConfirmPassword = view.findViewById(R.id.txtConfirmPassword);
+        TextView txtFirstName = view.findViewById(R.id.txtFirstName);
+        TextView txtLastName = view.findViewById(R.id.txtLastName);
+
+        txtFirstName.addTextChangedListener(new ClearErrorTextWatcher(layoutFirstName));
+        txtLastName.addTextChangedListener(new ClearErrorTextWatcher(layoutLastName));
+        txtEmail.addTextChangedListener(new ClearErrorTextWatcher(layoutEmail));
+        txtPassword.addTextChangedListener(new ClearErrorTextWatcher(layoutPassword));
+        txtConfirmPassword.addTextChangedListener(new ClearErrorTextWatcher(layoutConfirmPassword));
 
         btnRegister = view.findViewById(R.id.btnRegister);
-        btnRegister.setOnClickListener(v -> {
-            TextView txtEmail = view.findViewById(R.id.txtEmailRegister);
-            TextView txtPassword = view.findViewById(R.id.txtPassword);
-            TextView txtConfirmPassword = view.findViewById(R.id.txtConfirmPassword);
 
+        btnRegister.setOnClickListener(v -> {
             String email = txtEmail.getText().toString();
             String password = txtPassword.getText().toString();
             String confirmPassword = txtConfirmPassword.getText().toString();
+            String firstName = txtFirstName.getText().toString();
+            String lastName = txtLastName.getText().toString();
 
-            if (email.isEmpty() || password.isEmpty() || confirmPassword.isEmpty()) {
-                Toast.makeText(getActivity(), "Please fill all the fields", Toast.LENGTH_SHORT).show();
-                return;
+            boolean hasError = false;
+
+            if (firstName.isEmpty()) {
+                layoutFirstName.setError("First name is required");
+                layoutFirstName.setErrorEnabled(true);
+                hasError = true;
+            } else {
+                layoutFirstName.setErrorEnabled(false);
             }
 
-            if (password.equals(confirmPassword)) {
-                mAuth.createUserWithEmailAndPassword(email, password)
-                        .addOnCompleteListener(getActivity(), task -> {
-                            if (task.isSuccessful()) {
-                                // Sign in success, update UI with the signed-in user's information
-                                Toast.makeText(getActivity(), "Successfully registered", Toast.LENGTH_SHORT).show();
-                                Log.d("RegisterFragment", "createUserWithEmail:success");
+            if (lastName.isEmpty()) {
+                layoutLastName.setError("Last name is required");
+                layoutLastName.setErrorEnabled(true);
+                hasError = true;
+            } else {
+                layoutLastName.setErrorEnabled(false);
+            }
 
-                                txtEmail.setText("");
-                                txtPassword.setText("");
-                                txtConfirmPassword.setText("");
+            if (!EmailValidator.isValidEmail(email)) {
+                layoutEmail.setError("Please enter a valid email");
+                layoutEmail.setErrorEnabled(true);
+                hasError = true;
+            } else {
+                layoutEmail.setErrorEnabled(false);
+            }
+
+            if (password.isEmpty() || password.length() < 6) {
+                layoutPassword.setError("Please make sure your password is at least 6 characters long");
+                layoutPassword.setErrorEnabled(true);
+                hasError = true;
+            } else {
+                layoutPassword.setErrorEnabled(false);
+            }
+
+            if (!confirmPassword.equals(password)) {
+                layoutConfirmPassword.setError("Please make sure your passwords match");
+                layoutConfirmPassword.setErrorEnabled(true);
+                hasError = true;
+            } else {
+                layoutConfirmPassword.setErrorEnabled(false);
+            }
+
+            if (hasError) return;
 
 
-                                viewPager.setCurrentItem(0, true);
 
-                            } else {
-                                // If sign in fails, display a message to the user.
-                                Toast.makeText(getActivity(), task.getException().getMessage(), Toast.LENGTH_LONG).show();
-                                Log.w("RegisterFragment", "createUserWithEmail:failure", task.getException());
+            User user = new User();
+            user.setFirst_name(firstName);
+            user.setLast_name(lastName);
 
-                                // updateUI(null);
+            mAuth.createUserWithEmailAndPassword(email, password)
+                    .addOnCompleteListener(getActivity(), task -> {
+                        if (task.isSuccessful()) {
+                            FirebaseUser created_user = mAuth.getCurrentUser();
+                            String uid = created_user.getUid();
+
+                            db.collection("users")
+                                    .document(uid)
+                                    .set(user)
+                                    .addOnSuccessListener(documentReference -> {
+                                        Toast.makeText(getActivity(), "Successfully registered", Toast.LENGTH_SHORT).show();
+                                        Log.d("RegisterFragment", "createUserWithEmail:success");
+
+                                        txtFirstName.setText("");
+                                        txtLastName.setText("");
+                                        txtEmail.setText("");
+                                        txtPassword.setText("");
+                                        txtConfirmPassword.setText("");
+
+
+                                        viewPager.setCurrentItem(0, true);
+
+                                    })
+                                    .addOnFailureListener(e -> Log.w("CREATE FAILURE", "Error adding document", e));
+
+
+                        } else {
+                            Exception e = task.getException();
+                            Log.w("RegisterFragment", "createUserWithEmail:failure", e);
+
+                            if (e instanceof FirebaseAuthUserCollisionException) {
+                                layoutEmail.setError("Email already in use");
+                                layoutEmail.setErrorEnabled(true);
+                                Toast.makeText(getActivity(), "Failed to register", Toast.LENGTH_LONG).show();
                             }
-                        });
-            }
+                        }
+                    });
+
         });
     }
 }

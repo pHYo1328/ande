@@ -17,14 +17,13 @@ public class Authentication extends AppCompatActivity {
     AuthFragmentAdapter authFragmentAdapter;
     ViewPager2 viewPager;
 
-    private FirebaseAuth mAuth;
+    private final FirebaseAuth mAuth = FirebaseAuth.getInstance();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_authentication); // Set the layout file
 
-        mAuth = FirebaseAuth.getInstance();
         FirebaseUser currentUser = mAuth.getCurrentUser();
 
         if  (currentUser != null)   {

@@ -21,7 +21,7 @@ public class MainActivity extends BaseActivity {
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        TextView textView = findViewById(R.id.textView2);
+        TextView textView = findViewById(R.id.txtWelcome);
         String text = "Welcome Back,\nJohn";
         List<recycleItem> items = new ArrayList<>();
 
