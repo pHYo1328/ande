@@ -24,7 +24,6 @@ public class ProfileFragment extends Fragment {
     Button btnLogout;
 
 
-
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         Log.d("ProfileFragment", "onCreateView: " + mAuth.getCurrentUser().getUid());
@@ -50,7 +49,6 @@ public class ProfileFragment extends Fragment {
                     txtFirstName.setText(user.getFirst_name());
                     txtEmail.setText(currentUser.getEmail());
                 });
-
 
 
         btnLogout.setOnClickListener(v -> {

@@ -21,4 +21,5 @@
     <color name="transparent">#00000000</color>
     <color name="mtr_textinput_outline">#79747E</color>
     <color name="mtr_hint_foreground">#601D1B20</color>
+    <color name="off_white">#EBEBEB</color>
 </resources>

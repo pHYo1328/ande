@@ -20,8 +20,8 @@
             android:id="@+id/imageView4"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="64dp"
-            android:layout_marginBottom="64dp"
+            android:layout_marginTop="32dp"
+            android:layout_marginBottom="32dp"
             android:layout_weight="1"
             android:contentDescription="art"
             android:src="@drawable/splash" />
@@ -78,13 +78,40 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginHorizontal="32dp"
-                android:layout_marginVertical="64dp"
+                android:layout_marginTop="64dp"
+                android:layout_marginBottom="8dp"
                 android:backgroundTint="@color/budget_purple"
                 android:padding="16dp"
                 android:text="Login"
                 android:textColor="@color/white"
                 android:textSize="16sp"
                 app:cornerRadius="10dp" />
+
+            <com.google.android.material.divider.MaterialDivider
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="16dp" />
+
+
+            <Button
+                android:id="@+id/btnGoogleAuth"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="32dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="16dp"
+                android:backgroundTint="@color/icon_color"
+                android:padding="16dp"
+                android:text="Continue with Google"
+                android:textColor="@color/budget_purple"
+                android:textSize="16sp"
+                app:cornerRadius="10dp"
+                app:icon="@drawable/googleg_standard_color_18"
+                app:iconTint="@color/budget_purple"
+                app:rippleColor="@color/off_white"
+                app:strokeColor="@color/off_white"
+                app:strokeWidth="1dp" />
+
 
         </LinearLayout>
 

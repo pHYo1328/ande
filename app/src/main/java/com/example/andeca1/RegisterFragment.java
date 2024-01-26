@@ -19,6 +19,7 @@ import com.example.andeca1.classes.User;
 import com.example.andeca1.utils.ClearErrorTextWatcher;
 import com.example.andeca1.utils.EmailValidator;
 import com.google.android.material.textfield.TextInputLayout;
+import com.google.firebase.auth.EmailAuthProvider;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseAuthUserCollisionException;
 import com.google.firebase.auth.FirebaseUser;
@@ -119,6 +120,8 @@ public class RegisterFragment extends Fragment {
             User user = new User();
             user.setFirst_name(firstName);
             user.setLast_name(lastName);
+            user.setEmail(email);
+            user.setProvider(EmailAuthProvider.PROVIDER_ID);
 
             mAuth.createUserWithEmailAndPassword(email, password)
                     .addOnCompleteListener(getActivity(), task -> {

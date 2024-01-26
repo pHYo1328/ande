@@ -71,4 +71,5 @@
     <string name="sub_event_end_time">Sub-Event End Time</string>
     <string name="budget">budget</string>
     <string name="sub_event_edit">sub-event edit</string>
+    <string name="default_web_client_id" />
 </resources>
