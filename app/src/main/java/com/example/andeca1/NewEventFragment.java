@@ -8,12 +8,15 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.CalendarView;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
+
+import com.example.andeca1.utils.FirestoreUtils;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -23,7 +26,6 @@ import java.util.Locale;
 public class NewEventFragment extends Fragment {
     private EditText editEventTitle, editBudget;
     private TextView selectedDateStr;
-    private DbHelper db;
     private Date startDate;
     private Date endDate;
 
@@ -37,8 +39,7 @@ public class NewEventFragment extends Fragment {
         editBudget = view.findViewById(R.id.editTxtBudget);
         CalendarView calendarView = view.findViewById(R.id.calendarViewNewEvent);
         selectedDateStr = view.findViewById(R.id.selected_date);
-
-        db = new DbHelper(getActivity());
+        ImageButton closeButton = view.findViewById(R.id.exit_selection_mode);
 
         SimpleDateFormat dateFormat = new SimpleDateFormat("EEE, MMM dd, yyyy", Locale.getDefault());
         SimpleDateFormat dateFormatForDB = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
@@ -65,6 +66,7 @@ public class NewEventFragment extends Fragment {
             selectedDateStr.setText(formattedDate);
         });
         String finalStartDateStr = startDateStr;
+
         addSubEventButton.setOnClickListener(view12 -> {
             String eventTitle, budget;
             eventTitle = editEventTitle.getText().toString().trim();
@@ -89,18 +91,27 @@ public class NewEventFragment extends Fragment {
                 return;
             }
             String endDateStr = dateFormatForDB.format(endDate.getTime());
-            long eventId = db.createEvent(eventTitle, finalStartDateStr, endDateStr, budgetValue);
-            Bundle bundle = new Bundle();
-            bundle.putLong("eventId", eventId);
-            bundle.putString("startDate", finalStartDateStr);
-            bundle.putString("endDate", endDateStr);
-            NewSubEventFragment newSubEventFragment = new NewSubEventFragment();
-            newSubEventFragment.setArguments(bundle);
-            FragmentTransaction transaction = requireActivity().getSupportFragmentManager().beginTransaction();
-            transaction.replace(R.id.content_frame, newSubEventFragment);
-            transaction.commit();
-        });
+            FirestoreUtils.createEvent(eventTitle, finalStartDateStr, endDateStr, budgetValue, new FirestoreUtils.FirestoreCallback<String>() {
+                @Override
+                public void onSuccess(String eventId) {
+                    Bundle bundle = new Bundle();
+                    bundle.putString("eventId", eventId);
+                    bundle.putString("startDate", finalStartDateStr);
+                    bundle.putString("endDate", endDateStr);
+                    NewSubEventFragment newSubEventFragment = new NewSubEventFragment();
+                    newSubEventFragment.setArguments(bundle);
+                    FragmentTransaction transaction = requireActivity().getSupportFragmentManager().beginTransaction();
+                    transaction.replace(R.id.content_frame, newSubEventFragment);
+                    transaction.commit();
+                }
 
+                @Override
+                public void onError(Exception e) {
+                    Toast.makeText(getContext(),"fail to create event",Toast.LENGTH_LONG).show();
+                }
+            });
+
+        });
 
         saveButton.setOnClickListener(view1 -> {
             String eventTitle, budget;
@@ -127,11 +138,23 @@ public class NewEventFragment extends Fragment {
                 return;
             }
             String endDateStr = dateFormatForDB.format(endDate.getTime());
-            db.createEvent(eventTitle, finalStartDateStr, endDateStr, budgetValue);
-            FragmentTransaction transaction = requireActivity().getSupportFragmentManager().beginTransaction();
-            transaction.replace(R.id.content_frame, new EventFragment());
-            transaction.commit();
+            FirestoreUtils.createEvent(eventTitle, finalStartDateStr, endDateStr, budgetValue, new FirestoreUtils.FirestoreCallback<String>() {
+                @Override
+                public void onSuccess(String eventId) {
+                    FragmentTransaction transaction = requireActivity().getSupportFragmentManager().beginTransaction();
+                    transaction.replace(R.id.content_frame, new EventFragment());
+                    transaction.commit();
+                }
+
+                @Override
+                public void onError(Exception e) {
+                    Toast.makeText(getContext(),"fail to create event",Toast.LENGTH_LONG).show();
+                }
+            });
+
         });
+
+        closeButton.setOnClickListener(view1 -> getParentFragmentManager().beginTransaction().replace(R.id.content_frame,new EventFragment()).commit());
 
         return view;
     }

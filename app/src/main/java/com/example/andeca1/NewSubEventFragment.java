@@ -3,12 +3,12 @@ package com.example.andeca1;
 import android.app.TimePickerDialog;
 import android.icu.util.Calendar;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -16,6 +16,9 @@ import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 
+import com.example.andeca1.classes.DateRange;
+import com.example.andeca1.classes.SubEvent;
+import com.example.andeca1.utils.FirestoreUtils;
 import com.prolificinteractive.materialcalendarview.CalendarDay;
 import com.prolificinteractive.materialcalendarview.MaterialCalendarView;
 
@@ -29,8 +32,6 @@ public class NewSubEventFragment extends Fragment {
     private TextView selectedDate, startTime, endTime;
     private Date selectedCalendarDate;
     private final Calendar calendar = Calendar.getInstance();
-    private Button saveButton;
-    private DbHelper db;
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -38,23 +39,22 @@ public class NewSubEventFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_new_sub_event, container, false);
         startTime = view.findViewById(R.id.editStartTime);
         endTime = view.findViewById(R.id.editEndTime);
-        saveButton = view.findViewById(R.id.btnSaveSubEvent);
+        Button saveButton = view.findViewById(R.id.btnSaveSubEvent);
         editTitle = view.findViewById(R.id.editSubEventTitle);
         editBudget = view.findViewById(R.id.editSubBudget);
         selectedDate = view.findViewById(R.id.selected_date);
         MaterialCalendarView calendarView = view.findViewById(R.id.calendarView);
+        ImageButton closeButton = view.findViewById(R.id.exit_selection_mode);
+        TextView pageTitle = view.findViewById(R.id.toolbar_title);
 
-        db = new DbHelper(getContext());
-        String txtStartDate, txtEndDate;
+        String txtStartDate, txtEndDate,eventId,subEventId;
         Date startDate = null, endDate = null;
-        Long eventId = null;
         SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
-        Integer subEventId;
         if (getArguments() != null) {
             txtStartDate = getArguments().getString("startDate");
             txtEndDate = getArguments().getString("endDate");
-            eventId = getArguments().getLong("eventId");
-            subEventId = getArguments().getInt("subEventId");
+            eventId = getArguments().getString("eventId");
+            subEventId = getArguments().getString("subEventId");
             try {
                 assert txtStartDate != null;
                 startDate = formatter.parse(txtStartDate);
@@ -71,26 +71,40 @@ public class NewSubEventFragment extends Fragment {
             DateRange dateRange = new DateRange(startCalendarDay, endCalendarDay);
             calendarView.addDecorator(new EventDecorator(dateRange));
 
-            if (!subEventId.equals(0)) {
-                SubEvent subEvent = db.getSubEventById(subEventId);
-                editTitle.setText(subEvent.getSubEvent_title());
-                editBudget.setText(String.valueOf(subEvent.getSubEvent_budget()));
-                startTime.setText(subEvent.getStart_time());
-                endTime.setText(subEvent.getEnd_time());
-                try {
-                    selectedCalendarDate = formatter.parse(subEvent.getSubEvent_date());
-                    calendar.setTime(selectedCalendarDate);
-                    CalendarDay selectedDateDB = CalendarDay.from(calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH) + 1, calendar.get(Calendar.DAY_OF_MONTH));
-                    calendarView.setSelectedDate(selectedDateDB);
-                    selectedDate.setText(dateFormat.format(selectedCalendarDate));
-                } catch (ParseException e) {
-                    throw new RuntimeException(e);
-                }
+            if (subEventId!=null && eventId!=null) {
+                pageTitle.setText("Edit Sub-Event");
+                FirestoreUtils.getSubEventById(eventId, subEventId, new FirestoreUtils.FirestoreCallback<SubEvent>() {
+                    @Override
+                    public void onSuccess(SubEvent subEvent) {
+                        if (subEvent != null) {
+                            editTitle.setText(subEvent.getSubEvent_title());
+                            editBudget.setText(String.valueOf(subEvent.getSubEvent_budget()));
+                            startTime.setText(subEvent.getStart_time());
+                            endTime.setText(subEvent.getEnd_time());
+                            try {
+                                selectedCalendarDate = formatter.parse(subEvent.getSubEvent_date());
+                                calendar.setTime(selectedCalendarDate);
+                                CalendarDay selectedDateDB = CalendarDay.from(calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH) + 1, calendar.get(Calendar.DAY_OF_MONTH));
+                                calendarView.setSelectedDate(selectedDateDB);
+                                selectedDate.setText(dateFormat.format(selectedCalendarDate));
+                            } catch (ParseException e) {
+                                throw new RuntimeException(e);
+                            }
+                        }
+                    }
 
+                    @Override
+                    public void onError(Exception e) {
+                        // Handle errors if any
+                    }
+                });
             }
         } else {
+            eventId = null;
             subEventId = null;
         }
+
+        closeButton.setOnClickListener(view1 -> getParentFragmentManager().beginTransaction().replace(R.id.content_frame,new EventFragment()).commit());
 
         startTime.setOnClickListener(view15 -> {
             Calendar calendar = Calendar.getInstance();
@@ -160,8 +174,7 @@ public class NewSubEventFragment extends Fragment {
 
         Date finalStartDate = startDate;
         Date finalEndDate = endDate;
-        Long finalEventId = eventId;
-        saveButton.setOnClickListener(view1 -> saveButton.setOnClickListener(view2 -> {
+        saveButton.setOnClickListener(view1 -> {
             String title = editTitle.getText().toString().trim();
             String budget = editBudget.getText().toString().trim();
             String startTimeStr = startTime.getText().toString().trim();
@@ -213,20 +226,38 @@ public class NewSubEventFragment extends Fragment {
 
             SimpleDateFormat dateFormatForData = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
             String subEventDateStr = dateFormatForData.format(selectedCalendarDate);
-            if (!subEventId.equals(0)) {
-                db.updateSubEvent(subEventId, title, subEventDateStr, startTimeStr, endTimeStr, budgetValue);
-                FragmentTransaction transaction = requireActivity().getSupportFragmentManager().beginTransaction();
-                transaction.replace(R.id.content_frame,new EventFragment());
-                transaction.commit();
+            if (subEventId != null && eventId != null) {
+                FirestoreUtils.updateSubEvent(eventId, subEventId, title, subEventDateStr, startTimeStr, endTimeStr, budgetValue, new FirestoreUtils.FirestoreCallback<Void>() {
+                    @Override
+                    public void onSuccess(Void result) {
+                        FragmentTransaction transaction = getParentFragmentManager().beginTransaction();
+                        transaction.replace(R.id.content_frame,new EventFragment());
+                        transaction.commit();
+                    }
+                    @Override
+                    public void onError(Exception e) {
+                        // Handle errors if any
+                    }
+                });
             } else {
-                db.createSubEvent(title, subEventDateStr, startTimeStr, endTimeStr, budgetValue, finalEventId);
-                Log.d("onClickEvent","create is called");
-                editTitle.setText("");
-                editBudget.setText("");
-                startTime.setText("");
-                endTime.setText("");
+                FirestoreUtils.createSubEvent(title, subEventDateStr, startTimeStr, endTimeStr, budgetValue, eventId, new FirestoreUtils.FirestoreCallback<String>() {
+                    @Override
+                    public void onSuccess(String result) {
+                        editTitle.setText("");
+                        editBudget.setText("");
+                        startTime.setText("");
+                        endTime.setText("");
+                    }
+
+                    @Override
+                    public void onError(Exception e) {
+                        // Handle the error if sub-event creation fails
+                        Toast.makeText(getContext(),"fail to create sub event",Toast.LENGTH_LONG).show();
+                    }
+                });
+
             }
-        }));
+        });
         return view;
 
 

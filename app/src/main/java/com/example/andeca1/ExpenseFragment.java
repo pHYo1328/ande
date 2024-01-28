@@ -6,7 +6,6 @@ import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,7 +14,6 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Spinner;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.activity.result.ActivityResultLauncher;
@@ -23,8 +21,9 @@ import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 
+import com.example.andeca1.classes.Event;
+import com.example.andeca1.utils.FirestoreUtils;
 import com.google.android.material.datepicker.MaterialDatePicker;
-import com.google.android.material.textfield.TextInputEditText;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.text.ParseException;
@@ -32,13 +31,14 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.TimeZone;
 
 public class ExpenseFragment extends Fragment {
 
-    private EditText editAmount,editTextDate,editNote;
+    private EditText editAmount,editTextDate,editDesc,editTitle;
     private Spinner spinnerCategory,spinnerEvent;
     private String category;
     private String event;
@@ -56,11 +56,9 @@ public class ExpenseFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_expense, container, false);
         editTextDate = view.findViewById(R.id.dateEditText);
         editAmount = view.findViewById(R.id.spentEditText);
-        editNote = view.findViewById(R.id.descEditText);
+        editDesc = view.findViewById(R.id.descEditText);
+        editTitle = view.findViewById(R.id.expenseTitle);
         Button receiptButton = view.findViewById(R.id.btnReceipt);
-        editTextDate = view.findViewById(R.id.dateEditText);
-        editAmount = view.findViewById(R.id.spentEditText);
-        editNote = view.findViewById(R.id.descEditText);
 
         Button saveButton = view.findViewById(R.id.btnSaveSubEvent);
         editTextDate.setOnClickListener(v -> showMaterialDatePicker());
@@ -71,11 +69,8 @@ public class ExpenseFragment extends Fragment {
             String amount = getArguments().getString("amount_key");
             String description = getArguments().getString("description_key");
 
-            // Assuming you have a TextView for the title
-            TextView expenseTitleView = view.findViewById(R.id.expenseTitle);
-
             editAmount.setText(amount);
-            editNote.setText(description);
+            editDesc.setText(description);
         }
 
         receiptButton.setOnClickListener(view12 -> showCamera());
@@ -176,12 +171,24 @@ public class ExpenseFragment extends Fragment {
 
     private void setUpEventSpinner(View view){
         spinnerEvent = view.findViewById(R.id.eventSpinner);
-        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(requireContext(),
-                R.array.events, android.R.layout.simple_spinner_item);
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        spinnerEvent.setAdapter(adapter);
-        spinnerEvent.setSelection(0);
-        spinnerEvent.setOnItemSelectedListener(new EventSelectedListener());
+
+        FirestoreUtils.getAllEvents(new FirestoreUtils.FirestoreCallback<List<Event>>() {
+            @Override
+            public void onSuccess(List<Event> eventList) {
+
+                ArrayAdapter<Event> adapter = new ArrayAdapter<>(requireContext(), android.R.layout.simple_spinner_item, eventList);
+                adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+                spinnerEvent.setAdapter(adapter);
+                spinnerEvent.setSelection(0);
+                spinnerEvent.setOnItemSelectedListener(new EventSelectedListener());
+            }
+
+            @Override
+            public void onError(Exception e) {
+
+            }
+        });
+
     }
 
     private class CategorySelectedListener implements AdapterView.OnItemSelectedListener {
@@ -201,9 +208,8 @@ public class ExpenseFragment extends Fragment {
     private class EventSelectedListener implements AdapterView.OnItemSelectedListener {
         @Override
         public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-            if(position != 0){
-                event = (String) parent.getItemAtPosition(position);
-            }
+            Event selectedEvent =(Event) parent.getItemAtPosition(position);
+            event = selectedEvent.getId();
         }
 
         @Override
@@ -214,9 +220,10 @@ public class ExpenseFragment extends Fragment {
 
     private void saveButtonOnClickListener(){
         FirebaseFirestore db = FirebaseFirestore.getInstance();
+        String expenseTitle = editTitle.getText().toString().trim();
         String amount = editAmount.getText().toString().trim();
         String date = editTextDate.getText().toString().trim();
-        String note = editNote.getText().toString().trim();
+        String desc = editDesc.getText().toString().trim();
 
         double amountValue;
         try {
@@ -254,29 +261,30 @@ public class ExpenseFragment extends Fragment {
             return;
         }
 
+        if (expenseTitle.isEmpty() ){
+            editTitle.setError("Please enter expense title");
+            return;
+        }
+
         Map<String, Object> expense = new HashMap<>();
+        expense.put("title",expenseTitle);
         expense.put("amount", amount);
         expense.put("date", date);
         expense.put("category",category);
-        expense.put("note", note);
+        expense.put("description",desc);
         expense.put("event",event);
-
-        Log.d("SaveExpense", "Sending data to Firestore: " + expense);
         db.collection("expenses").add(expense)
                 .addOnSuccessListener(documentReference -> {
-                    Log.d("Firestore", "DocumentSnapshot added with ID: " + documentReference.getId());
+                    editTitle.setText("");
                     editAmount.setText("");
                     editTextDate.setText("");
-                    editNote.setText("");
+                    editDesc.setText("");
                     spinnerCategory.setSelection(0);
                     spinnerEvent.setSelection(0);
 
                     Toast.makeText(getContext(), "Expense saved successfully", Toast.LENGTH_SHORT).show();
                 })
-                .addOnFailureListener(e -> {
-                    Log.w("Firestore", "Error adding document", e);
-                    Toast.makeText(getContext(), "Server error", Toast.LENGTH_SHORT).show();
-                });
+                .addOnFailureListener(e -> Toast.makeText(getContext(), "Server error", Toast.LENGTH_SHORT).show());
 
     }
 

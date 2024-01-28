@@ -1,4 +1,4 @@
-package com.example.andeca1;
+package com.example.andeca1.classes;
 
 import android.util.Log;
 

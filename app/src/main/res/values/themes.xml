@@ -3,7 +3,7 @@
     <style name="Theme.ANDECA1" parent="Theme.Material3.DayNight.NoActionBar">
         <!-- Primary brand color. -->
         <item name="colorPrimary">@color/white</item>
-        <item name="colorPrimaryVariant">@color/purple_700</item>
+        <item name="colorPrimaryVariant">@color/budget_purple</item>
         <item name="colorOnPrimary">@color/white</item>
         <!-- Secondary brand color. -->
         <item name="colorSecondary">@color/teal_200</item>
@@ -19,7 +19,7 @@
 
 
     <style name="CustomMaterialDatePickerTheme" parent="ThemeOverlay.MaterialComponents.MaterialCalendar">
-        <item name="colorPrimary">@color/purple_500</item>
+        <item name="colorPrimary">@color/budget_purple</item>
         <item name="colorOnPrimary">@color/white</item>
     </style>
 
@@ -31,5 +31,13 @@
         <item name="android:textColor">@color/white</item>
         <!-- You can also customize other text properties if needed -->
     </style>
+
+    <style name="AlertDialogCustom" parent="Theme.AppCompat.Light.Dialog.Alert">
+        <!-- Customize your theme here. -->
+        <item name="colorAccent">@color/white</item> <!-- Button text color -->
+        <item name="android:textColorPrimary">@color/white</item>
+        <item name="android:background">@color/budget_purple</item>
+    </style>
+
 
 </resources>

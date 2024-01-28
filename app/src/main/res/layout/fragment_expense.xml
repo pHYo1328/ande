@@ -27,167 +27,177 @@
         </androidx.appcompat.widget.Toolbar>
     </com.google.android.material.appbar.AppBarLayout>
 
-    <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
-        android:id="@+id/btnReceipt"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_margin="8dp"
-        android:layout_gravity="bottom|end"
-        app:iconTint="@color/white"
-        android:contentDescription="@string/button_receipt_scanning"
-        android:text="@string/button_receipt_scanning"
-        android:textColor="@color/white"
-        app:backgroundTint="@color/purple_button"
-        app:icon="@drawable/sparkling"/>
-
-    <com.google.android.material.textfield.TextInputLayout
-        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+    <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:hint="@string/expense_title"
-        android:padding="16dp"
-        app:startIconContentDescription="amount of money spent"
-        app:startIconDrawable="@drawable/baseline_subtitles_24">
-
-        <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/expenseTitle"
+        android:layout_height="wrap_content" >
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:gravity="end"
-            android:inputType="text"
-            android:textAppearance="@style/TextAppearance.AppCompat.Medium"
-            android:textColor="@color/black"
-            android:textSize="14sp" />
-    </com.google.android.material.textfield.TextInputLayout>
+            android:orientation="vertical">
+            <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
+                android:id="@+id/btnReceipt"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="8dp"
+                android:layout_gravity="bottom|end"
+                app:iconTint="@color/white"
+                android:contentDescription="@string/button_receipt_scanning"
+                android:text="@string/button_receipt_scanning"
+                android:textColor="@color/white"
+                app:backgroundTint="@color/purple_button"
+                app:icon="@drawable/sparkling"/>
 
-    <com.google.android.material.textfield.TextInputLayout
-        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:hint="@string/amount_of_money_spent"
-        android:padding="16dp"
-        app:startIconContentDescription="amount of money spent"
-        app:startIconDrawable="@drawable/baseline_attach_money_24_black">
+            <com.google.android.material.textfield.TextInputLayout
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/expense_title"
+                android:padding="16dp"
+                app:startIconContentDescription="amount of money spent"
+                app:startIconDrawable="@drawable/baseline_subtitles_24">
 
-        <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/spentEditText"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:gravity="end"
-            android:inputType="numberDecimal"
-            android:textAppearance="@style/TextAppearance.AppCompat.Medium"
-            android:textColor="@color/black"
-            android:textSize="14sp" />
-    </com.google.android.material.textfield.TextInputLayout>
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/expenseTitle"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="end"
+                    android:inputType="text"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+                    android:textColor="@color/black"
+                    android:textSize="14sp" />
+            </com.google.android.material.textfield.TextInputLayout>
 
-    <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/dateTextInputLayout"
-        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:hint="@string/date"
-        android:padding="16dp"
-        app:startIconContentDescription="Date"
-        app:startIconDrawable="@drawable/baseline_access_time_24_black">
+            <com.google.android.material.textfield.TextInputLayout
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/amount_of_money_spent"
+                android:padding="16dp"
+                app:startIconContentDescription="amount of money spent"
+                app:startIconDrawable="@drawable/baseline_attach_money_24_black">
 
-        <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/dateEditText"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:focusable="false"
-            android:gravity="end"
-            android:inputType="none"
-            android:textAppearance="@style/TextAppearance.AppCompat.Medium"
-            android:textColor="@color/black"
-            android:textSize="14sp" />
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/spentEditText"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="end"
+                    android:inputType="numberDecimal"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+                    android:textColor="@color/black"
+                    android:textSize="14sp" />
+            </com.google.android.material.textfield.TextInputLayout>
 
-    </com.google.android.material.textfield.TextInputLayout>
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/dateTextInputLayout"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/date"
+                android:padding="16dp"
+                app:startIconContentDescription="Date"
+                app:startIconDrawable="@drawable/baseline_access_time_24_black">
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginHorizontal="10dp"
-        android:orientation="horizontal">
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/dateEditText"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:focusable="false"
+                    android:gravity="end"
+                    android:inputType="none"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+                    android:textColor="@color/black"
+                    android:textSize="14sp" />
 
-        <ImageView
-            android:id="@+id/imageView3"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:layout_marginHorizontal="20dp"
-            app:srcCompat="@drawable/price_tag"
-            android:contentDescription="@string/price_tag_icon"
-            />
+            </com.google.android.material.textfield.TextInputLayout>
 
-        <Spinner
-            android:id="@+id/categorySpinner"
-            style="@style/SpinnerWhiteText"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:backgroundTint="@color/black"
-            android:backgroundTintMode="add"
-            android:dropDownVerticalOffset="5dp"
-            android:hapticFeedbackEnabled="true"
-            android:padding="16dp"
-            android:spinnerMode="dropdown" />
-    </LinearLayout>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="10dp"
+                android:orientation="horizontal">
 
-    <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/NoteTextInputLayout"
-        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:hint="@string/description"
-        android:padding="16dp"
-        app:startIconContentDescription="Description"
-        app:startIconDrawable="@drawable/note">
+                <ImageView
+                    android:id="@+id/imageView3"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_marginHorizontal="20dp"
+                    app:srcCompat="@drawable/price_tag"
+                    android:contentDescription="@string/price_tag_icon"
+                    />
 
-        <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/descEditText"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:inputType="textMultiLine"
-            android:textAppearance="@style/TextAppearance.AppCompat.Medium"
-            android:textColor="@color/black"
-            android:textSize="14sp" />
-    </com.google.android.material.textfield.TextInputLayout>
+                <Spinner
+                    android:id="@+id/categorySpinner"
+                    style="@style/SpinnerWhiteText"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:backgroundTint="@color/black"
+                    android:backgroundTintMode="add"
+                    android:dropDownVerticalOffset="5dp"
+                    android:hapticFeedbackEnabled="true"
+                    android:padding="16dp"
+                    android:spinnerMode="dropdown" />
+            </LinearLayout>
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginHorizontal="10dp"
-        android:orientation="horizontal">
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/NoteTextInputLayout"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/description"
+                android:padding="16dp"
+                app:startIconContentDescription="Description"
+                app:startIconDrawable="@drawable/note">
 
-        <ImageView
-            android:id="@+id/imageView4"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:layout_marginHorizontal="20dp"
-            android:src="@drawable/event"
-            app:srcCompat="@drawable/event"
-            android:contentDescription="@string/todo" />
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/descEditText"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="textMultiLine"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+                    android:textColor="@color/black"
+                    android:textSize="14sp" />
+            </com.google.android.material.textfield.TextInputLayout>
 
-        <Spinner
-            android:id="@+id/eventSpinner"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:backgroundTint="@color/black"
-            android:backgroundTintMode="add"
-            android:dropDownVerticalOffset="5dp"
-            android:padding="16dp"
-            android:spinnerMode="dropdown" />
-    </LinearLayout>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="10dp"
+                android:orientation="horizontal">
 
-    <Button
-        android:id="@+id/btnSaveSubEvent"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="end"
-        android:layout_marginEnd="20dp"
-        android:backgroundTint="#9835D0"
-        android:drawableEnd="@drawable/baseline_save_24"
-        android:drawablePadding="5dp"
-        android:text="@string/button_save"
-        android:textColor="#FFFFFF" />
+                <ImageView
+                    android:id="@+id/imageView4"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_marginHorizontal="20dp"
+                    android:src="@drawable/event"
+                    app:srcCompat="@drawable/event"
+                    android:contentDescription="@string/todo" />
+
+                <Spinner
+                    android:id="@+id/eventSpinner"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:backgroundTint="@color/black"
+                    android:backgroundTintMode="add"
+                    android:dropDownVerticalOffset="5dp"
+                    android:padding="16dp"
+                    android:spinnerMode="dropdown" />
+            </LinearLayout>
+
+            <Button
+                android:id="@+id/btnSaveSubEvent"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="end"
+                android:layout_marginEnd="20dp"
+                android:backgroundTint="#9835D0"
+                android:drawableEnd="@drawable/baseline_save_24"
+                android:drawablePadding="5dp"
+                android:text="@string/button_save"
+                android:textColor="#FFFFFF" />
+
+        </LinearLayout>
+    </ScrollView>
 
 
 </LinearLayout>

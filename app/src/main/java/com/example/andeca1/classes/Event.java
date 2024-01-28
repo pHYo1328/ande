@@ -1,20 +1,20 @@
-package com.example.andeca1;
+package com.example.andeca1.classes;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class Event {
-    private Integer id;
+    private String id;
     private String startDate;
     private String endDate;
     private String eventName;
     private double budget;
-    private final List<SubEvent> subEvents;
+    private List<SubEvent> subEvents = new ArrayList<>();
 
     private Boolean isExpanded =false;
 
     public Event() {
-        this.subEvents = new ArrayList<>();
+        // Empty constructor required for Firestore data mapping
     }
 
     public Boolean getExpanded() {
@@ -25,15 +25,15 @@ public class Event {
         isExpanded = expanded;
     }
 
-    public Integer getId() {
+    public String getId() {
         return id;
     }
 
-    public void setId(Integer id) {
+    public void setId(String id) {
         this.id = id;
     }
 
-    public Event(Integer id,String eventName,String startDate, String endDate,double budget) {
+    public Event(String id,String eventName,String startDate, String endDate,double budget) {
         this.id = id;
         this.startDate = startDate;
         this.endDate = endDate;
@@ -45,7 +45,6 @@ public class Event {
     public String getStartDate() {
         return startDate;
     }
-
 
 
     public String getEndDate() {
@@ -72,6 +71,10 @@ public class Event {
 
     public void addSubEvent(SubEvent subEvent){
         this.subEvents.add(subEvent);
+    }
+    @Override
+    public String toString() {
+        return this.eventName;
     }
 
 }

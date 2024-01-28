@@ -7,12 +7,12 @@
         android:orientation="horizontal"
         android:background="#9835D0">
 
-        <TextView
-            android:id="@+id/txtViewTime"
-            android:layout_width="100dp"
-            android:layout_height="match_parent"
-            android:textColor="@color/white"
-            android:textSize="16sp" />
+    <TextView
+        android:id="@+id/txtViewTime"
+        android:layout_width="110dp"
+        android:layout_height="match_parent"
+        android:textColor="@color/white"
+        android:textSize="16sp" />
 
         <View
             android:layout_width="1dp"

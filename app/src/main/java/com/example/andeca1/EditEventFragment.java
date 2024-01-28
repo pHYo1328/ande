@@ -6,12 +6,15 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 
+import com.example.andeca1.classes.Event;
+import com.example.andeca1.utils.FirestoreUtils;
 import com.google.android.material.datepicker.MaterialDatePicker;
 
 import java.text.ParseException;
@@ -23,7 +26,6 @@ import java.util.TimeZone;
 
 public class EditEventFragment extends Fragment {
     private EditText editTitle,editStartDate,editEndDate,editBudget;
-    DbHelper db;
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_edit_event, container, false);
@@ -33,24 +35,36 @@ public class EditEventFragment extends Fragment {
         editEndDate = view.findViewById(R.id.editEndDate);
         Button btnSaveEvent = view.findViewById(R.id.btnSaveEvent);
         Button btnAddSubEvent = view.findViewById(R.id.btnEditAddSubEvent);
+        ImageButton closeButton = view.findViewById(R.id.exit_selection_mode);
 
-        db = new DbHelper(getContext());
-
-
-        Integer eventId=null;
+        String eventId=null;
         if (getArguments() != null) {
-            eventId = getArguments().getInt("eventId");
-            Event event=db.getEventByID(eventId);
-            editTitle.setText(event.getEventName());
-            editBudget.setText(String.valueOf(event.getBudget()));
-            editStartDate.setText(event.getStartDate());
-            editEndDate.setText(event.getEndDate());
+            eventId = getArguments().getString("eventId");
+            FirestoreUtils.getEventByID(eventId, new FirestoreUtils.FirestoreCallback<Event>() {
+                @Override
+                public void onSuccess(Event event) {
+                    if (event != null) {
+                        editTitle.setText(event.getEventName());
+                        editBudget.setText(String.valueOf(event.getBudget()));
+                        editStartDate.setText(event.getStartDate());
+                        editEndDate.setText(event.getEndDate());
+                    } else {
+                        Toast.makeText(requireContext(),"event is no longer available",Toast.LENGTH_LONG).show();
+                    }
+                }
+
+                @Override
+                public void onError(Exception e) {
+                    // Handle errors
+                }
+            });
+
         }
         editStartDate.setOnClickListener(v -> showMaterialDatePicker(editStartDate));
 
         editEndDate.setOnClickListener(v -> showMaterialDatePicker(editEndDate));
 
-        Integer finalEventId = eventId;
+        String finalEventId = eventId;
         btnSaveEvent.setOnClickListener(v -> {
             String eventTitle = editTitle.getText().toString().trim();
             String budget = editBudget.getText().toString().trim();
@@ -82,15 +96,25 @@ public class EditEventFragment extends Fragment {
                 return;
             }
 
+            assert finalEndDate != null;
             if (finalEndDate.before(finalStartDate)) {
                 Toast.makeText(getContext(), "Event end date shouldn't be before the start date", Toast.LENGTH_LONG).show();
                 return;
             }
 
-            db.updateEvent(finalEventId, eventTitle, startDateStr, endDateStr, budgetValue);
-            FragmentTransaction transaction = getActivity().getSupportFragmentManager().beginTransaction();
-            transaction.replace(R.id.content_frame, new EventFragment());
-            transaction.commit();
+            FirestoreUtils.updateEvent(finalEventId,eventTitle,startDateStr,endDateStr,budgetValue,new FirestoreUtils.FirestoreCallback<Void>() {
+                        @Override
+                        public void onSuccess(Void result) {
+                            FragmentTransaction transaction = getParentFragmentManager().beginTransaction();
+                            transaction.replace(R.id.content_frame, new EventFragment());
+                            transaction.commit();
+                        }
+                        @Override
+                        public void onError(Exception e) {
+                            Toast.makeText(getContext(), "fail to update event", Toast.LENGTH_LONG).show();
+                        }
+                    }
+            );
         });
 
 
@@ -119,22 +143,34 @@ public class EditEventFragment extends Fragment {
                     return;
                 }
 
+            assert finalEndDate != null;
                 if(finalEndDate.before(finalStartDate)){
                     Toast.makeText(getContext(),"Event end date shouldn't before start date",Toast.LENGTH_LONG).show();
                     return;
                 }
-                db.updateEvent(finalEventId,eventTitle,startDateStr,endDateStr,budgetValue);
-                Bundle bundle = new Bundle();
-                bundle.putInt("eventId",(int) finalEventId);
-                bundle.putString("startDate",startDateStr);
-                bundle.putString("endDate",endDateStr);
-                NewSubEventFragment newSubEventFragment = new NewSubEventFragment();
-                newSubEventFragment.setArguments(bundle);
-                FragmentTransaction transaction = getActivity().getSupportFragmentManager().beginTransaction();
-                transaction.replace(R.id.content_frame, newSubEventFragment);
-                transaction.commit();
-            });
+                FirestoreUtils.updateEvent(finalEventId,eventTitle,startDateStr,endDateStr,budgetValue,new FirestoreUtils.FirestoreCallback<Void>() {
+                    @Override
+                    public void onSuccess(Void result) {
+                        Bundle bundle = new Bundle();
+                        bundle.putString("eventId",finalEventId);
+                        bundle.putString("startDate",startDateStr);
+                        bundle.putString("endDate",endDateStr);
+                        NewSubEventFragment newSubEventFragment = new NewSubEventFragment();
+                        newSubEventFragment.setArguments(bundle);
+                        FragmentTransaction transaction = getParentFragmentManager().beginTransaction();
+                        transaction.replace(R.id.content_frame, newSubEventFragment);
+                        transaction.commit();
+                    }
 
+                    @Override
+                    public void onError(Exception e) {
+                        Toast.makeText(getContext(), "fail to update the event", Toast.LENGTH_LONG).show();
+                    }
+                }
+            );
+        });
+
+        closeButton.setOnClickListener(view1 -> getParentFragmentManager().beginTransaction().replace(R.id.content_frame,new EventFragment()).commit());
         return view;
     }
 
