@@ -24,6 +24,8 @@ import androidx.fragment.app.Fragment;
 import com.example.andeca1.classes.Event;
 import com.example.andeca1.utils.FirestoreUtils;
 import com.google.android.material.datepicker.MaterialDatePicker;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.text.ParseException;
@@ -266,6 +268,9 @@ public class ExpenseFragment extends Fragment {
             return;
         }
 
+        FirebaseAuth mAuth = FirebaseAuth.getInstance();
+        FirebaseUser currentUser = mAuth.getCurrentUser();
+
         Map<String, Object> expense = new HashMap<>();
         expense.put("title",expenseTitle);
         expense.put("amount", amount);
@@ -273,6 +278,7 @@ public class ExpenseFragment extends Fragment {
         expense.put("category",category);
         expense.put("description",desc);
         expense.put("event",event);
+        expense.put("userID", currentUser.getUid());
         db.collection("expenses").add(expense)
                 .addOnSuccessListener(documentReference -> {
                     editTitle.setText("");

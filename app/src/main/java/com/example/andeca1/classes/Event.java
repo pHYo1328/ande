@@ -1,5 +1,7 @@
 package com.example.andeca1.classes;
 
+import androidx.annotation.NonNull;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -12,6 +14,7 @@ public class Event {
     private List<SubEvent> subEvents = new ArrayList<>();
 
     private Boolean isExpanded =false;
+
 
     public Event() {
         // Empty constructor required for Firestore data mapping
@@ -28,6 +31,23 @@ public class Event {
     public String getId() {
         return id;
     }
+
+    public void setStartDate(String startDate) {
+        this.startDate = startDate;
+    }
+
+    public void setEndDate(String endDate) {
+        this.endDate = endDate;
+    }
+
+    public void setEventName(String eventName) {
+        this.eventName = eventName;
+    }
+
+    public void setSubEvents(List<SubEvent> subEvents) {
+        this.subEvents = subEvents;
+    }
+
 
     public void setId(String id) {
         this.id = id;
@@ -72,6 +92,7 @@ public class Event {
     public void addSubEvent(SubEvent subEvent){
         this.subEvents.add(subEvent);
     }
+    @NonNull
     @Override
     public String toString() {
         return this.eventName;

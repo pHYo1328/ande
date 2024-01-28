@@ -2,11 +2,12 @@ package com.example.andeca1.utils;
 
 import android.util.Log;
 import androidx.annotation.NonNull;
-import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.gms.tasks.Tasks;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
@@ -14,6 +15,7 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -24,16 +26,22 @@ public class FirestoreUtils {
     private static final FirebaseFirestore db = FirebaseFirestore.getInstance();
     private static final CollectionReference eventsCollection = db.collection("events");
 
+    private static final FirebaseAuth mAuth = FirebaseAuth.getInstance();
+    private static final FirebaseUser currentUser = mAuth.getCurrentUser();
     public interface FirestoreCallback<T> {
         void onSuccess(T result);
         void onError(Exception e);
     }
 
     public static void createEvent(String eventName, String startDate, String endDate, Double budget, FirestoreCallback<String> callback) {
-        Event event = new Event(null,eventName, startDate, endDate, budget);
-
+        Map<String, Object> eventMap = new HashMap<>();
+        eventMap.put("startDate", startDate);
+        eventMap.put("endDate", endDate);
+        eventMap.put("eventName", eventName);
+        eventMap.put("budget", budget);
+        eventMap.put("userID", currentUser.getUid());
         eventsCollection
-                .add(event)
+                .add(eventMap)
                 .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
                     @Override
                     public void onSuccess(DocumentReference documentReference) {
@@ -78,8 +86,9 @@ public class FirestoreUtils {
 
     public static void getAllEvents(FirestoreCallback<List<Event>> callback) {
         eventsCollection
+                .whereEqualTo("userID",currentUser.getUid())
                 .get()
-                .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+                .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>( ) {
                     @Override
                     public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
                         List<Event> eventList = new ArrayList<>();
@@ -109,7 +118,7 @@ public class FirestoreUtils {
 
         // Query: events with startDate <= selectedDate
         db.collection("events")
-                .whereLessThanOrEqualTo("startDate", selectedDate)
+                .whereEqualTo("userID", currentUser.getUid())
                 .get()
                 .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
                     @Override
@@ -122,7 +131,7 @@ public class FirestoreUtils {
                             String endDate = document.getString("endDate");
 
                             // Check if the selectedDate is also less than or equal to endDate
-                            if (selectedDate.compareTo(endDate) <= 0) {
+                            if (selectedDate.compareTo(endDate) <= 0 && selectedDate.compareTo(startDate)>=0) {
                                 String eventId = document.getId();
                                 String eventTitle = document.getString("eventName");
                                 Double budget = document.getDouble("budget");
@@ -169,7 +178,11 @@ public class FirestoreUtils {
     public static void updateEvent(String eventId, String eventTitle, String startDate, String endDate, Double budget, FirestoreCallback<Void> callback) {
         DocumentReference eventDocRef = eventsCollection.document(eventId);
 
-        Event updatedEvent = new Event(null,eventTitle, startDate, endDate, budget);
+        Map<String, Object> updatedEvent = new HashMap<>();
+        updatedEvent.put("startDate", startDate);
+        updatedEvent.put("endDate", endDate);
+        updatedEvent.put("eventName", eventTitle);
+        updatedEvent.put("budget", budget);
 
         eventDocRef
                 .set(updatedEvent)
