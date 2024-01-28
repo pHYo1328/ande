@@ -91,6 +91,7 @@
                 android:layout_marginTop="10dp"
                 android:gravity="end"
                 android:hint="@string/estimated_budget"
+                android:inputType="number|numberDecimal"
                 android:textAppearance="@style/TextAppearance.AppCompat.Medium"
                 android:textColor="@color/black"
                 android:textSize="14sp" />

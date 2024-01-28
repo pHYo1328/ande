@@ -3,6 +3,7 @@ package com.example.andeca1;
 import android.app.TimePickerDialog;
 import android.icu.util.Calendar;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -196,7 +197,8 @@ public class NewSubEventFragment extends Fragment {
                 return;
             }
 
-            if (selectedCalendarDate.before(finalStartDate) && selectedCalendarDate.after(finalEndDate)) {
+            Log.d("checkData","startDate"+selectedCalendarDate.before(finalStartDate));
+            if (selectedCalendarDate.before(finalStartDate) || selectedCalendarDate.after(finalEndDate)) {
                 Toast.makeText(getContext(), "Please select date between start date and end date of the event", Toast.LENGTH_LONG).show();
                 return;
             }

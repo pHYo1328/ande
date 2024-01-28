@@ -183,6 +183,7 @@ public class FirestoreUtils {
         updatedEvent.put("endDate", endDate);
         updatedEvent.put("eventName", eventTitle);
         updatedEvent.put("budget", budget);
+        updatedEvent.put("userID", currentUser.getUid());
 
         eventDocRef
                 .set(updatedEvent)
