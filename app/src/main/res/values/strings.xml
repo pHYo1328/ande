@@ -77,4 +77,7 @@
     <string name="events">Events</string>
     <string name="add_events">add events</string>
     <string name="edit_event">Edit Event</string>
+    <string name="button_suggestion">"<b>Give me ideas</b> for my current budget"</string>
+    <string name="chat_selection">0 Selected</string>
+    <string name="copy">Copy</string>
 </resources>

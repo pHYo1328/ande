@@ -8,7 +8,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.ImageButton;
-import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -18,8 +17,8 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.bumptech.glide.Glide;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.google.android.material.progressindicator.CircularProgressIndicator;
 import com.google.auth.oauth2.GoogleCredentials;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
@@ -76,6 +75,13 @@ public class ChatFragment extends Fragment implements View.OnClickListener, Base
 
         View closeButton = view.findViewById(R.id.exit_selection_mode);
         closeButton.setOnClickListener(this);
+
+        View suggestionButton = view.findViewById(R.id.suggestion_button);
+        suggestionButton.setOnClickListener((View v)->{
+            messageInput.setText(R.string.button_suggestion);
+            sendMessage();
+            suggestionButton.setVisibility(View.GONE);
+        });
 
         // Initialize ViewModel
         chatViewModel = new ViewModelProvider(requireActivity()).get(ChatViewModel.class);
@@ -185,7 +191,6 @@ public class ChatFragment extends Fragment implements View.OnClickListener, Base
 
         // Adding examples
         JsonArray examplesArray = new JsonArray();
-        // Assuming you have some way to get these examples. Modify as needed.
         addExample(examplesArray, "Hello", "[{\"message\": \"Hi there! I'm happy to lend a hand. Tell me about your financial goals for 2023.\"}]");
         addExample(examplesArray, "I want to buy a house", "[{\"message\": \"Great! Let's start by looking at your current budget.\"}]");
         instance.add("examples", examplesArray);
@@ -200,13 +205,13 @@ public class ChatFragment extends Fragment implements View.OnClickListener, Base
             }
             if (chatMsg.getType() == ChatMessage.TYPE_RECIPIENT) {
                 if (recipientMessages.length() > 0) {
-                    recipientMessages.append("\n"); // Add a separator (if needed) between messages
+                    recipientMessages.append("\n");
                 }
                 recipientMessages.append(chatMsg.getMessage());
             } else {
                 if (recipientMessages.length() > 0) {
                     combinedMessages.add(new ChatMessage(recipientMessages.toString(), "Now", ChatMessage.TYPE_RECIPIENT));
-                    recipientMessages = new StringBuilder(); // Reset for the next set of recipient messages
+                    recipientMessages = new StringBuilder(); // clear
                 }
                 combinedMessages.add(chatMsg);
             }
@@ -256,7 +261,6 @@ public class ChatFragment extends Fragment implements View.OnClickListener, Base
             clipboard.setPrimaryClip(clip);
             chatAdapter.exitSelectionMode();
             copyContent = "";
-            // Optionally show a toast or some confirmation to the user
             Toast.makeText(requireActivity(), "Text copied to clipboard", Toast.LENGTH_SHORT).show();
         } else if (view.getId() == R.id.exit_selection_mode) {
             // Exit selection mode
@@ -269,15 +273,13 @@ public class ChatFragment extends Fragment implements View.OnClickListener, Base
         String message = messageInput.getText().toString();
         if (!message.isEmpty()) {
             View sendButton = requireActivity().findViewById(R.id.send_button);
-            ImageView loadingSpinner = requireActivity().findViewById(R.id.loading_spinner);
+            CircularProgressIndicator loadingSpinner = requireActivity().findViewById(R.id.loading_spinner);
             sendButton.setVisibility(View.GONE);
             loadingSpinner.setVisibility(View.VISIBLE);
-            Glide.with(this).asGif().load(R.drawable.loading_spinner).into(loadingSpinner);
 
             //remove trailing white spaces
             message = message.trim();
             ChatMessage chatMessage = new ChatMessage(message, "Now", ChatMessage.TYPE_SENDER);
-//            chatMessages.add(chatMessage);
             chatViewModel.addChatMessage(chatMessage);
             chatAdapter.notifyItemInserted(chatMessages.size() - 1);
             recyclerView.scrollToPosition(chatMessages.size() - 1);
@@ -318,23 +320,18 @@ public class ChatFragment extends Fragment implements View.OnClickListener, Base
                             for (JsonElement responseElement : responseArray) {
                                 JsonObject responseObject = responseElement.getAsJsonObject();
 
-                                // Handle safetyAttributes if needed
-//                                JsonArray safetyAttributes = responseObject.getAsJsonArray("safetyAttributes");
-                                // Implement your logic to handle safety attributes
-
-                                // Process each candidate
+                                // Process candidate in the response obj
                                 JsonArray candidates = responseObject.getAsJsonArray("candidates");
                                 for (JsonElement candidateElement : candidates) {
                                     JsonObject candidate = candidateElement.getAsJsonObject();
                                     String candidateContent = candidate.get("content").getAsString();
 
-                                    // Parse the candidate content and update the chat messages
+                                    // Parse candidate content and update the chat messages
                                     try {
                                         JsonArray arr = JsonParser.parseString(candidateContent).getAsJsonArray();
                                         for (JsonElement objElement : arr) {
                                             JsonObject obj = objElement.getAsJsonObject();
                                             ChatMessage newMessage = new ChatMessage(obj.get("message").getAsString(), "Now", ChatMessage.TYPE_RECIPIENT);
-//                                            chatMessages.add(newMessage);
 
                                             // Ensure UI updates are run on the main thread
                                             requireActivity().runOnUiThread(() -> {
@@ -345,8 +342,6 @@ public class ChatFragment extends Fragment implements View.OnClickListener, Base
                                         }
                                     } catch (Exception e) {
                                         ChatMessage newMessage = new ChatMessage(candidateContent, "Now", ChatMessage.TYPE_RECIPIENT);
-
-//                                        chatMessages.add(newMessage);
 
                                         // Update your chat interface accordingly
                                         // Ensure UI updates are run on the main thread
@@ -364,7 +359,13 @@ public class ChatFragment extends Fragment implements View.OnClickListener, Base
                             System.out.println("Response code: " + response.code());
                             System.out.println("Response message: " + response.message());
                             chatMessage.setIsIgnored(true);
-                            requireActivity().runOnUiThread(() -> Toast.makeText(requireActivity(), "Something went wrong, Please try again", Toast.LENGTH_SHORT).show());
+                            requireActivity().runOnUiThread(() -> {
+                                ChatMessage errMessage = new ChatMessage("An error occurred. Please try again later.", "Now", ChatMessage.TYPE_RECIPIENT);
+                                errMessage.setIsIgnored(true);
+                                chatViewModel.addChatMessage(errMessage);
+                                chatAdapter.notifyItemInserted(chatMessages.size() - 1);
+                                recyclerView.scrollToPosition(chatMessages.size() - 1);
+                            });
                             throw new IOException("Unexpected code " + response);
 
                         }
@@ -376,7 +377,9 @@ public class ChatFragment extends Fragment implements View.OnClickListener, Base
                 }
                 requireActivity().runOnUiThread(() -> {
                     sendButton.setVisibility(View.VISIBLE);
+                    loadingSpinner.setProgressCompat(100, true);
                     loadingSpinner.setVisibility(View.GONE);
+
                 });
 
             }).start();

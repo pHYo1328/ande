@@ -22,7 +22,7 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="start"
                 android:background="@android:color/transparent"
-                android:contentDescription="Exit"
+                android:contentDescription="@string/exit"
                 android:gravity="center_vertical"
                 android:src="@drawable/ic_close"
                 android:visibility="gone" />
@@ -40,7 +40,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
-                android:text="0 Selected"
+                android:text="@string/chat_selection"
                 android:textAppearance="@style/TextAppearance.Widget.AppCompat.Toolbar.Title"
                 android:visibility="gone" />
 
@@ -50,7 +50,7 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="end"
                 android:background="@android:color/transparent"
-                android:contentDescription="Copy"
+                android:contentDescription="@string/copy"
                 android:gravity="center_vertical"
                 android:src="@drawable/ic_copy"
                 android:visibility="gone" />
@@ -69,7 +69,6 @@
         android:alpha="0.05"
         android:contentDescription="@string/chat_icon"
         android:src="@drawable/chat_icon" />
-    <!-- RecyclerView for displaying the chat messages -->
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/chat_recycler_view"
         android:layout_width="match_parent"
@@ -79,14 +78,26 @@
         android:clipToPadding="false"
         android:paddingBottom="16dp" />
 
+    <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
+        android:id="@+id/suggestion_button"
+        app:backgroundTint="@color/white"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_marginHorizontal="16dp"
+        android:layout_marginBottom="80dp"
+        android:textColor="@color/common_google_signin_btn_text_light"
+        android:text="@string/button_suggestion"
+        android:textAppearance="@style/TextAppearance.AppCompat.Medium" />
+
     <!-- Container for the message input and send button -->
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/message_input_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
-        android:layout_marginHorizontal="8dp"
-        android:layout_marginBottom="4dp"
+        android:layout_marginHorizontal="16dp"
+        android:layout_marginBottom="8dp"
         android:hint="@string/type_your_message"
         app:cursorColor="@color/black">
 
@@ -103,6 +114,7 @@
                 style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
+                android:layout_marginStart="4dp"
                 android:layout_weight="1"
                 android:hint="@string/type_your_message"
                 android:inputType="textMultiLine"
@@ -120,14 +132,17 @@
                 android:padding="12dp"
                 android:src="@drawable/ic_send" />
 
-            <ImageView
+            <com.google.android.material.progressindicator.CircularProgressIndicator
                 android:id="@+id/loading_spinner"
                 android:layout_width="48dp"
                 android:layout_height="48dp"
                 android:layout_gravity="center"
                 android:contentDescription="@string/loading"
-                android:src="@drawable/loading_spinner"
-                android:visibility="gone" />
+                android:indeterminate="true"
+                android:visibility="gone"
+                app:indicatorColor="@color/purple_button"
+                app:indicatorSize="48dp"
+                app:trackThickness="8dp" />
         </LinearLayout>
 
     </com.google.android.material.textfield.TextInputLayout>
@@ -137,7 +152,6 @@
         android:layout_width="match_parent"
         android:layout_height="56dp"
         android:layout_alignParentBottom="true">
-        <!-- Navigation bar elements here -->
     </FrameLayout>
 
 </RelativeLayout>
