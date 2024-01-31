@@ -34,6 +34,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
+import java.util.Objects;
 
 
 public class EventFragment extends Fragment implements EventsAdapter.OnEventEditListener,EventsAdapter.OnSubEventEditListener {
@@ -124,7 +125,8 @@ public class EventFragment extends Fragment implements EventsAdapter.OnEventEdit
         FirestoreUtils.getAllEventsOnSelectedDate(selectedCalendarDate, new FirestoreUtils.FirestoreCallback<List<Event>>() {
             @Override
             public void onSuccess(List<Event> eventsOnSelectedDate) {
-                if (eventsOnSelectedDate.isEmpty()) {
+
+                if (eventsOnSelectedDate.size()==0) {
                     // If there are no events, show the no events message and hide the RecyclerView
                     noEventsTextView.setVisibility(View.VISIBLE);
                     recyclerView.setVisibility(View.GONE);
@@ -140,26 +142,28 @@ public class EventFragment extends Fragment implements EventsAdapter.OnEventEdit
                             return false;
                         }
 
+
                         @Override
                         public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
                             int position = viewHolder.getAdapterPosition();
                             Event eventToRemove = eventsOnSelectedDate.get(position);
-
                             // Create an AlertDialog.Builder instance
                             AlertDialog.Builder builder = new AlertDialog.Builder(getContext(),R.style.AlertDialogCustom);
                             builder.setMessage("Are you sure you want to delete this event?")
                                     .setTitle("Delete Event")
                                     .setPositiveButton("Delete", (dialog, id) -> {
                                         // User confirmed deletion
-                                        eventsOnSelectedDate.remove(position);
                                         FirestoreUtils.deleteEvent(eventToRemove.getId(), new FirestoreUtils.FirestoreCallback<Void>() {
                                             @Override
                                             public void onSuccess(Void result) {
+                                                eventsOnSelectedDate.remove(position);
                                                 adapter.notifyItemRemoved(position);
+                                                adapter.notifyItemRangeChanged(position, eventsOnSelectedDate.size());
                                                 addDecorator(calendarView);
                                                 if (eventsOnSelectedDate.size() == 0) {
                                                     noEventsTextView.setVisibility(View.VISIBLE);
                                                 }
+
                                             }
 
                                             @Override
