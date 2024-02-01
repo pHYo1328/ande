@@ -10,6 +10,7 @@ public class Event {
     private String startDate;
     private String endDate;
     private String eventName;
+    private String imgUrl;
     private double budget;
     private List<SubEvent> subEvents = new ArrayList<>();
 
@@ -80,4 +81,27 @@ public class Event {
         return this.eventName;
     }
 
+    public void setStartDate(String startDate) {
+        this.startDate = startDate;
+    }
+
+    public void setEndDate(String endDate) {
+        this.endDate = endDate;
+    }
+
+    public void setEventName(String eventName) {
+        this.eventName = eventName;
+    }
+
+    public String getImgUrl() {
+        return imgUrl;
+    }
+
+    public void setImgUrl(String imgUrl) {
+        this.imgUrl = imgUrl;
+    }
+
+    public void setSubEvents(List<SubEvent> subEvents) {
+        this.subEvents = subEvents;
+    }
 }

@@ -22,4 +22,10 @@
     <color name="mtr_textinput_outline">#79747E</color>
     <color name="mtr_hint_foreground">#601D1B20</color>
     <color name="off_white">#EBEBEB</color>
+    <color name="theme_danger">#FF0000</color>
+    <color name="theme_success">#57E65D</color>
+    <color name="pie_cat_1">#A155B9</color>
+    <color name="pie_cat_2">#165BAA</color>
+    <color name="pie_cat_3">#F765A3</color>
+    <color name="pie_cat_others">#D0D0D0</color>
 </resources>

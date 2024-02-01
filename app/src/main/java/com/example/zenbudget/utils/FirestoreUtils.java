@@ -11,13 +11,20 @@ import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
+
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 import com.example.zenbudget.classes.Event;
 import com.example.zenbudget.classes.SubEvent;
+import com.google.firebase.firestore.SetOptions;
 
 public class FirestoreUtils {
     private static final FirebaseAuth mAuth = FirebaseAuth.getInstance();
@@ -35,6 +42,27 @@ public class FirestoreUtils {
         eventMap.put("endDate", endDate);
         eventMap.put("eventName", eventName);
         eventMap.put("budget", budget);
+        assert currentUser != null;
+        eventMap.put("userID", currentUser.getUid());
+        // Handle any errors
+        eventsCollection
+                .add(eventMap)
+                .addOnSuccessListener(documentReference -> {
+                    // Document was added successfully, return the ID
+                    callback.onSuccess(documentReference.getId());
+                })
+                .addOnFailureListener(callback::onError);
+    }
+
+    public static void createEvent(String eventName, String startDate, String endDate, Double budget, String imgUrl, FirestoreCallback<String> callback) {
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        CollectionReference eventsCollection = db.collection("events");
+        Map<String, Object> eventMap = new HashMap<>();
+        eventMap.put("startDate", startDate);
+        eventMap.put("endDate", endDate);
+        eventMap.put("eventName", eventName);
+        eventMap.put("budget", budget);
+        eventMap.put("imgUrl", imgUrl);
         assert currentUser != null;
         eventMap.put("userID", currentUser.getUid());
         // Handle any errors
@@ -177,7 +205,7 @@ public class FirestoreUtils {
 
         // Handle any errors
         eventDocRef
-                .set(updatedEvent)
+                .set(updatedEvent, SetOptions.merge())
                 .addOnSuccessListener(aVoid -> {
                     // Event updated successfully
                     callback.onSuccess(null);
@@ -271,5 +299,36 @@ public class FirestoreUtils {
                     callback.onSuccess(null);
                 })
                 .addOnFailureListener(callback::onError);
+    }
+
+    public static String formatDate(String inputDateStr, String inputFormat) {
+        return formatDate(inputDateStr, inputFormat, null);
+    }
+    public static String formatDate(String inputDateStr) {
+        return formatDate(inputDateStr, null, null);
+    }
+    public static String formatDate(String inputDateStr, String inputFormat, String outputFormat) {
+        if (inputFormat == null) {
+            inputFormat = "yyyy-MM-dd";
+        }
+        if (outputFormat == null) {
+            outputFormat = "dd MMM yyyy";
+        }
+
+        SimpleDateFormat inFormat = new SimpleDateFormat(inputFormat, Locale.getDefault());
+        SimpleDateFormat outFormat = new SimpleDateFormat(outputFormat, Locale.getDefault());
+
+        String outputDateStr = null;
+        try {
+            Date inputDate = inFormat.parse(inputDateStr);
+
+            assert inputDate != null;
+            outputDateStr = outFormat.format(inputDate);
+
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+
+        return outputDateStr;
     }
 }

@@ -9,31 +9,33 @@ import android.text.SpannableString;
 import android.text.Spanned;
 import android.text.style.AbsoluteSizeSpan;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.zenbudget.classes.Event;
 import com.example.zenbudget.classes.User;
 import com.example.zenbudget.utils.Provider;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
+import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 public class HomeFragment extends Fragment {
     private final FirebaseFirestore db = FirebaseFirestore.getInstance();
     private final FirebaseAuth mAuth = FirebaseAuth.getInstance();
 
     private RecyclerView recyclerView;
-    private recyclerViewAdapter adapter;
-    private List<recycleItem> items;
+    private HomeViewAdapter adapter;
+    private List<HomeRecyclerItem> items;
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -41,8 +43,7 @@ public class HomeFragment extends Fragment {
 
         TextView txtWelcome = view.findViewById(R.id.txtWelcome);
         FirebaseUser currentUser = mAuth.getCurrentUser();
-
-        Log.d("HomeFragment", "onCreateView: " + Provider.Determine());
+        items = new ArrayList<>();
 
         db.collection("users")
                 .document(currentUser.getUid())
@@ -56,34 +57,44 @@ public class HomeFragment extends Fragment {
                     txtWelcome.setText(spannableString);
                 });
 
+        db.collection("events")
+                .whereEqualTo("userID", currentUser.getUid())
+                .get()
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        ArrayList<HomeRecyclerItem> current = new ArrayList<>();
+                        ArrayList<HomeRecyclerItem> upcoming = new ArrayList<>();
+
+                        for (QueryDocumentSnapshot document : task.getResult()) {
+                            Event event = document.toObject(Event.class);
+                            LocalDate startDate = LocalDate.parse(event.getStartDate());
+                            LocalDate endDate = LocalDate.parse(event.getEndDate());
+                            LocalDate today = LocalDate.now();
+
+                            if (today.isAfter(startDate) && today.isBefore(endDate)) {
+                                current.add(new HomeRecyclerItem(event, document.getId()));
+                            } else {
+                                upcoming.add(new HomeRecyclerItem(event, document.getId()));
+                            }
+                        }
+
+                        items.add(new HomeRecyclerItem(HomeRecyclerItem.TYPE_CURRENT));
+                        items.addAll(current);
+                        items.add(new HomeRecyclerItem(HomeRecyclerItem.TYPE_UPCOMING));
+                        items.addAll(upcoming);
+
+                        adapter.notifyDataSetChanged();
+                    } else {
+                        Toast.makeText(getActivity(), "Error getting events: " + task.getException(), Toast.LENGTH_SHORT).show();
+                    }
+                });
+
 
         recyclerView = view.findViewById(R.id.recyclerView);
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
-        SimpleDateFormat inputFormat = new SimpleDateFormat("yyyy-MM-dd", java.util.Locale.getDefault());
-        SimpleDateFormat outputFormat = new SimpleDateFormat("MM-dd", java.util.Locale.getDefault());
-        items = new ArrayList<>();
 
-        try {
-            Date date1 = inputFormat.parse("2023-10-01");
-            Date date2 = inputFormat.parse("2023-11-15");
-            Date date3 = inputFormat.parse("2023-12-20");
 
-            assert date1 != null;
-            String formattedDate1 = outputFormat.format(date1);
-            assert date2 != null;
-            String formattedDate2 = outputFormat.format(date2);
-            assert date3 != null;
-            String formattedDate3 = outputFormat.format(date3);
-
-            items.add(new recycleItem("October", 90, formattedDate1, R.drawable.oct, "$69.20 Left"));
-            items.add(new recycleItem("Trip to Japan", 100, formattedDate2, R.drawable.jp, "$400.60"));
-            items.add(new recycleItem("December", 100, formattedDate3, R.drawable.jp, "$400.60"));
-            items.add(new recycleItem("December", 100, formattedDate3, R.drawable.jp, "$400.60"));
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
-
-        adapter = new recyclerViewAdapter(items);
+        adapter = new HomeViewAdapter(items, requireActivity().getSupportFragmentManager());
         recyclerView.setAdapter(adapter);
 
         return view;
