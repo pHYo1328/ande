@@ -50,7 +50,7 @@ public class HomeFragment extends Fragment {
                 .get()
                 .addOnSuccessListener(documentSnapshot -> {
                     User user = documentSnapshot.toObject(User.class);
-                    String text = "Welcome back, \n" + user.getFirst_name();
+                    String text = "Welcome back, " + user.getFirst_name();
                     SpannableString spannableString = new SpannableString(text);
                     spannableString.setSpan(new AbsoluteSizeSpan(25, true), 0, 14, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
                     spannableString.setSpan(new AbsoluteSizeSpan(25, true), 15, text.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);

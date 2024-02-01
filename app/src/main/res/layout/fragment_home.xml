@@ -7,15 +7,26 @@
     android:orientation="vertical"
     tools:context=".HomeFragment">
 
-    <TextView
-        android:id="@+id/txtWelcome"
+    <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="98dp"
-        android:background="@drawable/rounded_corner"
-        android:text="Welcome Back, John"
-        android:textAlignment="center"
-        android:textColor="@color/white"
-        android:textSize="30sp" />
+        android:layout_height="wrap_content">
+
+        <ImageView
+            android:id="@+id/imageView6"
+            android:layout_width="match_parent"
+            android:layout_height="75dp"
+            app:srcCompat="@drawable/rounded_corner" />
+
+        <TextView
+            android:id="@+id/txtWelcome"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:text="Welcome Back, John"
+            android:textAlignment="center"
+            android:textColor="@color/white"
+            android:textSize="30sp" />
+    </RelativeLayout>
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerView"

@@ -80,7 +80,7 @@ public class ExpenseAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                                                     bundle.putString("eventId", expense.getEvent());
                                                     fragment.setArguments(bundle);
 
-                                                    fragmentManager.beginTransaction().replace(R.id.content_frame, fragment, "NEW").commit();
+                                                    fragmentManager.beginTransaction().replace(R.id.content_frame, fragment).commit();
                                                 });
                                     } else {
                                         dialog.dismiss();

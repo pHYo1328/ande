@@ -54,16 +54,14 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:scaleType="matrix"
-                app:tint="#B0454545"
                 android:tintMode="src_atop"
+                app:tint="#B0070707"
                 tools:srcCompat="@tools:sample/backgrounds/scenic" />
 
             <LinearLayout
                 android:id="@+id/layoutEventDetails"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:backgroundTint="#74000000"
-                android:backgroundTintMode="src_atop"
                 android:orientation="vertical"
                 android:paddingHorizontal="12dp"
                 android:paddingVertical="6dp">
@@ -92,8 +90,8 @@
                         android:layout_height="match_parent"
                         android:layout_weight="1"
                         android:background="@android:color/transparent"
-                        app:tint="@color/white"
-                        app:srcCompat="@drawable/ic_baseline_more_horiz_24" />
+                        app:srcCompat="@drawable/ic_baseline_more_horiz_24"
+                        app:tint="@color/white" />
 
                 </LinearLayout>
 
@@ -121,8 +119,8 @@
                             android:id="@+id/imageView"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            app:tint="@color/white"
-                            app:srcCompat="@drawable/baseline_arrow_right_alt_24" />
+                            app:srcCompat="@drawable/baseline_arrow_right_alt_24"
+                            app:tint="@color/white" />
 
                         <TextView
                             android:id="@+id/txtEndDate"

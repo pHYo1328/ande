@@ -1,5 +1,6 @@
 package com.example.zenbudget;
 
+import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -12,6 +13,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
 import com.example.zenbudget.classes.Event;
+import com.example.zenbudget.utils.FirestoreUtils;
 
 import java.util.List;
 
@@ -39,15 +41,38 @@ public class HomeViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
         int type = item.getType();
         Event event = item.getEvent();
 
+        Log.d("HomeViewAdapter", "onBindViewHolder: " + FirestoreUtils.formatDate("00:30 PM", "HH:mm", "hh:mm a"));
+
         Log.d("HomeViewAdapter", "onBindViewHolder: " + event.getEventName());
 
         if (type == HomeRecyclerItem.TYPE_EVENT) {
+            currentHolder.headerLayout.setVisibility(View.GONE);
+            currentHolder.txtInfo.setVisibility(View.GONE);
+            currentHolder.txtStartDate.setText(FirestoreUtils.formatDate(event.getStartDate()));
+            currentHolder.txtEndDate.setText(FirestoreUtils.formatDate(event.getEndDate()));
+            currentHolder.progressBar.setProgress((float) event.getBudget());
+            currentHolder.lblAmount.setText(String.format("$%.2f", event.getBudget()));
             Glide.with(currentHolder.imgEvent.getContext())
                     .load(event.getImgUrl())
                     .apply(new RequestOptions().centerCrop()
                     ).into(currentHolder.imgEvent);
 
             currentHolder.lblEventName.setText(event.getEventName());
+            currentHolder.cardDetails.setOnClickListener(v -> {
+                EventDashboard eventDetailsFragment = new EventDashboard();
+                Bundle args = new Bundle();
+                args.putString("eventId", item.getEventId());
+                eventDetailsFragment.setArguments(args);
+                fragmentManager.beginTransaction().replace(R.id.content_frame, eventDetailsFragment).commit();
+            });
+        } else if (type == HomeRecyclerItem.TYPE_CURRENT) {
+            currentHolder.lblHeader.setText("Current Events");
+            currentHolder.txtInfo.setVisibility(View.GONE);
+            currentHolder.cardDetails.setVisibility(View.GONE);
+        } else if (type == HomeRecyclerItem.TYPE_UPCOMING) {
+            currentHolder.lblHeader.setText("Upcoming Events");
+            currentHolder.txtInfo.setVisibility(View.GONE);
+            currentHolder.cardDetails.setVisibility(View.GONE);
         }
     }
 

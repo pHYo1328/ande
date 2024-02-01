@@ -133,12 +133,10 @@ public class EventDashboard extends Fragment {
 
 
                     // Event Details
-//                    Glide.with(this)
-//                            .load(event.getImgUrl())
-//                            .apply(new RequestOptions().centerCrop()
-//                                    .placeholder(R.drawable.loading_spinner) // Placeholder image
-//                                    .error(R.drawable.oct) // Error image in case of loading failure
-//                            ).into(imgDashboard);
+                    Glide.with(this)
+                            .load(event.getImgUrl())
+                            .apply(new RequestOptions().centerCrop()
+                            ).into(imgDashboard);
 
                     txtEventName.setText(event.getEventName());
                     txtEventStartDate.setText(FirestoreUtils.formatDate(event.getStartDate()));
@@ -278,9 +276,7 @@ public class EventDashboard extends Fragment {
             }
             entryList.subList(3, entryList.size()).clear();
             entryList.add(others.entrySet().iterator().next());
-
         }
-
 
 
         ArrayList<Integer> colors = new ArrayList<>();

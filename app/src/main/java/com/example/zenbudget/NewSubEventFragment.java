@@ -252,7 +252,7 @@ public class NewSubEventFragment extends Fragment {
         Calendar tempCalendar = Calendar.getInstance();
         tempCalendar.set(Calendar.HOUR_OF_DAY, hour);
         String amPm = tempCalendar.get(Calendar.AM_PM) == Calendar.AM ? "AM" : "PM";
-        if (amPm.equals("PM")) {
+        if (amPm.equals("PM") && hour!= 12) {
             hour -= 12;
         }
         String timeString = String.format(Locale.getDefault(), "%02d:%02d %s", hour, minute, amPm);

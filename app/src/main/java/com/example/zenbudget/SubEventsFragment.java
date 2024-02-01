@@ -28,7 +28,7 @@ public class SubEventsFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        RecyclerView subEventsRecycler = view.findViewById(R.id.recyclerView);
+        RecyclerView subEventsRecycler = view.findViewById(R.id.recyclerExpenses);
         SubEventAdapter adapter = new SubEventAdapter(subEvents, getActivity().getSupportFragmentManager());
         subEventsRecycler.setAdapter(adapter);
         subEventsRecycler.setLayoutManager(new LinearLayoutManager(getActivity()));
