@@ -89,6 +89,9 @@ public class ChatFragment extends Fragment implements View.OnClickListener, Base
         // Observe chat messages LiveData
         chatViewModel.getChatMessages().observe(getViewLifecycleOwner(), chatMessages -> {
             chatAdapter.setChatMessages(chatMessages); // Update adapter's data
+            if (chatMessages.size() > 0) {
+                suggestionButton.setVisibility(View.GONE);
+            }
             chatAdapter.notifyDataSetChanged();
             recyclerView.scrollToPosition(chatMessages.size() - 1);
         });
