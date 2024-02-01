@@ -1,6 +1,6 @@
-package com.example.andeca1;
+package com.example.zenbudget;
 
-import static com.example.andeca1.utils.FirestoreUtils.getAllEvents;
+import static com.example.zenbudget.utils.FirestoreUtils.getAllEvents;
 
 import android.app.AlertDialog;
 import android.icu.util.Calendar;
@@ -19,10 +19,10 @@ import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.andeca1.classes.DateRange;
-import com.example.andeca1.classes.Event;
-import com.example.andeca1.classes.SubEvent;
-import com.example.andeca1.utils.FirestoreUtils;
+import com.example.zenbudget.classes.DateRange;
+import com.example.zenbudget.classes.Event;
+import com.example.zenbudget.classes.SubEvent;
+import com.example.zenbudget.utils.FirestoreUtils;
 import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton;
 import com.prolificinteractive.materialcalendarview.CalendarDay;
 import com.prolificinteractive.materialcalendarview.MaterialCalendarView;
@@ -123,7 +123,7 @@ public class EventFragment extends Fragment implements EventsAdapter.OnEventEdit
     @Override
     public void onSubEventDeleteClicked(String eventId, String subEventId) {
         AlertDialog.Builder builder = new AlertDialog.Builder(getContext(),R.style.AlertDialogCustom);
-        builder.setMessage("Are you sure you want to delete this event?")
+        builder.setMessage("Are you sure you want to delete this sub-event?")
                 .setTitle("Delete Event")
                 .setPositiveButton("Delete", (dialog, id) ->
                         FirestoreUtils.deleteSubEvent(eventId, subEventId, new FirestoreUtils.FirestoreCallback<Void>() {
