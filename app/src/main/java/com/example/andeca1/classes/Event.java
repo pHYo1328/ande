@@ -31,24 +31,6 @@ public class Event {
     public String getId() {
         return id;
     }
-
-    public void setStartDate(String startDate) {
-        this.startDate = startDate;
-    }
-
-    public void setEndDate(String endDate) {
-        this.endDate = endDate;
-    }
-
-    public void setEventName(String eventName) {
-        this.eventName = eventName;
-    }
-
-    public void setSubEvents(List<SubEvent> subEvents) {
-        this.subEvents = subEvents;
-    }
-
-
     public void setId(String id) {
         this.id = id;
     }

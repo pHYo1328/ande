@@ -58,6 +58,7 @@ public class NewEventFragment extends Fragment {
                 throw new RuntimeException(e);
             }
         }
+
         calendarView.setOnDateChangeListener((view1, year, month, dayOfMonth) -> {
             Calendar selectedDate = Calendar.getInstance();
             selectedDate.set(year, month, dayOfMonth);
@@ -155,7 +156,6 @@ public class NewEventFragment extends Fragment {
         });
 
         closeButton.setOnClickListener(view1 -> getParentFragmentManager().beginTransaction().replace(R.id.content_frame,new EventFragment()).commit());
-
         return view;
     }
 }

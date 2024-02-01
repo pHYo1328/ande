@@ -1,7 +1,5 @@
 package com.example.andeca1.classes;
 
-import android.util.Log;
-
 import com.prolificinteractive.materialcalendarview.CalendarDay;
 
 public class DateRange {

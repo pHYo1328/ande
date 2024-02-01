@@ -2,17 +2,16 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginHorizontal="15dp"
-    android:layout_marginTop="15dp"
-    android:orientation="vertical"
-    android:padding="16dp"
-    android:background="@drawable/background_purple"
-    >
+    android:orientation="vertical">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal">
+        android:layout_marginHorizontal="15dp"
+        android:layout_marginTop="15dp"
+        android:background="@drawable/background_purple"
+        android:orientation="horizontal"
+        android:padding="16dp">
 
         <TextView
             android:id="@+id/txtViewDate"
@@ -68,6 +67,7 @@
         android:id="@+id/subEventsContainer"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginHorizontal="10dp"
         android:orientation="vertical"
         android:visibility="visible">
         <!-- Sub-events will be dynamically added here -->

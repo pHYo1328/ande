@@ -80,4 +80,5 @@
     <string name="button_suggestion">"<b>Give me ideas</b> for my current budget"</string>
     <string name="chat_selection">0 Selected</string>
     <string name="copy">Copy</string>
+    <string name="edit_sub_event">Edit Sub-Event</string>
 </resources>

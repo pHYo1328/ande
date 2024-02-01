@@ -21,6 +21,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.andeca1.classes.DateRange;
 import com.example.andeca1.classes.Event;
+import com.example.andeca1.classes.SubEvent;
 import com.example.andeca1.utils.FirestoreUtils;
 import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton;
 import com.prolificinteractive.materialcalendarview.CalendarDay;
@@ -34,10 +35,9 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
-import java.util.Objects;
 
 
-public class EventFragment extends Fragment implements EventsAdapter.OnEventEditListener,EventsAdapter.OnSubEventEditListener {
+public class EventFragment extends Fragment implements EventsAdapter.OnEventEditListener,EventsAdapter.OnSubEventEditListener,EventsAdapter.OnSubEventDeleteListener {
     private TextView selectedDate,noEventsTextView;
     private final SimpleDateFormat dateFormat = new SimpleDateFormat("EEE, MMM dd, yyyy", Locale.getDefault());
     private final Calendar calendar = Calendar.getInstance();
@@ -120,6 +120,37 @@ public class EventFragment extends Fragment implements EventsAdapter.OnEventEdit
         transaction.commit();
     }
 
+    @Override
+    public void onSubEventDeleteClicked(String eventId, String subEventId) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(getContext(),R.style.AlertDialogCustom);
+        builder.setMessage("Are you sure you want to delete this event?")
+                .setTitle("Delete Event")
+                .setPositiveButton("Delete", (dialog, id) ->
+                        FirestoreUtils.deleteSubEvent(eventId, subEventId, new FirestoreUtils.FirestoreCallback<Void>() {
+                            @Override
+                            public void onSuccess(Void result) {
+                                for (Event event : adapter.getEvents()) {
+                                    if (event.getId().equals(eventId)) {
+                                        List<SubEvent> subEvents = event.getSubEvents();
+                                        subEvents.removeIf(subEvent -> subEvent.getId().equals(subEventId));
+                                        adapter.notifyDataSetChanged();
+                                        break;
+                                    }
+                                }
+                            }
+                    @Override
+                    public void onError(Exception e) {
+                        Toast.makeText(getContext(), "Failed to delete sub-event", Toast.LENGTH_LONG).show();
+                    }
+                }))
+                .setNegativeButton("Cancel", (dialog, id) -> {
+                });
+
+        // Create and show the AlertDialog
+        AlertDialog alertDialog = builder.create();
+        alertDialog.show();
+    }
+
     private void setRecyclerView(MaterialCalendarView calendarView){
         recyclerView.setLayoutManager(new LinearLayoutManager(this.getContext()));
         FirestoreUtils.getAllEventsOnSelectedDate(selectedCalendarDate, new FirestoreUtils.FirestoreCallback<List<Event>>() {
@@ -147,7 +178,6 @@ public class EventFragment extends Fragment implements EventsAdapter.OnEventEdit
                         public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
                             int position = viewHolder.getAdapterPosition();
                             Event eventToRemove = eventsOnSelectedDate.get(position);
-                            // Create an AlertDialog.Builder instance
                             AlertDialog.Builder builder = new AlertDialog.Builder(getContext(),R.style.AlertDialogCustom);
                             builder.setMessage("Are you sure you want to delete this event?")
                                     .setTitle("Delete Event")
@@ -165,7 +195,6 @@ public class EventFragment extends Fragment implements EventsAdapter.OnEventEdit
                                                 }
 
                                             }
-
                                             @Override
                                             public void onError(Exception e) {
                                                 // Handle the error if event deletion fails
@@ -183,7 +212,7 @@ public class EventFragment extends Fragment implements EventsAdapter.OnEventEdit
                             alertDialog.show();
                         }
                     };
-                    adapter = new EventsAdapter(eventsOnSelectedDate,EventFragment.this,EventFragment.this);
+                    adapter = new EventsAdapter(eventsOnSelectedDate,EventFragment.this,EventFragment.this, EventFragment.this);
                     recyclerView.setAdapter(adapter);
                     ItemTouchHelper itemTouchHelper = new ItemTouchHelper(simpleItemTouchCallback);
                     itemTouchHelper.attachToRecyclerView(recyclerView);
@@ -234,5 +263,6 @@ public class EventFragment extends Fragment implements EventsAdapter.OnEventEdit
 
 
     }
+
 
 }

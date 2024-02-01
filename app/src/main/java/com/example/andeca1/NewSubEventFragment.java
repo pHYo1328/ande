@@ -30,27 +30,24 @@ import java.util.Locale;
 
 public class NewSubEventFragment extends Fragment {
     private EditText editTitle, editBudget;
-    private TextView selectedDate, startTime, endTime;
+    private TextView selectedDate, startTime, endTime, pageTitle;
     private Date selectedCalendarDate;
     private final Calendar calendar = Calendar.getInstance();
+    private final SimpleDateFormat dateFormat = new SimpleDateFormat("EEE, MMM dd, yyyy", Locale.getDefault());
+    private final SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
+    private final SimpleDateFormat timeFormat = new SimpleDateFormat("hh:mm a", Locale.getDefault());
+    private MaterialCalendarView calendarView;
+    private Button saveButton;
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        SimpleDateFormat dateFormat = new SimpleDateFormat("EEE, MMM dd, yyyy", Locale.getDefault());
         View view = inflater.inflate(R.layout.fragment_new_sub_event, container, false);
-        startTime = view.findViewById(R.id.editStartTime);
-        endTime = view.findViewById(R.id.editEndTime);
-        Button saveButton = view.findViewById(R.id.btnSaveSubEvent);
-        editTitle = view.findViewById(R.id.editSubEventTitle);
-        editBudget = view.findViewById(R.id.editSubBudget);
-        selectedDate = view.findViewById(R.id.selected_date);
-        MaterialCalendarView calendarView = view.findViewById(R.id.calendarView);
-        ImageButton closeButton = view.findViewById(R.id.exit_selection_mode);
-        TextView pageTitle = view.findViewById(R.id.toolbar_title);
+        initializeViews(view);
+        setupCalendarView();
+        setupTimePickers();
 
         String txtStartDate, txtEndDate,eventId,subEventId;
         Date startDate = null, endDate = null;
-        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
         if (getArguments() != null) {
             txtStartDate = getArguments().getString("startDate");
             txtEndDate = getArguments().getString("endDate");
@@ -73,7 +70,7 @@ public class NewSubEventFragment extends Fragment {
             calendarView.addDecorator(new EventDecorator(dateRange));
 
             if (subEventId!=null && eventId!=null) {
-                pageTitle.setText("Edit Sub-Event");
+                pageTitle.setText(R.string.edit_sub_event);
                 FirestoreUtils.getSubEventById(eventId, subEventId, new FirestoreUtils.FirestoreCallback<SubEvent>() {
                     @Override
                     public void onSuccess(SubEvent subEvent) {
@@ -93,10 +90,9 @@ public class NewSubEventFragment extends Fragment {
                             }
                         }
                     }
-
                     @Override
                     public void onError(Exception e) {
-                        // Handle errors if any
+                        Toast.makeText(getContext(),"fail to get sub event",Toast.LENGTH_LONG).show();
                     }
                 });
             }
@@ -105,76 +101,9 @@ public class NewSubEventFragment extends Fragment {
             subEventId = null;
         }
 
-        closeButton.setOnClickListener(view1 -> getParentFragmentManager().beginTransaction().replace(R.id.content_frame,new EventFragment()).commit());
-
-        startTime.setOnClickListener(view15 -> {
-            Calendar calendar = Calendar.getInstance();
-            int hour = calendar.get(Calendar.HOUR_OF_DAY);
-            int minute = calendar.get(Calendar.MINUTE);
-
-            // Create a TimePickerDialog
-            TimePickerDialog timePickerDialog = new TimePickerDialog(
-                    getActivity(),
-                    R.style.CustomMaterialDatePickerTheme,
-                    (view14, selectedHour, selectedMinute) -> {
-                        Calendar calendar12 = Calendar.getInstance();
-                        calendar12.set(Calendar.HOUR_OF_DAY, selectedHour);
-                        String amPm;
-                        if (calendar12.get(Calendar.AM_PM) == Calendar.AM) {
-                            amPm = "AM";
-                        } else {
-                            amPm = "PM";
-                            selectedHour = selectedHour - 12;
-                        }
-                        String timeString = String.format(Locale.getDefault(), "%02d:%02d %s", selectedHour, selectedMinute, amPm);
-                        startTime.setText(timeString);
-                    },
-                    hour,
-                    minute,
-                    false
-            );
-            timePickerDialog.show();
-
-        });
-
-        endTime.setOnClickListener(view13 -> {
-            Calendar calendar = Calendar.getInstance();
-            int hour = calendar.get(Calendar.HOUR_OF_DAY);
-            int minute = calendar.get(Calendar.MINUTE);
-
-            // Create a TimePickerDialog
-            TimePickerDialog timePickerDialog = new TimePickerDialog(
-                    getActivity(),
-                    R.style.CustomMaterialDatePickerTheme,
-                    (view12, selectedHour, selectedMinute) -> {
-                        Calendar calendar1 = Calendar.getInstance();
-                        calendar1.set(Calendar.HOUR_OF_DAY, selectedHour);
-                        String amPm;
-                        if (calendar1.get(Calendar.AM_PM) == Calendar.AM) {
-                            amPm = "AM";
-                        } else {
-                            amPm = "PM";
-                            selectedHour = selectedHour - 12;
-                        }
-                        String timeString = String.format(Locale.getDefault(), "%02d:%02d %s", selectedHour, selectedMinute, amPm);
-                        endTime.setText(timeString);
-                    },
-                    hour,
-                    minute,
-                    false
-            );
-            timePickerDialog.show();
-        });
-
-        calendarView.setOnDateChangedListener((widget, date, selected) -> {
-            calendar.set(date.getYear(), date.getMonth() - 1, date.getDay());
-            selectedCalendarDate = calendar.getTime();
-            widget.invalidateDecorators();
-            selectedDate.setText(dateFormat.format(calendar.getTime()));
-        });
-
         Date finalStartDate = startDate;
         Date finalEndDate = endDate;
+
         saveButton.setOnClickListener(view1 -> {
             String title = editTitle.getText().toString().trim();
             String budget = editBudget.getText().toString().trim();
@@ -193,11 +122,11 @@ public class NewSubEventFragment extends Fragment {
             }
 
             if (selectedCalendarDate == null) {
+                Log.d("checkData", "it is null");
                 Toast.makeText(getContext(), "Please select date between start date and end date of the event", Toast.LENGTH_LONG).show();
                 return;
             }
 
-            Log.d("checkData","startDate"+selectedCalendarDate.before(finalStartDate));
             if (selectedCalendarDate.before(finalStartDate) || selectedCalendarDate.after(finalEndDate)) {
                 Toast.makeText(getContext(), "Please select date between start date and end date of the event", Toast.LENGTH_LONG).show();
                 return;
@@ -207,7 +136,6 @@ public class NewSubEventFragment extends Fragment {
                 return;
             }
 
-            SimpleDateFormat timeFormat = new SimpleDateFormat("hh:mm a", Locale.getDefault());
             try {
                 Date startTimeDate = timeFormat.parse(startTimeStr);
                 Date endTimeDate = timeFormat.parse(endTimeStr);
@@ -264,6 +192,74 @@ public class NewSubEventFragment extends Fragment {
 
 
     }
+    private void initializeViews(View view) {
+        startTime = view.findViewById(R.id.editStartTime);
+        endTime = view.findViewById(R.id.editEndTime);
+        saveButton = view.findViewById(R.id.btnSaveSubEvent);
+        editTitle = view.findViewById(R.id.editSubEventTitle);
+        editBudget = view.findViewById(R.id.editSubBudget);
+        selectedDate = view.findViewById(R.id.selected_date);
+        calendarView = view.findViewById(R.id.calendarView);
+        ImageButton closeButton = view.findViewById(R.id.exit_selection_mode);
+        pageTitle = view.findViewById(R.id.toolbar_title);
+        closeButton.setOnClickListener(v -> closeFragment());
+    }
 
+    private void setupCalendarView() {
+        resetCalendarToCurrentDate();
+        selectedDate.setText(dateFormat.format(calendar.getTime()));
+        selectedCalendarDate = calendar.getTime();
+        calendarView.setOnDateChangedListener((widget, date, selected) -> {
+            calendar.set(date.getYear(), date.getMonth() - 1, date.getDay());
+            selectedCalendarDate = calendar.getTime();
+            widget.invalidateDecorators();
+            selectedDate.setText(dateFormat.format(calendar.getTime()));
+        });
+    }
 
+    private void resetCalendarToCurrentDate() {
+        calendar.set(calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH));
+        calendar.set(Calendar.HOUR_OF_DAY, 0);
+        calendar.set(Calendar.MINUTE, 0);
+        calendar.set(Calendar.SECOND, 0);
+        calendar.set(Calendar.MILLISECOND, 0);
+    }
+
+    private void setupTimePickers() {
+        setupTimePicker(startTime);
+        setupTimePicker(endTime);
+    }
+
+    private void setupTimePicker(TextView timeView) {
+        timeView.setOnClickListener(view -> {
+            Calendar currentTime = Calendar.getInstance();
+            int hour = currentTime.get(Calendar.HOUR_OF_DAY);
+            int minute = currentTime.get(Calendar.MINUTE);
+
+            TimePickerDialog timePickerDialog = new TimePickerDialog(
+                    getActivity(),
+                    R.style.CustomMaterialDatePickerTheme,
+                    (view1, selectedHour, selectedMinute) -> updateTimeView(timeView, selectedHour, selectedMinute),
+                    hour,
+                    minute,
+                    false
+            );
+            timePickerDialog.show();
+        });
+    }
+
+    private void updateTimeView(TextView timeView, int hour, int minute) {
+        Calendar tempCalendar = Calendar.getInstance();
+        tempCalendar.set(Calendar.HOUR_OF_DAY, hour);
+        String amPm = tempCalendar.get(Calendar.AM_PM) == Calendar.AM ? "AM" : "PM";
+        if (amPm.equals("PM")) {
+            hour -= 12;
+        }
+        String timeString = String.format(Locale.getDefault(), "%02d:%02d %s", hour, minute, amPm);
+        timeView.setText(timeString);
+    }
+
+    private void closeFragment() {
+        getParentFragmentManager().beginTransaction().replace(R.id.content_frame, new EventFragment()).commit();
+    }
 }

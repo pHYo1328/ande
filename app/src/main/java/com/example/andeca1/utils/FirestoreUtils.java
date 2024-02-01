@@ -1,16 +1,13 @@
 package com.example.andeca1.utils;
 
 import android.util.Log;
-import androidx.annotation.NonNull;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
+
 import com.google.android.gms.tasks.Task;
 import com.google.android.gms.tasks.Tasks;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
-import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
@@ -23,9 +20,6 @@ import com.example.andeca1.classes.Event;
 import com.example.andeca1.classes.SubEvent;
 
 public class FirestoreUtils {
-    private static final FirebaseFirestore db = FirebaseFirestore.getInstance();
-    private static final CollectionReference eventsCollection = db.collection("events");
-
     private static final FirebaseAuth mAuth = FirebaseAuth.getInstance();
     private static final FirebaseUser currentUser = mAuth.getCurrentUser();
     public interface FirestoreCallback<T> {
@@ -34,108 +28,101 @@ public class FirestoreUtils {
     }
 
     public static void createEvent(String eventName, String startDate, String endDate, Double budget, FirestoreCallback<String> callback) {
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        CollectionReference eventsCollection = db.collection("events");
         Map<String, Object> eventMap = new HashMap<>();
         eventMap.put("startDate", startDate);
         eventMap.put("endDate", endDate);
         eventMap.put("eventName", eventName);
         eventMap.put("budget", budget);
+        assert currentUser != null;
         eventMap.put("userID", currentUser.getUid());
+        // Handle any errors
         eventsCollection
                 .add(eventMap)
-                .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
-                    @Override
-                    public void onSuccess(DocumentReference documentReference) {
-                        // Document was added successfully, return the ID
-                        callback.onSuccess(documentReference.getId());
-                    }
+                .addOnSuccessListener(documentReference -> {
+                    // Document was added successfully, return the ID
+                    callback.onSuccess(documentReference.getId());
                 })
-                .addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        // Handle any errors
-                        callback.onError(e);
-                    }
-                });
+                .addOnFailureListener(callback::onError);
     }
 
     public static void getEventByID(String eventId, FirestoreCallback<Event> callback) {
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        CollectionReference eventsCollection = db.collection("events");
         DocumentReference eventRef = eventsCollection.document(eventId);
 
+        // Handle any errors
         eventRef.get()
-                .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
-                    @Override
-                    public void onSuccess(DocumentSnapshot documentSnapshot) {
-                        if (documentSnapshot.exists()) {
-                            // Document exists, parse it into an Event object
-                            Event event = documentSnapshot.toObject(Event.class);
-                            callback.onSuccess(event);
-                        } else {
-                            // Document does not exist
-                            callback.onSuccess(null); // Or handle it as needed
-                        }
+                .addOnSuccessListener(documentSnapshot -> {
+                    if (documentSnapshot.exists()) {
+                        // Document exists, parse it into an Event object
+                        Event event = documentSnapshot.toObject(Event.class);
+                        callback.onSuccess(event);
+                    } else {
+                        // Document does not exist
+                        callback.onSuccess(null); // Or handle it as needed
                     }
                 })
-                .addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        // Handle any errors
-                        callback.onError(e);
-                    }
-                });
+                .addOnFailureListener(callback::onError);
     }
 
     public static void getAllEvents(FirestoreCallback<List<Event>> callback) {
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        CollectionReference eventsCollection = db.collection("events");
+        assert currentUser != null;
+        // Handle any errors
         eventsCollection
                 .whereEqualTo("userID",currentUser.getUid())
                 .get()
-                .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>( ) {
-                    @Override
-                    public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
-                        List<Event> eventList = new ArrayList<>();
-                        for (QueryDocumentSnapshot document : queryDocumentSnapshots) {
-                            String startDate = document.getString("startDate");
-                            String endDate = document.getString("endDate");
-                            String eventId = document.getId();
-                            String eventTitle = document.getString("eventName");
-                            Double budget = document.getDouble("budget");
-                            Event event = new Event(eventId, eventTitle, startDate, endDate, budget);
-                            eventList.add(event);
+                .addOnSuccessListener(queryDocumentSnapshots -> {
+                    List<Event> eventList = new ArrayList<>();
+                    for (QueryDocumentSnapshot document : queryDocumentSnapshots) {
+                        String startDate = document.getString("startDate");
+                        String endDate = document.getString("endDate");
+                        String eventId = document.getId();
+                        String eventTitle = document.getString("eventName");
+                        Double budgetObj = document.getDouble("budget");
+                        double budget = 0.0;
+                        if (budgetObj != null) {
+                            budget = budgetObj;
                         }
-                        callback.onSuccess(eventList);
+                        Event event = new Event(eventId, eventTitle, startDate, endDate, budget);
+                        eventList.add(event);
                     }
+                    callback.onSuccess(eventList);
                 })
-                .addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        // Handle any errors
-                        callback.onError(e);
-                    }
-                });
+                .addOnFailureListener(callback::onError);
     }
 
     public static void getAllEventsOnSelectedDate(String selectedDate, FirestoreCallback<List<Event>> callback) {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
 
         // Query: events with startDate <= selectedDate
+        assert currentUser != null;
         db.collection("events")
                 .whereEqualTo("userID", currentUser.getUid())
                 .get()
-                .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
-                    @Override
-                    public void onSuccess(QuerySnapshot querySnapshot) {
-                        List<Event> eventList = new ArrayList<>();
-                        List<Task<QuerySnapshot>> subEventTasks = new ArrayList<>();
+                .addOnSuccessListener(querySnapshot -> {
+                    List<Event> eventList = new ArrayList<>();
+                    List<Task<QuerySnapshot>> subEventTasks = new ArrayList<>();
 
-                        for (QueryDocumentSnapshot document : querySnapshot) {
-                            String startDate = document.getString("startDate");
-                            String endDate = document.getString("endDate");
+                    for (QueryDocumentSnapshot document : querySnapshot) {
+                        String startDate = document.getString("startDate");
+                        String endDate = document.getString("endDate");
 
-                            // Check if the selectedDate is also less than or equal to endDate
-                            if (selectedDate.compareTo(endDate) <= 0 && selectedDate.compareTo(startDate)>=0) {
+                        // Check if the selectedDate is also less than or equal to endDate
+                        assert endDate != null;
+                        if (selectedDate.compareTo(endDate) <= 0) {
+                            assert startDate != null;
+                            if (selectedDate.compareTo(startDate)>=0) {
                                 String eventId = document.getId();
                                 String eventTitle = document.getString("eventName");
-                                Double budget = document.getDouble("budget");
-
+                                Double budgetObj = document.getDouble("budget");
+                                double budget = 0.0;
+                                if(budgetObj!= null){
+                                    budget = budgetObj;
+                                }
                                 Event event = new Event(eventId, eventTitle, startDate, endDate, budget);
                                 db.collection("events").document(eventId).collection("subEvents")
                                         .whereEqualTo("subEvent_date", selectedDate)
@@ -163,11 +150,11 @@ public class FirestoreUtils {
                                 eventList.add(event);
                             }
                         }
-
-                        // Wait for all subevent tasks to complete
-                        Tasks.whenAllComplete(subEventTasks)
-                                .addOnCompleteListener(tasks -> callback.onSuccess(eventList));
                     }
+
+                    // Wait for all subevent tasks to complete
+                    Tasks.whenAllComplete(subEventTasks)
+                            .addOnCompleteListener(tasks -> callback.onSuccess(eventList));
                 })
                 .addOnFailureListener(e -> {
                     Log.e("Firestore", "Error getting events: ", e);
@@ -176,6 +163,8 @@ public class FirestoreUtils {
     }
 
     public static void updateEvent(String eventId, String eventTitle, String startDate, String endDate, Double budget, FirestoreCallback<Void> callback) {
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        CollectionReference eventsCollection = db.collection("events");
         DocumentReference eventDocRef = eventsCollection.document(eventId);
 
         Map<String, Object> updatedEvent = new HashMap<>();
@@ -183,147 +172,104 @@ public class FirestoreUtils {
         updatedEvent.put("endDate", endDate);
         updatedEvent.put("eventName", eventTitle);
         updatedEvent.put("budget", budget);
+        assert currentUser != null;
         updatedEvent.put("userID", currentUser.getUid());
 
+        // Handle any errors
         eventDocRef
                 .set(updatedEvent)
-                .addOnSuccessListener(new OnSuccessListener<Void>() {
-                    @Override
-                    public void onSuccess(Void aVoid) {
-                        // Event updated successfully
-                        callback.onSuccess(null);
-                    }
+                .addOnSuccessListener(aVoid -> {
+                    // Event updated successfully
+                    callback.onSuccess(null);
                 })
-                .addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        // Handle any errors
-                        callback.onError(e);
-                    }
-                });
+                .addOnFailureListener(callback::onError);
     }
     public static void deleteEvent(String eventId, FirestoreCallback<Void> callback) {
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        CollectionReference eventsCollection = db.collection("events");
         eventsCollection
                 .document(eventId)
                 .delete()
-                .addOnSuccessListener(new OnSuccessListener<Void>() {
-                    @Override
-                    public void onSuccess(Void aVoid) {
-                        // Event deleted successfully
-                        callback.onSuccess(null);
-                    }
+                .addOnSuccessListener(aVoid -> {
+                    // Event deleted successfully
+                    callback.onSuccess(null);
                 })
-                .addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        // Handle any errors
-                        callback.onError(e);
-                    }
-                });
+                .addOnFailureListener(callback::onError);
     }
 
     public static void createSubEvent(String subEventTitle, String subEventDate, String startTime, String endTime, double budget, String eventId, FirestoreCallback<String> callback) {
         SubEvent subEvent = new SubEvent(subEventTitle,subEventDate,startTime,endTime,budget);
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        CollectionReference eventsCollection = db.collection("events");
         eventsCollection
                 .document(eventId)
                 .collection("subEvents")
                 .add(subEvent)
-                .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
-                    @Override
-                    public void onSuccess(DocumentReference documentReference) {
-                        // Sub-event added successfully, return the ID
-                        callback.onSuccess(documentReference.getId());
-                    }
+                .addOnSuccessListener(documentReference -> {
+                    // Sub-event added successfully, return the ID
+                    callback.onSuccess(documentReference.getId());
                 })
-                .addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        // Handle any errors
-                        callback.onError(e);
-                    }
-                });
+                .addOnFailureListener(callback::onError);
     }
 
     public static void getSubEventById(String eventId, String subEventId, FirestoreCallback<SubEvent> callback) {
-        Log.d("checkData","eventid"+ eventId);
-        Log.d("checkData","i m "+subEventId);
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        CollectionReference eventsCollection = db.collection("events");
         eventsCollection
                 .document(eventId)
                 .collection("subEvents")
                 .document(subEventId)
                 .get()
-                .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
-                    @Override
-                    public void onSuccess(DocumentSnapshot documentSnapshot) {
-                        if (documentSnapshot.exists()) {
-                            // Sub-event document exists, parse it into a SubEvent object
-                            String subEventTitle = documentSnapshot.getString("subEvent_title");
-                            String subEventDate = documentSnapshot.getString("subEvent_date");
-                            String startTime = documentSnapshot.getString("start_time");
-                            String endTime = documentSnapshot.getString("end_time");
-                            double subEventBudget = documentSnapshot.getDouble("subEvent_budget");
-
-                            SubEvent subEvent = new SubEvent(subEventId, subEventTitle, subEventDate, startTime, endTime, subEventBudget, eventId);
-                            callback.onSuccess(subEvent);
-                        } else {
-                            // Sub-event document does not exist
-                            callback.onSuccess(null); // Return null to indicate not found
+                .addOnSuccessListener(documentSnapshot -> {
+                    if (documentSnapshot.exists()) {
+                        // Sub-event document exists, parse it into a SubEvent object
+                        String subEventTitle = documentSnapshot.getString("subEvent_title");
+                        String subEventDate = documentSnapshot.getString("subEvent_date");
+                        String startTime = documentSnapshot.getString("start_time");
+                        String endTime = documentSnapshot.getString("end_time");
+                        Double subEventBudgetObj = documentSnapshot.getDouble("subEvent_budget");
+                        double subEventBudget = 0.0;
+                        if (subEventBudgetObj != null) {
+                            subEventBudget = subEventBudgetObj;
                         }
+                        SubEvent subEvent = new SubEvent(subEventId, subEventTitle, subEventDate, startTime, endTime, subEventBudget, eventId);
+                        callback.onSuccess(subEvent);
+                    } else {
+                        // Sub-event document does not exist
+                        callback.onSuccess(null); // Return null to indicate not found
                     }
                 })
-                .addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        // Handle any errors
-                        callback.onError(e);
-                    }
-                });
+                .addOnFailureListener(callback::onError);
     }
 
     public static void updateSubEvent(String eventId, String subEventId, String subEventTitle, String subEventDate, String startTime, String endTime, double budget, FirestoreCallback<Void> callback) {
         SubEvent updatedData = new SubEvent(subEventTitle,subEventDate,startTime,endTime,budget);
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        CollectionReference eventsCollection = db.collection("events");
         eventsCollection
                 .document(eventId)
                 .collection("subEvents")
                 .document(subEventId)
                 .set(updatedData)
-                .addOnSuccessListener(new OnSuccessListener<Void>() {
-                    @Override
-                    public void onSuccess(Void aVoid) {
-                        // Sub-event updated successfully
-                        callback.onSuccess(null);
-                    }
+                .addOnSuccessListener(aVoid -> {
+                    // Sub-event updated successfully
+                    callback.onSuccess(null);
                 })
-                .addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        // Handle any errors
-                        callback.onError(e);
-                    }
-                });
+                .addOnFailureListener(callback::onError);
     }
 
     public static void deleteSubEvent(String eventId, String subEventId, FirestoreCallback<Void> callback) {
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        CollectionReference eventsCollection = db.collection("events");
         eventsCollection
                 .document(eventId)
                 .collection("subEvents")
                 .document(subEventId)
                 .delete()
-                .addOnSuccessListener(new OnSuccessListener<Void>() {
-                    @Override
-                    public void onSuccess(Void aVoid) {
-                        // Sub-event deleted successfully
-                        callback.onSuccess(null);
-                    }
+                .addOnSuccessListener(aVoid -> {
+                    // Sub-event deleted successfully
+                    callback.onSuccess(null);
                 })
-                .addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        // Handle any errors
-                        callback.onError(e);
-                    }
-                });
+                .addOnFailureListener(callback::onError);
     }
-
-
 }

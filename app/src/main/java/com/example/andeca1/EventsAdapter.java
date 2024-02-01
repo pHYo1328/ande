@@ -18,6 +18,10 @@ import java.util.List;
 
 public class EventsAdapter extends RecyclerView.Adapter<EventsAdapter.EventViewHolder> {
 
+    public List<Event> getEvents() {
+        return eventList;
+    }
+
     public interface OnEventEditListener {
         void onEventEditClicked(String eventId,String startDate);
     }
@@ -26,17 +30,24 @@ public class EventsAdapter extends RecyclerView.Adapter<EventsAdapter.EventViewH
         void onSubEventEditClicked(String eventId,String subEventId, String startDate, String endDate);
     }
 
+    public interface OnSubEventDeleteListener {
+        void onSubEventDeleteClicked(String eventId, String subEventId);
+    }
+
+
 
     private final List<Event> eventList;
     private final OnEventEditListener editButtonClickListener;
     private final OnSubEventEditListener subEventEditButtonClickListener;
+    private final OnSubEventDeleteListener subEventDeleteButtonClickListener;
 
 
     // Constructor
-    public EventsAdapter(List<Event> events, OnEventEditListener eventListener, OnSubEventEditListener subEventListener) {
+    public EventsAdapter(List<Event> events, OnEventEditListener eventListener, OnSubEventEditListener subEventListener, OnSubEventDeleteListener subEventDeleteListener) {
         this.eventList = events;
         this.editButtonClickListener = eventListener;
         this.subEventEditButtonClickListener = subEventListener;
+        this.subEventDeleteButtonClickListener = subEventDeleteListener;
     }
 
 
@@ -92,6 +103,7 @@ public class EventsAdapter extends RecyclerView.Adapter<EventsAdapter.EventViewH
                         TextView time = subEventView.findViewById(R.id.txtViewTime);
                         TextView subBudget = subEventView.findViewById(R.id.txtSubBudget);
                         ImageButton btnSubEventEdit = subEventView.findViewById(R.id.btnSubEventEdit);
+                        ImageButton btnSubEventDelete = subEventView.findViewById(R.id.btnSubEventDelete);
                         subEventTitle.setText(subEvent.getSubEvent_title());
                         time.setText(String.format("%s - %s", subEvent.getStart_time(), subEvent.getEnd_time()));
                         subBudget.setText(String.format("%s", subEvent.getSubEvent_budget()));
@@ -100,6 +112,13 @@ public class EventsAdapter extends RecyclerView.Adapter<EventsAdapter.EventViewH
                                 subEventEditButtonClickListener.onSubEventEditClicked(event.getId(),subEvent.getId(),event.getStartDate(), event.getEndDate());
                             }
                         });
+
+                        btnSubEventDelete.setOnClickListener(v->{
+                            if(subEventDeleteButtonClickListener != null){
+                                subEventDeleteButtonClickListener.onSubEventDeleteClicked(event.getId(), subEvent.getId());
+                            }
+                        });
+
 
                         subEventsContainer.addView(subEventView);
                     }
