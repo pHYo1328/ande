@@ -4,11 +4,11 @@ plugins {
 }
 
 android {
-    namespace 'com.example.andeca1'
+    namespace 'com.example.zenbudget'
     compileSdk 34
 
     defaultConfig {
-        applicationId "com.example.andeca1"
+        applicationId "com.example.zenbudget"
         minSdk 30
         targetSdk 34
         versionCode 1
