@@ -14,5 +14,5 @@ dependencyResolutionManagement {
         // Add other project repositories if necessary
     }
 }
-rootProject.name = "ANDE CA1"
+rootProject.name = "Zen Budget"
 include ':app'
