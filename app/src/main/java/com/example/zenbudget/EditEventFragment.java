@@ -189,14 +189,12 @@ public class EditEventFragment extends Fragment {
         MaterialDatePicker<Long> materialDatePicker = builder.build();
 
         materialDatePicker.addOnPositiveButtonClickListener(selection -> {
-            // Use the selected date here
             Calendar calendar = Calendar.getInstance(TimeZone.getDefault());
             calendar.setTimeInMillis(selection);
             SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
             String formattedDate = dateFormat.format(calendar.getTime());
             editText.setText(formattedDate);
         });
-        // Show the MaterialDatePicker
         materialDatePicker.show(getParentFragmentManager(), "DATE_PICKER");
     }
 }

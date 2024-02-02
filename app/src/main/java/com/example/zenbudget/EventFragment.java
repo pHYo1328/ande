@@ -128,7 +128,7 @@ public class EventFragment extends Fragment implements EventsAdapter.OnEventEdit
     public void onSubEventDeleteClicked(String eventId, String subEventId) {
         AlertDialog.Builder builder = new AlertDialog.Builder(getContext(),R.style.AlertDialogCustom);
         builder.setMessage("Are you sure you want to delete this sub-event?")
-                .setTitle("Delete Event")
+                .setTitle("Delete Sub-Event")
                 .setPositiveButton("Delete", (dialog, id) ->
                         FirestoreUtils.deleteSubEvent(eventId, subEventId, new FirestoreUtils.FirestoreCallback<Void>() {
                             @Override
@@ -174,7 +174,6 @@ public class EventFragment extends Fragment implements EventsAdapter.OnEventEdit
 
                         @Override
                         public boolean onMove(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder, @NonNull RecyclerView.ViewHolder target) {
-                            // not important if we're not implementing drag and drop
                             return false;
                         }
 
@@ -263,7 +262,7 @@ public class EventFragment extends Fragment implements EventsAdapter.OnEventEdit
 
             @Override
             public void onError(Exception e) {
-                // Handle errors
+                Toast.makeText(getContext(),"fail to get all events",Toast.LENGTH_LONG).show();
             }
         });
 

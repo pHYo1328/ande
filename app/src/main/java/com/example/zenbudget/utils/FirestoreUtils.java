@@ -28,8 +28,6 @@ public class FirestoreUtils {
         void onSuccess(T result);
         void onError(Exception e);
     }
-
-
     public static void createEvent(String eventName, String startDate, String endDate, Double budget, String imgUrl,String userID, FirestoreCallback<String> callback) {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         CollectionReference eventsCollection = db.collection("events");
@@ -111,7 +109,7 @@ public class FirestoreUtils {
                         String startDate = document.getString("startDate");
                         String endDate = document.getString("endDate");
 
-                        // Check if the selectedDate is also less than or equal to endDate
+                        // Check if the selectedDate is also less than or equal to endDate and bigger or equal to startDate
                         assert endDate != null;
                         if (selectedDate.compareTo(endDate) <= 0) {
                             assert startDate != null;

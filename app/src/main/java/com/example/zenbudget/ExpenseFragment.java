@@ -154,14 +154,12 @@ public class ExpenseFragment extends Fragment {
         MaterialDatePicker<Long> materialDatePicker = builder.build();
 
         materialDatePicker.addOnPositiveButtonClickListener(selection -> {
-            // Use the selected date here
             Calendar calendar = Calendar.getInstance(TimeZone.getDefault());
             calendar.setTimeInMillis(selection);
             SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault());
             String formattedDate = dateFormat.format(calendar.getTime());
             editTextDate.setText(formattedDate);
         });
-        // Show the MaterialDatePicker
         materialDatePicker.show(getParentFragmentManager(), "DATE_PICKER");
     }
 
@@ -207,7 +205,7 @@ public class ExpenseFragment extends Fragment {
 
         @Override
         public void onNothingSelected(AdapterView<?> parent) {
-            // Interface callback for when nothing is selected
+
         }
     }
 
@@ -220,7 +218,7 @@ public class ExpenseFragment extends Fragment {
 
         @Override
         public void onNothingSelected(AdapterView<?> parent) {
-            // Interface callback for when nothing is selected
+
         }
     }
 
@@ -242,7 +240,7 @@ public class ExpenseFragment extends Fragment {
             return;
         }
 
-        // Validate the date - make sure it's a valid date
+
         SimpleDateFormat format = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault());
         try {
             Date parsedDate = format.parse(date);
@@ -262,7 +260,6 @@ public class ExpenseFragment extends Fragment {
         }
 
         if (event==null) {
-            // Show some error or make a Toast
             Toast.makeText(getContext(), "Please enter an event", Toast.LENGTH_SHORT).show();
             return;
         }
