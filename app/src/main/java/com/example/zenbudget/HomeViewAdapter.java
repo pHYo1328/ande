@@ -48,7 +48,6 @@ public class HomeViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
             currentHolder.txtInfo.setVisibility(View.GONE);
             currentHolder.txtStartDate.setText(FirestoreUtils.formatDate(event.getStartDate()));
             currentHolder.txtEndDate.setText(FirestoreUtils.formatDate(event.getEndDate()));
-            currentHolder.progressBar.setProgress((float) event.getBudget());
             Glide.with(currentHolder.imgEvent.getContext())
                     .load(event.getImgUrl())
                     .apply(new RequestOptions().centerCrop()
@@ -79,7 +78,6 @@ public class HomeViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
             }
 
             currentHolder.progressBar.setProgress((float) (left/ item.getTotalBudget() * 100));
-
         } else if (type == HomeRecyclerItem.TYPE_CURRENT) {
             currentHolder.lblHeader.setText("Current Events");
             currentHolder.txtInfo.setVisibility(View.GONE);
@@ -88,6 +86,10 @@ public class HomeViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
             currentHolder.lblHeader.setText("Upcoming Events");
             currentHolder.txtInfo.setVisibility(View.GONE);
             currentHolder.cardDetails.setVisibility(View.GONE);
+        } else if (type == HomeRecyclerItem.TYPE_INFO) {
+            currentHolder.headerLayout.setVisibility(View.GONE);
+            currentHolder.cardDetails.setVisibility(View.GONE);
+            currentHolder.txtInfo.setText(item.getInfoMsg());
         }
     }
 

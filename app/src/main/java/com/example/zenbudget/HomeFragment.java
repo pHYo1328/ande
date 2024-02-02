@@ -69,7 +69,6 @@ public class HomeFragment extends Fragment {
                 });
 
 
-
         recyclerView = view.findViewById(R.id.recyclerView);
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
 
@@ -87,15 +86,18 @@ public class HomeFragment extends Fragment {
                 latch.await();
 
                 getActivity().runOnUiThread(() -> {
-                    Log.d("HomeFragment", "Items: " + myEvents.size());
-                    Log.d("HomeFragment", "Current: " + current.size());
-                    Log.d("HomeFragment", "Upcoming: " + upcoming.size());
+                    if (myEvents.isEmpty()) {
+                        items.add(new HomeRecyclerItem(HomeRecyclerItem.TYPE_CURRENT));
+                        items.add(new HomeRecyclerItem(HomeRecyclerItem.TYPE_INFO, "You have no current events to show."));
+                        items.add(new HomeRecyclerItem(HomeRecyclerItem.TYPE_UPCOMING));
+                        items.add(new HomeRecyclerItem(HomeRecyclerItem.TYPE_INFO, "You have no upcoming events to show. Create one to get started."));
+                        adapter.notifyDataSetChanged();
+                    }
+
 
                     for (Event e : myEvents) {
                         AtomicReference<Double> totalSpent = new AtomicReference<>(0.0);
                         AtomicReference<Double> totalBudget = new AtomicReference<>(e.getBudget());
-
-                        Log.d("HomeFragment", "Event: " + e.getEventName() + " " + e.getId());
 
                         db.collection("expenses")
                                 .whereEqualTo("event", e.getId())
@@ -126,17 +128,25 @@ public class HomeFragment extends Fragment {
 
                                                         Double totalS = totalSpent.get();
                                                         Double totalB = totalBudget.get();
-                                                        if (today.isAfter(startDate) && today.isBefore(endDate)) {
+                                                        if (today.isAfter(startDate) && today.isBefore(endDate) || today.isEqual(startDate) || today.isEqual(endDate) || today.isEqual(startDate)) {
                                                             current.add(new HomeRecyclerItem(e, e.getId(), totalS, totalB));
-                                                        } else {
+                                                        } else if (today.isBefore(startDate)) {
                                                             upcoming.add(new HomeRecyclerItem(e, e.getId(), totalS, totalB));
                                                         }
 
                                                         items.clear();
+
+
                                                         items.add(new HomeRecyclerItem(HomeRecyclerItem.TYPE_CURRENT));
+                                                        if (current.isEmpty())
+                                                            items.add(new HomeRecyclerItem(HomeRecyclerItem.TYPE_INFO, "You have no current events to show."));
                                                         items.addAll(current);
+
                                                         items.add(new HomeRecyclerItem(HomeRecyclerItem.TYPE_UPCOMING));
+                                                        if (upcoming.isEmpty())
+                                                            items.add(new HomeRecyclerItem(HomeRecyclerItem.TYPE_INFO, "You have no upcoming events to show. Create one to get started."));
                                                         items.addAll(upcoming);
+
 
                                                         adapter.notifyDataSetChanged();
                                                     } else {
@@ -164,17 +174,18 @@ public class HomeFragment extends Fragment {
                 .get()
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
-
                         for (QueryDocumentSnapshot document : task.getResult()) {
                             Event event = document.toObject(Event.class);
                             event.setId(document.getId());
 
-
                             myEvents.add(event);
-                            latch.countDown();
                         }
-
+                        latch.countDown();
                     }
+                })
+                .addOnFailureListener(e -> {
+                    Log.d("HomeFragment", "Error getting events: " + e.getMessage());
+                    Toast.makeText(getActivity(), "Error getting events: " + e.getMessage(), Toast.LENGTH_SHORT).show();
                 });
     }
 }

@@ -6,6 +6,14 @@ public class HomeRecyclerItem {
     private Event event;
     private Integer type;
     private String eventId;
+    private String infoMsg;
+
+    public HomeRecyclerItem(int type, String infoMsg) {
+        this.type = type;
+        this.event = new Event();
+        this.eventId = "";
+        this.infoMsg = infoMsg;
+    }
 
     public HomeRecyclerItem(int type) {
         this.type = type;
@@ -17,6 +25,8 @@ public class HomeRecyclerItem {
     public static final int TYPE_UPCOMING = 1;
 
     public static final int TYPE_EVENT = 2;
+
+    public static final int TYPE_INFO = 3;
 
     private Double totalSpent;
     private Double totalBudget;
@@ -55,6 +65,14 @@ public class HomeRecyclerItem {
 
     public Double getTotalSpent() {
         return totalSpent;
+    }
+
+    public String getInfoMsg() {
+        return infoMsg;
+    }
+
+    public void setInfoMsg(String infoMsg) {
+        this.infoMsg = infoMsg;
     }
 
     public void setTotalSpent(Double totalSpent) {
