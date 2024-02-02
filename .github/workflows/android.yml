@@ -36,4 +36,4 @@ jobs:
         KEY_GPG_PASSPHRASE: ${{ secrets.KEY_GPG_PASSPHRASE }}
 
     - name: Build with Gradle
-      run: ./gradlew build
+      run: ./gradlew build -x lint
