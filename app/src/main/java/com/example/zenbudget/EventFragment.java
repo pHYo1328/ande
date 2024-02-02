@@ -24,6 +24,8 @@ import com.example.zenbudget.classes.Event;
 import com.example.zenbudget.classes.SubEvent;
 import com.example.zenbudget.utils.FirestoreUtils;
 import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.prolificinteractive.materialcalendarview.CalendarDay;
 import com.prolificinteractive.materialcalendarview.MaterialCalendarView;
 
@@ -44,6 +46,8 @@ public class EventFragment extends Fragment implements EventsAdapter.OnEventEdit
     private String selectedCalendarDate;
     private RecyclerView recyclerView;
     private EventsAdapter adapter;
+    private static final FirebaseAuth mAuth = FirebaseAuth.getInstance();
+    private static final FirebaseUser currentUser = mAuth.getCurrentUser();
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_event, container, false);
@@ -153,7 +157,8 @@ public class EventFragment extends Fragment implements EventsAdapter.OnEventEdit
 
     private void setRecyclerView(MaterialCalendarView calendarView){
         recyclerView.setLayoutManager(new LinearLayoutManager(this.getContext()));
-        FirestoreUtils.getAllEventsOnSelectedDate(selectedCalendarDate, new FirestoreUtils.FirestoreCallback<List<Event>>() {
+        assert currentUser != null;
+        FirestoreUtils.getAllEventsOnSelectedDate(selectedCalendarDate,currentUser.getUid(), new FirestoreUtils.FirestoreCallback<List<Event>>() {
             @Override
             public void onSuccess(List<Event> eventsOnSelectedDate) {
 
@@ -232,7 +237,8 @@ public class EventFragment extends Fragment implements EventsAdapter.OnEventEdit
         calendarView.removeDecorators();
         List<DateRange> dateRanges = new ArrayList<>();
         SimpleDateFormat dateFormatForData = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
-        getAllEvents(new FirestoreUtils.FirestoreCallback<List<Event>>() {
+        assert currentUser != null;
+        getAllEvents(currentUser.getUid(),new FirestoreUtils.FirestoreCallback<List<Event>>() {
             @Override
             public void onSuccess(List<Event> events) {
                 for (Event event : events) {

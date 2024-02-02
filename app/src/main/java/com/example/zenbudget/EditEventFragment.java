@@ -16,6 +16,8 @@ import androidx.fragment.app.FragmentTransaction;
 import com.example.zenbudget.classes.Event;
 import com.example.zenbudget.utils.FirestoreUtils;
 import com.google.android.material.datepicker.MaterialDatePicker;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -26,6 +28,8 @@ import java.util.TimeZone;
 
 public class EditEventFragment extends Fragment {
     private EditText editTitle,editStartDate,editEndDate,editBudget;
+    private static final FirebaseAuth mAuth = FirebaseAuth.getInstance();
+    private static final FirebaseUser currentUser = mAuth.getCurrentUser();
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_edit_event, container, false);
@@ -102,7 +106,8 @@ public class EditEventFragment extends Fragment {
                 return;
             }
 
-            FirestoreUtils.updateEvent(finalEventId,eventTitle,startDateStr,endDateStr,budgetValue,new FirestoreUtils.FirestoreCallback<Void>() {
+            assert currentUser != null;
+            FirestoreUtils.updateEvent(finalEventId,eventTitle,startDateStr,endDateStr,budgetValue,currentUser.getUid(),new FirestoreUtils.FirestoreCallback<Void>() {
                         @Override
                         public void onSuccess(Void result) {
                             FragmentTransaction transaction = getParentFragmentManager().beginTransaction();
@@ -148,7 +153,8 @@ public class EditEventFragment extends Fragment {
                     Toast.makeText(getContext(),"Event end date shouldn't before start date",Toast.LENGTH_LONG).show();
                     return;
                 }
-                FirestoreUtils.updateEvent(finalEventId,eventTitle,startDateStr,endDateStr,budgetValue,new FirestoreUtils.FirestoreCallback<Void>() {
+            assert currentUser != null;
+            FirestoreUtils.updateEvent(finalEventId,eventTitle,startDateStr,endDateStr,budgetValue,currentUser.getUid(),new FirestoreUtils.FirestoreCallback<Void>() {
                     @Override
                     public void onSuccess(Void result) {
                         Bundle bundle = new Bundle();

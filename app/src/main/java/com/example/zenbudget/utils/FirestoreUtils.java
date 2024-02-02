@@ -4,8 +4,6 @@ import android.util.Log;
 
 import com.google.android.gms.tasks.Task;
 import com.google.android.gms.tasks.Tasks;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -14,7 +12,6 @@ import com.google.firebase.firestore.QuerySnapshot;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -27,34 +24,13 @@ import com.example.zenbudget.classes.SubEvent;
 import com.google.firebase.firestore.SetOptions;
 
 public class FirestoreUtils {
-    private static final FirebaseAuth mAuth = FirebaseAuth.getInstance();
-    private static final FirebaseUser currentUser = mAuth.getCurrentUser();
     public interface FirestoreCallback<T> {
         void onSuccess(T result);
         void onError(Exception e);
     }
 
-    public static void createEvent(String eventName, String startDate, String endDate, Double budget, FirestoreCallback<String> callback) {
-        FirebaseFirestore db = FirebaseFirestore.getInstance();
-        CollectionReference eventsCollection = db.collection("events");
-        Map<String, Object> eventMap = new HashMap<>();
-        eventMap.put("startDate", startDate);
-        eventMap.put("endDate", endDate);
-        eventMap.put("eventName", eventName);
-        eventMap.put("budget", budget);
-        assert currentUser != null;
-        eventMap.put("userID", currentUser.getUid());
-        // Handle any errors
-        eventsCollection
-                .add(eventMap)
-                .addOnSuccessListener(documentReference -> {
-                    // Document was added successfully, return the ID
-                    callback.onSuccess(documentReference.getId());
-                })
-                .addOnFailureListener(callback::onError);
-    }
 
-    public static void createEvent(String eventName, String startDate, String endDate, Double budget, String imgUrl, FirestoreCallback<String> callback) {
+    public static void createEvent(String eventName, String startDate, String endDate, Double budget, String imgUrl,String userID, FirestoreCallback<String> callback) {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         CollectionReference eventsCollection = db.collection("events");
         Map<String, Object> eventMap = new HashMap<>();
@@ -63,8 +39,7 @@ public class FirestoreUtils {
         eventMap.put("eventName", eventName);
         eventMap.put("budget", budget);
         eventMap.put("imgUrl", imgUrl);
-        assert currentUser != null;
-        eventMap.put("userID", currentUser.getUid());
+        eventMap.put("userID", userID);
         // Handle any errors
         eventsCollection
                 .add(eventMap)
@@ -79,9 +54,8 @@ public class FirestoreUtils {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         CollectionReference eventsCollection = db.collection("events");
         DocumentReference eventRef = eventsCollection.document(eventId);
-
-        // Handle any errors
-        eventRef.get()
+        eventRef
+                .get()
                 .addOnSuccessListener(documentSnapshot -> {
                     if (documentSnapshot.exists()) {
                         // Document exists, parse it into an Event object
@@ -95,13 +69,12 @@ public class FirestoreUtils {
                 .addOnFailureListener(callback::onError);
     }
 
-    public static void getAllEvents(FirestoreCallback<List<Event>> callback) {
+    public static void getAllEvents(String userID,FirestoreCallback<List<Event>> callback) {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         CollectionReference eventsCollection = db.collection("events");
-        assert currentUser != null;
         // Handle any errors
         eventsCollection
-                .whereEqualTo("userID",currentUser.getUid())
+                .whereEqualTo("userID",userID)
                 .get()
                 .addOnSuccessListener(queryDocumentSnapshots -> {
                     List<Event> eventList = new ArrayList<>();
@@ -123,13 +96,12 @@ public class FirestoreUtils {
                 .addOnFailureListener(callback::onError);
     }
 
-    public static void getAllEventsOnSelectedDate(String selectedDate, FirestoreCallback<List<Event>> callback) {
+    public static void getAllEventsOnSelectedDate(String selectedDate,String userID, FirestoreCallback<List<Event>> callback) {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
 
         // Query: events with startDate <= selectedDate
-        assert currentUser != null;
         db.collection("events")
-                .whereEqualTo("userID", currentUser.getUid())
+                .whereEqualTo("userID", userID)
                 .get()
                 .addOnSuccessListener(querySnapshot -> {
                     List<Event> eventList = new ArrayList<>();
@@ -190,7 +162,7 @@ public class FirestoreUtils {
                 });
     }
 
-    public static void updateEvent(String eventId, String eventTitle, String startDate, String endDate, Double budget, FirestoreCallback<Void> callback) {
+    public static void updateEvent(String eventId, String eventTitle, String startDate, String endDate, Double budget,String userID, FirestoreCallback<Void> callback) {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         CollectionReference eventsCollection = db.collection("events");
         DocumentReference eventDocRef = eventsCollection.document(eventId);
@@ -200,8 +172,7 @@ public class FirestoreUtils {
         updatedEvent.put("endDate", endDate);
         updatedEvent.put("eventName", eventTitle);
         updatedEvent.put("budget", budget);
-        assert currentUser != null;
-        updatedEvent.put("userID", currentUser.getUid());
+        updatedEvent.put("userID", userID);
 
         // Handle any errors
         eventDocRef

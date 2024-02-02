@@ -18,6 +18,8 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 
 import com.example.zenbudget.utils.FirestoreUtils;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
@@ -41,6 +43,8 @@ public class NewEventFragment extends Fragment {
     private Date startDate;
     private Date endDate;
     private static final String ACCESS_KEY = "lWdTZql7q7NmIpmsmnS7ShJb3nJuucYcAIci0u277bM";
+    private static final FirebaseAuth mAuth = FirebaseAuth.getInstance();
+    private static final FirebaseUser currentUser = mAuth.getCurrentUser();
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -107,23 +111,56 @@ public class NewEventFragment extends Fragment {
             String endDateStr = dateFormatForDB.format(endDate.getTime());
 
 
-            FirestoreUtils.createEvent(eventTitle, finalStartDateStr, endDateStr, budgetValue, new FirestoreUtils.FirestoreCallback<String>() {
+            OkHttpClient client = new OkHttpClient();
+            String baseUrl = "https://api.unsplash.com/photos/random";
+            String count = "1";
+            String orientation = "landscape";
+            String query = "bali";
+
+            StringBuilder apiUrlBuilder = new StringBuilder(baseUrl);
+            apiUrlBuilder.append("?client_id=").append(ACCESS_KEY);
+            apiUrlBuilder.append("&count=").append(count);
+            apiUrlBuilder.append("&orientation=").append(orientation);
+            apiUrlBuilder.append("&query=").append(query);
+
+            String apiUrl = apiUrlBuilder.toString();
+
+            Request request = new Request.Builder()
+                    .url(apiUrl)
+                    .build();
+
+            client.newCall(request).enqueue(new Callback() {
+
                 @Override
-                public void onSuccess(String eventId) {
-                    Bundle bundle = new Bundle();
-                    bundle.putString("eventId", eventId);
-                    bundle.putString("startDate", finalStartDateStr);
-                    bundle.putString("endDate", endDateStr);
-                    NewSubEventFragment newSubEventFragment = new NewSubEventFragment();
-                    newSubEventFragment.setArguments(bundle);
-                    FragmentTransaction transaction = requireActivity().getSupportFragmentManager().beginTransaction();
-                    transaction.replace(R.id.content_frame, newSubEventFragment);
-                    transaction.commit();
+                public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
+                    if (response.isSuccessful()) {
+                        Gson gson = new Gson();
+                        String responseBody = response.body().string();
+                        JsonArray res = JsonParser.parseString(responseBody).getAsJsonArray();
+                        JsonObject obj = res.get(0).getAsJsonObject();
+                        JsonObject urls = obj.get("urls").getAsJsonObject();
+                        String url = urls.get("regular").getAsString();
+
+                        assert currentUser != null;
+                        FirestoreUtils.createEvent(eventTitle, finalStartDateStr, endDateStr, budgetValue, url,currentUser.getUid(), new FirestoreUtils.FirestoreCallback<String>() {
+                            @Override
+                            public void onSuccess(String eventId) {
+                                FragmentTransaction transaction = requireActivity().getSupportFragmentManager().beginTransaction();
+                                transaction.replace(R.id.content_frame, new EventFragment());
+                                transaction.commit();
+                            }
+
+                            @Override
+                            public void onError(Exception e) {
+                                Toast.makeText(getContext(), "fail to create event", Toast.LENGTH_LONG).show();
+                            }
+                        });
+                    }
                 }
 
                 @Override
-                public void onError(Exception e) {
-                    Toast.makeText(getContext(), "fail to create event", Toast.LENGTH_LONG).show();
+                public void onFailure(@NonNull Call call, @NonNull IOException e) {
+                    e.printStackTrace();
                 }
             });
 
@@ -186,7 +223,8 @@ public class NewEventFragment extends Fragment {
                         JsonObject urls = obj.get("urls").getAsJsonObject();
                         String url = urls.get("regular").getAsString();
 
-                        FirestoreUtils.createEvent(eventTitle, finalStartDateStr, endDateStr, budgetValue, url, new FirestoreUtils.FirestoreCallback<String>() {
+                        assert currentUser != null;
+                        FirestoreUtils.createEvent(eventTitle, finalStartDateStr, endDateStr, budgetValue, url,currentUser.getUid(), new FirestoreUtils.FirestoreCallback<String>() {
                             @Override
                             public void onSuccess(String eventId) {
                                 FragmentTransaction transaction = requireActivity().getSupportFragmentManager().beginTransaction();

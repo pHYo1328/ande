@@ -44,6 +44,8 @@ public class ExpenseFragment extends Fragment {
     private Spinner spinnerCategory,spinnerEvent;
     private String category;
     private String event;
+    private static final FirebaseAuth mAuth = FirebaseAuth.getInstance();
+    private static final FirebaseUser currentUser = mAuth.getCurrentUser();
 
     public static ExpenseFragment newInstance(String amount, String description) {
         ExpenseFragment fragment = new ExpenseFragment();
@@ -174,7 +176,7 @@ public class ExpenseFragment extends Fragment {
     private void setUpEventSpinner(View view){
         spinnerEvent = view.findViewById(R.id.eventSpinner);
 
-        FirestoreUtils.getAllEvents(new FirestoreUtils.FirestoreCallback<List<Event>>() {
+        FirestoreUtils.getAllEvents(currentUser.getUid(),new FirestoreUtils.FirestoreCallback<List<Event>>() {
             @Override
             public void onSuccess(List<Event> eventList) {
 
@@ -278,6 +280,7 @@ public class ExpenseFragment extends Fragment {
         expense.put("category",category);
         expense.put("description",desc);
         expense.put("event",event);
+        assert currentUser != null;
         expense.put("userID", currentUser.getUid());
         db.collection("expenses").add(expense)
                 .addOnSuccessListener(documentReference -> {
