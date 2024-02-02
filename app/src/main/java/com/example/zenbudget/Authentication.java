@@ -20,6 +20,18 @@ public class Authentication extends AppCompatActivity {
     private final FirebaseAuth mAuth = FirebaseAuth.getInstance();
 
     @Override
+    protected void onResume() {
+        super.onResume();
+        FirebaseUser currentUser = mAuth.getCurrentUser();
+        if (currentUser != null)   {
+            Intent i = new Intent(Authentication.this, BaseActivity.class);
+            startActivity(i);
+            overridePendingTransition(0, 0);
+            return;
+        }
+    }
+
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_authentication); // Set the layout file
