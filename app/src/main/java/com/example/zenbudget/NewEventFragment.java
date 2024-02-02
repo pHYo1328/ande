@@ -43,8 +43,8 @@ public class NewEventFragment extends Fragment {
     private Date startDate;
     private Date endDate;
     private static final String ACCESS_KEY = "lWdTZql7q7NmIpmsmnS7ShJb3nJuucYcAIci0u277bM";
-    private static final FirebaseAuth mAuth = FirebaseAuth.getInstance();
-    private static final FirebaseUser currentUser = mAuth.getCurrentUser();
+    private final FirebaseAuth mAuth = FirebaseAuth.getInstance();
+    FirebaseUser currentUser = mAuth.getCurrentUser();
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -110,7 +110,7 @@ public class NewEventFragment extends Fragment {
             }
             String endDateStr = dateFormatForDB.format(endDate.getTime());
 
-
+            assert currentUser != null;
             OkHttpClient client = new OkHttpClient();
             String baseUrl = "https://api.unsplash.com/photos/random";
             String count = "1";
@@ -145,8 +145,14 @@ public class NewEventFragment extends Fragment {
                         FirestoreUtils.createEvent(eventTitle, finalStartDateStr, endDateStr, budgetValue, url,currentUser.getUid(), new FirestoreUtils.FirestoreCallback<String>() {
                             @Override
                             public void onSuccess(String eventId) {
+                                Bundle bundle = new Bundle();
+                                bundle.putString("eventId", eventId);
+                                bundle.putString("startDate", finalStartDateStr);
+                                bundle.putString("endDate", endDateStr);
+                                NewSubEventFragment newSubEventFragment = new NewSubEventFragment();
+                                newSubEventFragment.setArguments(bundle);
                                 FragmentTransaction transaction = requireActivity().getSupportFragmentManager().beginTransaction();
-                                transaction.replace(R.id.content_frame, new EventFragment());
+                                transaction.replace(R.id.content_frame, newSubEventFragment);
                                 transaction.commit();
                             }
 
@@ -163,7 +169,6 @@ public class NewEventFragment extends Fragment {
                     e.printStackTrace();
                 }
             });
-
         });
 
         saveButton.setOnClickListener(view1 -> {

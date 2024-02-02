@@ -46,8 +46,8 @@ public class EventFragment extends Fragment implements EventsAdapter.OnEventEdit
     private String selectedCalendarDate;
     private RecyclerView recyclerView;
     private EventsAdapter adapter;
-    private static final FirebaseAuth mAuth = FirebaseAuth.getInstance();
-    private static final FirebaseUser currentUser = mAuth.getCurrentUser();
+    private final FirebaseAuth mAuth = FirebaseAuth.getInstance();
+    FirebaseUser currentUser = mAuth.getCurrentUser();
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_event, container, false);

@@ -6,6 +6,7 @@ import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -44,8 +45,8 @@ public class ExpenseFragment extends Fragment {
     private Spinner spinnerCategory,spinnerEvent;
     private String category;
     private String event;
-    private static final FirebaseAuth mAuth = FirebaseAuth.getInstance();
-    private static final FirebaseUser currentUser = mAuth.getCurrentUser();
+    private final FirebaseAuth mAuth = FirebaseAuth.getInstance();
+    FirebaseUser currentUser = mAuth.getCurrentUser();
 
     public static ExpenseFragment newInstance(String amount, String description) {
         ExpenseFragment fragment = new ExpenseFragment();
@@ -57,6 +58,7 @@ public class ExpenseFragment extends Fragment {
     }
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        Log.d("checkData","i m testing"+currentUser.getUid());
         View view = inflater.inflate(R.layout.fragment_expense, container, false);
         editTextDate = view.findViewById(R.id.dateEditText);
         editAmount = view.findViewById(R.id.spentEditText);

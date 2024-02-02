@@ -28,8 +28,8 @@ import java.util.TimeZone;
 
 public class EditEventFragment extends Fragment {
     private EditText editTitle,editStartDate,editEndDate,editBudget;
-    private static final FirebaseAuth mAuth = FirebaseAuth.getInstance();
-    private static final FirebaseUser currentUser = mAuth.getCurrentUser();
+    private final FirebaseAuth mAuth = FirebaseAuth.getInstance();
+    FirebaseUser currentUser = mAuth.getCurrentUser();
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_edit_event, container, false);
