@@ -37,6 +37,12 @@
             android:layout_width="match_parent"
             android:layout_height="200dp"
             android:background="@drawable/rounded_corner" />
+        <ImageView
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:src="@drawable/circle_user"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="50dp"/>
 
         <TextView
             android:id="@+id/txtProfileFirstName"
