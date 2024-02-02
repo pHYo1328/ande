@@ -6,6 +6,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -48,7 +49,7 @@ public class EventDashboard extends Fragment {
     List<SubEventRecyclerItem> subEventRecyclerItems;
     List<SubEvent> subEvents;
     TextView txtEventName, txtEventStartDate, txtEventEndDate, txtBudget, txtSpent, txtRemaining, txtNoExpenses, txtNoSubEvents;
-    LinearLayout layoutBack;
+    ImageButton btnBack;
     ImageView imgDashboard;
     PieChart mPieChart;
     FragmentContainerView containerExpenses, containerSubEvents;
@@ -62,8 +63,8 @@ public class EventDashboard extends Fragment {
         View view = inflater.inflate(R.layout.fragment_dashboard, container, false);
         event_id = getArguments().getString("eventId");
 
-        layoutBack = view.findViewById(R.id.layoutBack);
-        layoutBack.setOnClickListener(v -> {
+        btnBack = view.findViewById(R.id.exit_selection_mode);
+        btnBack.setOnClickListener(v -> {
             getActivity().getSupportFragmentManager().beginTransaction().replace(R.id.content_frame, new HomeFragment()).commit();
         });
 
@@ -248,7 +249,7 @@ public class EventDashboard extends Fragment {
                 .addOnFailureListener(e -> {
                     e.printStackTrace();
                     Toast.makeText(getContext(), "Failed to load event", Toast.LENGTH_SHORT).show();
-                    layoutBack.performClick();
+                    btnBack.performClick();
                 })
         ;
     }

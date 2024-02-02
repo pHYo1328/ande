@@ -74,6 +74,7 @@ public class LoginFragment extends Fragment {
         btnGoogleAuth.setOnClickListener(v -> {
             Intent i = gsc.getSignInIntent();
             startActivityForResult(i, RC_SIGN_IN);
+            Log.d(TAG, "onViewCreated: " + i.toString());
         });
 
         btnLogin.setOnClickListener(v -> {
@@ -143,9 +144,11 @@ public class LoginFragment extends Fragment {
 
             try {
                 GoogleSignInAccount account = task.getResult(ApiException.class);
+                Log.d(TAG, "onActivityResult: " + account.getEmail());
                 firebaseAuthWithGoogleAccount(account);
             } catch (Exception e) {
-                Log.w(TAG, "onActivityResult: " + e.getMessage());
+                e.printStackTrace();
+                Log.w(TAG, "onActivityResult: " + e);
             }
         }
     }
@@ -154,7 +157,6 @@ public class LoginFragment extends Fragment {
         Log.d(TAG, "firebaseAuthWithGoogleAccount: " + account.getId());
 
         AuthCredential credential = GoogleAuthProvider.getCredential(account.getIdToken(), null);
-
 
         db.collection("users")
                 .whereEqualTo("email", account.getEmail())

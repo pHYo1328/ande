@@ -37,11 +37,15 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
+                android:hint="Email"
                 app:boxBackgroundMode="outline"
+                app:boxCornerRadiusBottomEnd="10dp"
+                app:boxCornerRadiusBottomStart="10dp"
+                app:boxCornerRadiusTopEnd="10dp"
+                app:boxCornerRadiusTopStart="10dp"
                 app:boxStrokeColor="@color/mtr_textinput_outline"
-                app:hintTextColor="@color/black"
                 app:cursorColor="@color/mtr_hint_foreground"
-                android:hint="Email">
+                app:hintTextColor="@color/black">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/txtLoginEmail"
@@ -56,11 +60,15 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="4dp"
-                app:boxBackgroundMode="outline"
-                app:boxStrokeColor="@color/mtr_textinput_outline"
-                app:hintTextColor="@color/black"
-                app:cursorColor="@color/mtr_hint_foreground"
                 android:hint="Password"
+                app:boxBackgroundMode="outline"
+                app:boxCornerRadiusBottomEnd="10dp"
+                app:boxCornerRadiusBottomStart="10dp"
+                app:boxCornerRadiusTopEnd="10dp"
+                app:boxCornerRadiusTopStart="10dp"
+                app:boxStrokeColor="@color/mtr_textinput_outline"
+                app:cursorColor="@color/mtr_hint_foreground"
+                app:hintTextColor="@color/black"
                 app:passwordToggleEnabled="true">
 
                 <com.google.android.material.textfield.TextInputEditText
@@ -74,43 +82,36 @@
 
 
             <Button
-                android:id="@+id/btnLogin"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginHorizontal="32dp"
-                android:layout_marginTop="64dp"
-                android:layout_marginBottom="8dp"
-                android:backgroundTint="@color/budget_purple"
-                android:padding="16dp"
-                android:text="Login"
-                android:textColor="@color/white"
-                android:textSize="16sp"
-                app:cornerRadius="10dp" />
-
-            <com.google.android.material.divider.MaterialDivider
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginHorizontal="16dp" />
-
-
-            <Button
                 android:id="@+id/btnGoogleAuth"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginHorizontal="32dp"
-                android:layout_marginTop="8dp"
-                android:layout_marginBottom="16dp"
+                android:layout_marginTop="64dp"
                 android:backgroundTint="@color/icon_color"
                 android:padding="16dp"
                 android:text="Continue with Google"
                 android:textColor="@color/budget_purple"
-                android:textSize="16sp"
-                app:cornerRadius="10dp"
+                android:textSize="14sp"
+                app:cornerRadius="50dp"
                 app:icon="@drawable/googleg_standard_color_18"
                 app:iconTint="@color/budget_purple"
                 app:rippleColor="@color/off_white"
                 app:strokeColor="@color/off_white"
                 app:strokeWidth="1dp" />
+
+            <Button
+                android:id="@+id/btnLogin"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="32dp"
+                android:layout_marginTop="4dp"
+                android:layout_marginBottom="8dp"
+                android:backgroundTint="@color/budget_purple"
+                android:padding="16dp"
+                android:text="Login"
+                android:textColor="@color/white"
+                android:textSize="14sp"
+                app:cornerRadius="50dp" />
 
 
         </LinearLayout>
