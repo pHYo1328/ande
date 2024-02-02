@@ -61,7 +61,7 @@ public class ChatFragment extends Fragment implements View.OnClickListener, Base
         recyclerView = view.findViewById(R.id.chat_recycler_view);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
 
-        chatAdapter = new ChatAdapter(new ArrayList<>(), this); // Initialize with empty list
+        chatAdapter = new ChatAdapter(new ArrayList<>(), this);
         recyclerView.setAdapter(chatAdapter);
 
         messageInput = view.findViewById(R.id.message_input);
@@ -83,12 +83,12 @@ public class ChatFragment extends Fragment implements View.OnClickListener, Base
             suggestionButton.setVisibility(View.GONE);
         });
 
-        // Initialize ViewModel
+        // Initialize ViewModel yes
         chatViewModel = new ViewModelProvider(requireActivity()).get(ChatViewModel.class);
 
-        // Observe chat messages LiveData
+        // Observe chat messages LiveData i think
         chatViewModel.getChatMessages().observe(getViewLifecycleOwner(), chatMessages -> {
-            chatAdapter.setChatMessages(chatMessages); // Update adapter's data
+            chatAdapter.setChatMessages(chatMessages); // Update adapter's data otherwise it die
             if (chatMessages.size() > 0) {
                 suggestionButton.setVisibility(View.GONE);
             }
@@ -192,7 +192,7 @@ public class ChatFragment extends Fragment implements View.OnClickListener, Base
                 "Please also verify that the JSON array is in the correct format\n" +
                 "Output Format: JSON array with each message as a separate object with only the message key with no markdown or HTML formatting");
 
-        // Adding examples
+        // Adding examples in the api
         JsonArray examplesArray = new JsonArray();
         addExample(examplesArray, "Hello", "[{\"message\": \"Hi there! I'm happy to lend a hand. Tell me about your financial goals for 2023.\"}]");
         addExample(examplesArray, "I want to buy a house", "[{\"message\": \"Great! Let's start by looking at your current budget.\"}]");
@@ -201,7 +201,7 @@ public class ChatFragment extends Fragment implements View.OnClickListener, Base
         List<ChatMessage> combinedMessages = new ArrayList<>();
         StringBuilder recipientMessages = new StringBuilder();
 
-        // Combine recipient messages
+        // Combine recipient messages that are from the same sender
         for (ChatMessage chatMsg : chatMessages) {
             if (chatMsg.getIsIgnored()) {
                 continue;
@@ -214,7 +214,7 @@ public class ChatFragment extends Fragment implements View.OnClickListener, Base
             } else {
                 if (recipientMessages.length() > 0) {
                     combinedMessages.add(new ChatMessage(recipientMessages.toString(), "Now", ChatMessage.TYPE_RECIPIENT));
-                    recipientMessages = new StringBuilder(); // clear
+                    recipientMessages = new StringBuilder(); // reset this shiet
                 }
                 combinedMessages.add(chatMsg);
             }
@@ -230,7 +230,7 @@ public class ChatFragment extends Fragment implements View.OnClickListener, Base
         int start = Math.max(0, combinedMessages.size() - 9);
         List<ChatMessage> lastEightMessages = combinedMessages.subList(start, combinedMessages.size());
 
-        // Add to the real messagesArray
+        // Add to the real messagesArray final
         JsonArray messagesArray = new JsonArray();
         for (ChatMessage chatMsg : lastEightMessages) {
             JsonObject messageObj = new JsonObject();
@@ -243,7 +243,6 @@ public class ChatFragment extends Fragment implements View.OnClickListener, Base
         instancesArray.add(instance);
         requestJson.add("instances", instancesArray);
 
-        // Adding parameters
         JsonObject parameters = new JsonObject();
         parameters.addProperty("maxOutputTokens", 1024);
         parameters.addProperty("temperature", 0.9);
@@ -280,7 +279,7 @@ public class ChatFragment extends Fragment implements View.OnClickListener, Base
             sendButton.setVisibility(View.GONE);
             loadingSpinner.setVisibility(View.VISIBLE);
 
-            //remove trailing white spaces
+            //remove trailing white spaces so no send extra space
             message = message.trim();
             ChatMessage chatMessage = new ChatMessage(message, "Now", ChatMessage.TYPE_SENDER);
             chatViewModel.addChatMessage(chatMessage);
@@ -345,9 +344,7 @@ public class ChatFragment extends Fragment implements View.OnClickListener, Base
                                         }
                                     } catch (Exception e) {
                                         ChatMessage newMessage = new ChatMessage(candidateContent, "Now", ChatMessage.TYPE_RECIPIENT);
-
-                                        // Update your chat interface accordingly
-                                        // Ensure UI updates are run on the main thread
+                                        // Ensure UI update on ui thread otherwise cmi
                                         requireActivity().runOnUiThread(() -> {
                                             chatViewModel.addChatMessage(newMessage);
                                             chatAdapter.notifyItemInserted(chatMessages.size() - 1);
@@ -376,7 +373,6 @@ public class ChatFragment extends Fragment implements View.OnClickListener, Base
 
                 } catch (Exception e) {
                     e.printStackTrace();
-                    // Handle exceptions (update UI, show error message, etc.)
                 }
                 requireActivity().runOnUiThread(() -> {
                     sendButton.setVisibility(View.VISIBLE);

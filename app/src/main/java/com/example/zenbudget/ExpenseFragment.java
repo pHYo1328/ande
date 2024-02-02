@@ -87,36 +87,35 @@ public class ExpenseFragment extends Fragment {
     }
 
     public void showCamera(){
-        // Create an intent to open the camera or gallery
+        //  an intent to open the camera or gallery
         Intent cameraIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
         Intent galleryIntent = new Intent(Intent.ACTION_PICK, android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
         galleryIntent.setDataAndType(android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI,"image/*");
 
-        // Create a chooser intent to let the user select between camera and gallery
+        //  chooser intent to let the user select between camera and gallery
         Intent chooser = new Intent(Intent.ACTION_CHOOSER);
         chooser.putExtra(Intent.EXTRA_INTENT, galleryIntent);
         chooser.putExtra(Intent.EXTRA_TITLE, "Choose an app to proceed");
 
-        // Create a list for the camera intent and add it to the chooser
+        // list for the camera intent and add it to the chooser
         Intent[] intentArray = { cameraIntent };
         chooser.putExtra(Intent.EXTRA_INITIAL_INTENTS, intentArray);
 
-        // Start the activity with the chooser
+        //    / activity with the chooser
         mGetContent.launch(chooser);
     }
 
-    // Register activity result callbacks
+    //  activity result callbacks
     ActivityResultLauncher<Intent> mGetContent = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(),
             result -> {
                 if (result.getResultCode() == Activity.RESULT_OK) {
-                    // There are no request codes
                     Intent data = result.getData();
                     if (data != null && data.getData() != null) {
-                        // Handle the image uri from gallery
+                        //  the image uri from gallery
                         Uri selectedImageUri = data.getData();
                         openReceiptFragmentWithImage(selectedImageUri);
                     } else if (data != null && data.getExtras() != null) {
-                        // Handle the image from camera
+                        //  the image from camera
                         Bundle extras = data.getExtras();
                         Bitmap imageBitmap = (Bitmap) extras.get("data");
                         openReceiptFragmentWithImage(imageBitmap);

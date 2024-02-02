@@ -92,8 +92,8 @@ public class ReceiptFragment extends Fragment implements BaseActivity.KeyboardVi
             try {
                 //Convert the URI to a Bitmap
 
-                    InputStream imageStream = requireContext().getContentResolver().openInputStream(imageUri);
-                    Bitmap imageBitmap = BitmapFactory.decodeStream(imageStream);
+                InputStream imageStream = requireContext().getContentResolver().openInputStream(imageUri);
+                Bitmap imageBitmap = BitmapFactory.decodeStream(imageStream);
                 imageViewReceipt.setImageBitmap(imageBitmap);
                 sendRequestWithImage(imageBitmap);
             } catch (FileNotFoundException e) {
@@ -352,8 +352,6 @@ public class ReceiptFragment extends Fragment implements BaseActivity.KeyboardVi
                             imageViewLoading.setProgressCompat(100, true);
                             imageViewLoading.setVisibility(View.GONE);
                         });
-
-
                     }
                 }
             } catch (Exception e) {
@@ -362,8 +360,6 @@ public class ReceiptFragment extends Fragment implements BaseActivity.KeyboardVi
                 View TextViewError = requireActivity().findViewById(R.id.textViewError);
                 TextViewError.setVisibility(View.VISIBLE);
             }
-
-
         }
         ).start();
     }
