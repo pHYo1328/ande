@@ -77,4 +77,8 @@ public class Expense {
     public void setAmount(String amount) {
         this.amount = amount;
     }
+
+    public Double getDoubleAmount() {
+        return Double.valueOf(amount);
+    }
 }

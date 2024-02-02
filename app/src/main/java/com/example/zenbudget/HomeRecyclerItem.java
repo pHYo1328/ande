@@ -18,10 +18,15 @@ public class HomeRecyclerItem {
 
     public static final int TYPE_EVENT = 2;
 
-    public HomeRecyclerItem(Event e, String eventId) {
+    private Double totalSpent;
+    private Double totalBudget;
+
+    public HomeRecyclerItem(Event e, String eventId, double totalSpent, double totalBudget) {
         this.event = e;
         this.eventId = eventId;
         this.type = TYPE_EVENT;
+        this.totalSpent = totalSpent;
+        this.totalBudget = totalBudget;
     }
 
     public Event getEvent() {
@@ -46,5 +51,21 @@ public class HomeRecyclerItem {
 
     public void setEventId(String eventId) {
         this.eventId = eventId;
+    }
+
+    public Double getTotalSpent() {
+        return totalSpent;
+    }
+
+    public void setTotalSpent(Double totalSpent) {
+        this.totalSpent = totalSpent;
+    }
+
+    public Double getTotalBudget() {
+        return totalBudget;
+    }
+
+    public void setTotalBudget(Double totalBudget) {
+        this.totalBudget = totalBudget;
     }
 }

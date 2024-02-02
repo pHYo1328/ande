@@ -155,6 +155,13 @@ public class EventDashboard extends Fragment {
                         spent += e.getAmountDouble();
                     }
 
+
+                    if (spent > budget) {
+                        txtRemaining.setTextColor(ContextCompat.getColor(requireContext(), R.color.theme_danger));
+                    } else {
+                        txtRemaining.setTextColor(ContextCompat.getColor(requireContext(), R.color.theme_success));
+                    }
+
                     txtSpent.setText(String.format("%.2f", spent));
                     txtRemaining.setText(String.format("%.2f", budget - spent));
 
