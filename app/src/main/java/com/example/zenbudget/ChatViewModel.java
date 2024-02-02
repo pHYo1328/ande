@@ -5,24 +5,21 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ChatViewModel extends ViewModel {
-
-    // Using MutableLiveData for chat messages
     private MutableLiveData<List<ChatMessage>> chatMessages;
 
     public MutableLiveData<List<ChatMessage>> getChatMessages() {
         if (chatMessages == null) {
             chatMessages = new MutableLiveData<>();
-            chatMessages.setValue(new ArrayList<>()); // Initialize with empty list
+            chatMessages.setValue(new ArrayList<>());
         }
         return chatMessages;
     }
 
-    // Method to add a message to the list
     public void addChatMessage(ChatMessage message) {
         List<ChatMessage> currentMessages = chatMessages.getValue();
         if (currentMessages != null) {
             currentMessages.add(message);
-            chatMessages.setValue(currentMessages); // Trigger LiveData update
+            chatMessages.setValue(currentMessages);
         }
     }
 }
