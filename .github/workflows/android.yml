@@ -42,5 +42,5 @@ jobs:
       uses: actions/upload-artifact@v3
       if: always()
       with:
-        name: app-release
-        path: /app/build/outputs/apk/release/
+        name: apk
+        path: app/build/outputs/apk/release/app-release.apk
