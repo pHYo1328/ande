@@ -37,11 +37,9 @@ jobs:
       - name: Build with Gradle and Upload APK as Artifact
         run: |
           ./gradlew build -x lint
-          echo "APK build complete, proceeding to upload..."
-          ls -R app/build/outputs/apk/
-          # Assuming this is the correct path, otherwise adjust based on actual APK location
+
           - uses: actions/upload-artifact@v3
             if: always()
             with:
               name: apk
-              path: app/build/outputs/apk/release/
+              path: app/build/outputs/apk/release/app-release-unsigned.apk
